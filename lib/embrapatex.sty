@@ -117,7 +117,7 @@
 % Retira espaço extra obsoleto entre as frases.
 %\frenchspacing
 
-\addto\captionsbrazil{% portugues-brasil
+\addto\captionsbrazilian{% portugues-brasil
 	%% ajusta nomes padroes do babel
 	\renewcommand{\bibname}{Refer\^encias}
 	\renewcommand{\indexname}{\'Indice}
@@ -728,15 +728,16 @@
 	\hspace*{8cm}
 	\begin{minipage}{8cm}
 		\begin{SingleSpace}
-			\imprimirpreambulo
-			\newline
-			\artigoorientador: \ignorespaces\imprimirorientador \\
+			\sloppy
+			\imprimirpreambulo\par
+			\vspace{\onelineskip}
+			\artigoorientador: \ignorespaces\imprimirorientador\par
 			\abntex@ifnotempty{\imprimircoorientador}{
-				\newline
-				\artigocoorientador: \ignorespaces\imprimircoorientador
+				\vspace{\onelineskip}
+				\artigocoorientador: \ignorespaces\imprimircoorientador\par
 			}
 		\end{SingleSpace}
-	\end{minipage}
+	\end{minipage}\hfill
 
 	\vfill
 	\centering
@@ -776,9 +777,10 @@
 	\hspace*{8cm}
 	\begin{minipage}{8cm}
 		\begin{SingleSpace}
+			\sloppy
 			\imprimirpreambulo
 		\end{SingleSpace}
-	\end{minipage}
+	\end{minipage}\hfill
 
 	\vspace{\onelineskip}
 
@@ -885,7 +887,7 @@
 		\hspace*{8cm}
 		\begin{minipage}{8cm}
 			\input{#1}
-		\end{minipage}
+		\end{minipage}\hfill
 		\pagebreak
 	}
 }
@@ -932,7 +934,7 @@
 		\begin{minipage}{8cm}
 			\input{#1}
 			\raggedleft{(\imprimirautordaepigrafe) \par}
-		\end{minipage}
+		\end{minipage}\hfill
 		\pagebreak
 	}
 }
@@ -959,6 +961,7 @@
 					\small
 					\setlength{\parindent}{0pt}%
 					\setlength{\parskip}{0pt}%
+					\sloppy
 					% Entrada principal: autor invertido (Sobrenome, Nome).
 					% Se \autorinvertido estiver vazio, usa-se \autor.
 					\ifnotempty{\imprimirautorinvertido}{\imprimirautorinvertido}{\imprimirautor}\par
@@ -978,7 +981,7 @@
 						\ifthenelse{\equal{\imprimirincluibibliografia}{sim}}{Inclui bibliografia.\par}{}%
 						\ifnotempty{\imprimirdescritores}{\vspace{4pt}\imprimirdescritores\par}{}%
 					\endgroup
-					\par\vspace{4pt}%
+					\vspace{4pt}%
 					\ifnotempty{\imprimircdd}{{\raggedleft CDD: \imprimircdd\par}}{}%
 					\ifnotempty{\imprimircdu}{{\raggedleft CDU: \imprimircdu\par}}{}%
 					\vfill
