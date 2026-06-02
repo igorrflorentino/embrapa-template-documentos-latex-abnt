@@ -12,6 +12,7 @@
 *.log
 *.out
 *.toc
+*.synctex
 *.synctex.gz
 *.synctex(busy)
 *.fls
@@ -45,3 +46,19 @@
 *.idx
 *.ilg
 *.ind
+
+# --- Arquivos de sistema operacional ---
+# Versionado em Windows e macOS; ignoramos os metadados de cada sistema.
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
