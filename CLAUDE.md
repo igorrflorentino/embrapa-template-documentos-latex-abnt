@@ -60,7 +60,7 @@ O modelo separa orquestração, configuração de pacotes, estilo e conteúdo:
   - `\EMBRAPAqua{}{tabular ...}{\Fonte{...}}` dentro de `quadro`
 
   Eles garantem a legenda centralizada + a linha "Fonte:" que a ABNT exige. Exemplos completos no `README.md`.
-- **Citações** — `\cite{chave}` para citação entre parênteses, `\citeonline{chave}` para citação no corpo do texto. O estilo é ABNT alfabético (opções do `abntex2cite` em `lib/preambulo.tex:56`). Adicione as entradas em `elementos-pos-textuais/referencias.bib`.
+- **Citações** — `\cite{chave}` para citação entre parênteses, `\citeonline{chave}` para citação no corpo do texto. O estilo é ABNT alfabético (opções do `abntex2cite` em `lib/preambulo.tex:54`). Adicione as entradas em `elementos-pos-textuais/referencias.bib`.
 - **Algoritmos** — o `algorithm2e` é carregado com a opção `portuguese`. Use os comandos de palavras-chave em português (`\Inicio`, `\Para`, `\Enqto`, `\Entrada`, `\Saida`) e inicie o corpo com `\SetSpacedAlgorithm` para o espaçamento entre linhas conforme a ABNT.
 - **Enumerações no texto** — use os ambientes `alineas` / `subalineas` (marcadores com letras em ordem alfabética, conforme a ABNT) em vez de `itemize` ou `enumerate`.
 
