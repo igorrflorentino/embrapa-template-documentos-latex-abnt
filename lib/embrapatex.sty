@@ -98,8 +98,8 @@
 \captionsetup{
 	justification=centering,% Centraliza o caption
 	skip=0pt,                %Retira o espaco entre a figura/tabela e o caption
-	labelfont=bf, % A palavra 'Figure 1' agora eh negrito
-	font=bf	% O texto depois de 'Figure 1' agora eh negrito
+	labelfont=bf, % A palavra 'Figura 1' agora eh negrito
+	font=bf	% O texto depois de 'Figura 1' agora eh negrito
 }
 % Os items da lista de figura agora sao negritos
 \renewcommand{\cftfigurefont}{\bfseries}
@@ -130,12 +130,6 @@
 	\renewcommand{\subsubsectionautorefname}{subse{\c c}\~ao}
 	\renewcommand{\paragraphautorefname}{subse{\c c}\~ao}
 }
-
-% Por algum motivo, o algorithm2e estava pegando algumas palavras do espanhol.
-% Acredito que seja porque os comandos \para seja idêntico nos dois idiomas.
-% Esses comando resolvem o problema
-\SetKwFor{Para}{para}{fa\c{c}a}{fim para}
-\SetKwBlock{Inicio}{inicio}{fim}
 
 % Na versao mais nova do algorithm2e (versao 5.1) aparentemente foram adicionados
 % algumas palavras com acentuacao e por isso estava causando erro no template.
@@ -169,10 +163,10 @@
 % Espaco entre o caption e o algoritmo
 %\SetAlCapSkip{\onelineskip}
 
-% Distance between floats on the top or the bottom and the text;
+% Distancia entre floats no topo ou no rodape e o texto.
 \setlength{\textfloatsep}{18pt plus 2pt minus 2pt}
 
-% Distance between floats inserted inside the page text (using h) and the text proper.
+% Distancia entre floats inseridos no meio do texto (usando h) e o proprio texto.
 \setlength{\intextsep}{18pt plus 2pt minus 2pt}
 
 \newcommand{\Caption}[1]{ %
@@ -337,11 +331,7 @@
 	\addtolength\belowdisplayshortskip{\onelineskip}
 }
 
-% Altera o nome do algoritmo
-\SetKwBlock{Inicio}{início}{fim}
-
-% Numeracao da tabela comeca em 1
-\setcounter{table}{-1}
+% A numeracao de tabelas comeca em 1 (comportamento padrao do LaTeX).
 
 % Comandos para inserir figuras, tabelas e quadros
 \newcommand{\EMBRAPAfig}[3]{\IBGEtab{#1}{#2}{#3}}
@@ -392,7 +382,6 @@
 \providecommand{\membrodabancaquatro}{} \renewcommand{\membrodabancaquatro}{\def \@membrodabancaquatro}
 \providecommand{\membrodabancacinco}{} \renewcommand{\membrodabancacinco}{\def \@membrodabancacinco}
 \providecommand{\membrodabancaseis}{} \renewcommand{\membrodabancaseis}{\def \@membrodabancaseis}
-\providecommand{\membrodabancaumies}{} \renewcommand{\membrodabancaumies}{\def \@membrodabancaumies}
 \providecommand{\membrodabancadoisies}{} \renewcommand{\membrodabancadoisies}{\def \@membrodabancadoisies}
 \providecommand{\membrodabancatresies}{} \renewcommand{\membrodabancatresies}{\def \@membrodabancatresies}
 \providecommand{\membrodabancaquatroies}{} \renewcommand{\membrodabancaquatroies}{\def \@membrodabancaquatroies}
@@ -446,7 +435,6 @@
 \providecommand{\imprimirmembrodabancaquatro}{} \renewcommand{\imprimirmembrodabancaquatro}{\@membrodabancaquatro}
 \providecommand{\imprimirmembrodabancacinco}{} \renewcommand{\imprimirmembrodabancacinco}{\@membrodabancacinco}
 \providecommand{\imprimirmembrodabancaseis}{} \renewcommand{\imprimirmembrodabancaseis}{\@membrodabancaseis}
-\providecommand{\imprimirmembrodabancaumies}{} \renewcommand{\imprimirmembrodabancaumies}{\@membrodabancaumies}
 \providecommand{\imprimirmembrodabancadoisies}{} \renewcommand{\imprimirmembrodabancadoisies}{\@membrodabancadoisies}
 \providecommand{\imprimirmembrodabancatresies}{} \renewcommand{\imprimirmembrodabancatresies}{\@membrodabancatresies}
 \providecommand{\imprimirmembrodabancaquatroies}{} \renewcommand{\imprimirmembrodabancaquatroies}{\@membrodabancaquatroies}
@@ -493,6 +481,8 @@
 \programapesquisa{}
 \linhapesquisa{}
 \numerodocumento{}
+\epigrafee{}
+\autordaepigrafe{}
 \autor{}
 \titulo{}
 \data{}
@@ -759,6 +749,15 @@
 % Espaço entre uma assintura e outra
 \setlength{\ABNTEXsignskip}{\onelineskip}
 
+% Monta uma assinatura da banca omitindo as linhas (centro/IES) que estiverem
+% vazias — evita o erro "There's no line here to end" causado por \\ consecutivos
+% quando algum campo fica em branco.
+\newcommand{\assinaturabanca}[3]{%
+	\assinatura{#1%
+		\ifnotempty{#2}{\\ #2}{}%
+		\ifnotempty{#3}{\\ #3}{}}%
+}
+
 \newcommand{\imprimirfolhadeaprovacaopadrao}{
 
 	\begin{center}
@@ -794,37 +793,45 @@
 		\vspace{\onelineskip}
 
 	% Membro Um da banca é sempre o Orientador
-	\ifnotempty{\imprimirorientadorcentro}{
-		\assinatura{\imprimirorientador\  \artigoorientadorcomparenteses \\ \imprimirorientadorcentro \\  \imprimirorientadories}
-	}{
-		\assinatura{\imprimirorientador\  \artigoorientadorcomparenteses \\  \imprimirorientadories}
-	}
+	\assinaturabanca{\imprimirorientador\  \artigoorientadorcomparenteses}{\imprimirorientadorcentro}{\imprimirorientadories}
 
 	% Membro Dois da banca pode ser o coorientador ou outro membro
 	\ifnotempty{\imprimircoorientador}{
-		\assinatura{\imprimircoorientador\ \artigocoorientadorcomparenteses \\ \imprimircoorientadorcentro\\ \imprimircoorientadories}
+		\assinaturabanca{\imprimircoorientador\ \artigocoorientadorcomparenteses}{\imprimircoorientadorcentro}{\imprimircoorientadories}
 	}
 
 	% Membro Três da banca pode ser o coorientador ou outro membro
 	\ifnotempty{\imprimirmembrodabancadois}{
-		\assinatura{\imprimirmembrodabancadois \\ \imprimirmembrodabancadoiscentro \\ \imprimirmembrodabancadoisies}
+		\assinaturabanca{\imprimirmembrodabancadois}{\imprimirmembrodabancadoiscentro}{\imprimirmembrodabancadoisies}
 	}
 
 	% Membro Quatro
 	\ifnotempty{\imprimirmembrodabancatres}{
-		\assinatura{\imprimirmembrodabancatres \\ \imprimirmembrodabancatrescentro \\ \imprimirmembrodabancatresies}
+		\assinaturabanca{\imprimirmembrodabancatres}{\imprimirmembrodabancatrescentro}{\imprimirmembrodabancatresies}
 	}
 
 	% Membro Cinco
 	\ifnotempty{\imprimirmembrodabancaquatro}{
-		\assinatura{\imprimirmembrodabancaquatro \\ \imprimirmembrodabancaquatrocentro \\ \imprimirmembrodabancaquatroies}
+		\assinaturabanca{\imprimirmembrodabancaquatro}{\imprimirmembrodabancaquatrocentro}{\imprimirmembrodabancaquatroies}
+	}
+
+	% Membro Seis
+	\ifnotempty{\imprimirmembrodabancacinco}{
+		\assinaturabanca{\imprimirmembrodabancacinco}{\imprimirmembrodabancacincocentro}{\imprimirmembrodabancacincoies}
+	}
+
+	% Membro Sete
+	\ifnotempty{\imprimirmembrodabancaseis}{
+		\assinaturabanca{\imprimirmembrodabancaseis}{\imprimirmembrodabancaseiscentro}{\imprimirmembrodabancaseisies}
 	}
 
 	\pagebreak
 }
 
 \newcommand{\imprimirfolhadeaprovacao}{
-	\imprimirfolhadeaprovacaopadrao
+	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{
+		\imprimirfolhadeaprovacaopadrao
+	}
 }
 
 
@@ -1065,10 +1072,6 @@
 \renewcommand{\lstlistlistingname}{Lista de Códigos-Fonte}%
 
 
-%\AtBeginDocument{ %
-%	\counterwithout{lstlisting}{chapter}
-%}
-
 \lstset{
 	commentstyle=\color{Green}\ttfamily,
 	basicstyle=\ttfamily,
@@ -1088,15 +1091,6 @@
 	belowskip=\onelineskip,
 	belowcaptionskip=\onelineskip
 }
-
-%\newfloat[chapter]{codigofonte}{locf}{\lstlistingname}
-%\newlistof{listofcodigosfonte}{locf}{\lstlistlistingname}
-%\newlistentry{codigofonte}{locf}{0}
-%
-%% configurações para atender às regras da ABNT
-%\counterwithout{codigofonte}{chapter}
-%\renewcommand{\cftcodigofontename}{\lstlistingname\space}
-%\renewcommand*{\cftcodigofonteaftersnum}{\hfill--\hfill}
 
 \AtBeginDocument{ %
 	\counterwithout{lstlisting}{chapter}
@@ -1235,17 +1229,6 @@
 	\addcontentsline{toc}{chapter}{GLOSSÁRIO}
 }
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%               Referências           %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newcommand{\imprimirreferencias}[1]{ %
-	\bibliography{#1} %
-	% TODO Por algum motivo, colocar esse comando antes da bibliografia faz com que o
-	% ultimo capitulo dos elem fique sem o numero da pagina.
-	\postextual %
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%               Apendices             %%
