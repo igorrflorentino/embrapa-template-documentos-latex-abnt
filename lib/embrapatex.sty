@@ -718,6 +718,20 @@
 }
 \makeatother
 
+% Correção da ordem folha de rosto / ficha catalográfica.
+% O \imprimirfolhaderosto do abntex2 é definido com \@ifstar + subcomandos que
+% exigem um argumento que o corpo nunca repassa; quando chamado sem argumento
+% (uso padrão), ele acaba consumindo o PRÓXIMO token do documento — no nosso
+% caso \imprimirfichacatalografica — como se fosse seu argumento. Isso fazia a
+% ficha ser processada DENTRO da folha de rosto, aparecendo ANTES dela.
+% Redefinimos para uma versão simples que renderiza a folha de rosto sem
+% consumir o token seguinte, restaurando a ordem (folha de rosto → ficha).
+\renewcommand{\imprimirfolhaderosto}{%
+	\begin{folhaderosto}%
+		\folhaderostocontent
+	\end{folhaderosto}%
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%         Folha de Aprovação          %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
