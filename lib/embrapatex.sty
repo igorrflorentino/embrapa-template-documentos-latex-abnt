@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Customizações do abnTeX2 (http://abnTeX2.googlecode.com)           %%
+%% Customizações do abnTeX2 (https://www.abntex2.net.br)              %%
 %% para a Empresa Brasileira de Pesquisa Agropecuária (Embrapa)       %%
 %%                                                                    %%
 %% This work may be distributed and/or modified under the             %%
@@ -16,7 +16,7 @@
 %% Contact: igor.lopes@embrapa.br                                    %%
 %%                                                                    %%
 %% Further information about abnTeX2                                  %%
-%% are available on http://abntex2.googlecode.com/                    %%
+%% are available on https://www.abntex2.net.br/                       %%
 %%                                                                    %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -36,11 +36,10 @@
 %%       Formatação das Páginas        %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Define o espaço entre linhas para 1.5 cm
-%\OnehalfSpacing	Bug no ABNTEX2?
+% Define o espaçamento entre linhas em 1,5 (exigência da ABNT NBR 14724).
+% Usa-se \baselinestretch em vez do \OnehalfSpacing (abntex2/memoir) porque
+% este último não surtia efeito consistente neste template.
 \renewcommand{\baselinestretch}{1.5}
-
-%\OnehalfSpacing
 
 % Define as margens do documento
 \setlrmarginsandblock{3cm}{2cm}{*} % externa / interna
@@ -182,10 +181,6 @@
  	\vspace{-5pt}
 }
 
-% Cria o comando para fazer notas e anotacoes na figura e na tabela
-\newcommand{\Nota}[2][\notaname]{\Fonte[#1]{#2}}
-
-
 %Remove as bordas do hyperlinks.
 \newcommand{\removerbordasdohyperlink}[1]{%
 	\ifthenelse{\equal{#1}{sim}}{%
@@ -314,9 +309,6 @@
 	}
 }
 
-% Mantém compatibilidade - apelido para o comando antigo
-\newcommand{\trabalhoacademico}[1]{\tipodocumento{#1}}
-
 \AtBeginDocument{ %
 	% Adiciona os metadados do documento gerado
 	\hypersetup{ %
@@ -333,26 +325,19 @@
 
 % A numeracao de tabelas comeca em 1 (comportamento padrao do LaTeX).
 
-% Comandos para inserir figuras, tabelas e quadros
-\newcommand{\EMBRAPAfig}[3]{\IBGEtab{#1}{#2}{#3}}
-\newcommand{\EMBRAPAtab}[3]{\IBGEtab{#1}{#2}{#3}}
-\newcommand{\EMBRAPAqua}[3]{\IBGEtab{#1}{#2}{#3}}
-
-% Ambiente para alineas e e subalineas (incisos) com ponto
-\newlist{alineascomponto}{itemize}{2}
-\setlist[alineascomponto,1]{label={$\bullet$},topsep=0pt,itemsep=0pt,leftmargin=\parindent+\labelwidth-\labelsep}%
-\setlist[alineascomponto,2]{label={--},topsep=0pt,itemsep=0pt,leftmargin=*}
-\newlist{subalineascomponto}{enumerate}{1}
-\setlist[subalineascomponto,1]{label={$\circ$},topsep=0pt,itemsep=0pt,leftmargin=*}%
-% ---
-
-% Ambiente para alineas e e subalineas (incisos) com numeros
-\newlist{alineascomnumero}{enumerate}{2}
-\setlist[alineascomnumero,1]{label={$\arabic*$.},topsep=0pt,itemsep=0pt,leftmargin=\parindent+\labelwidth-\labelsep}%
-\setlist[alineascomnumero,2]{label={--},topsep=0pt,itemsep=0pt,leftmargin=*}
-\newlist{subalineascomnumero}{enumerate}{1}
-\setlist[subalineascomnumero,1]{label={$\arabic*$.},topsep=0pt,itemsep=0pt,leftmargin=*}%
-% ---
+% Comandos para inserir figuras, tabelas e quadros.
+% Os três delegam ao \IBGEtab do abntex2 (que monta a legenda + a linha
+% "Fonte:" com a largura do conteúdo). Mantemos nomes semânticos distintos
+% por clareza no texto, mas todos compartilham UMA definição (\EMBRAPA@float):
+% alterar uma muda o comportamento das três. Atenção à assimetria de uso
+% (ver README):
+%   - figura:        \EMBRAPAfig{\Caption{...}}{\includegraphics{...}}{\Fonte{...}}
+%   - tabela/quadro: \Caption{...} vem ANTES do float e o 1o argumento fica vazio:
+%                    \EMBRAPAtab{}{<tabular>}{\Fonte{...}}
+\newcommand{\EMBRAPA@float}[3]{\IBGEtab{#1}{#2}{#3}}
+\let\EMBRAPAfig\EMBRAPA@float
+\let\EMBRAPAtab\EMBRAPA@float
+\let\EMBRAPAqua\EMBRAPA@float
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%              Funções                %%
@@ -412,10 +397,6 @@
 \providecommand{\cdu}{} \renewcommand{\cdu}{\def \@cdu}
 \providecommand{\bibliotecario}{} \renewcommand{\bibliotecario}{\def \@bibliotecario}
 \providecommand{\crb}{} \renewcommand{\crb}{\def \@crb}
-
-% Compatibilidade com comandos antigos (IES → Unidade)
-\providecommand{\ies}[1]{} \renewcommand{\ies}[1]{\unidade{#1}}
-\providecommand{\iessigla}[1]{} \renewcommand{\iessigla}[1]{\unidadesigla{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%        Imprimir as Variáveis        %%
@@ -712,9 +693,10 @@
 
 	\vspace{2.5cm}
 
-	%Retira o espaço do parágrafo
+	% Desloca o bloco seguinte para a metade direita da página: o -2cm cancela
+	% a margem/indentação à esquerda e o 8cm reposiciona o início do minipage
+	% à direita (recuo característico exigido pela ABNT nestes elementos).
 	\noindent\hspace*{-2cm}
-	%Adiciona o espaço da margem
 	\hspace*{8cm}
 	\begin{minipage}{8cm}
 		\begin{SingleSpace}
@@ -770,9 +752,10 @@
 	\vspace{\onelineskip}
 	\vspace{\onelineskip}
 
-	%Retira o espaço do parágrafo
+	% Desloca o bloco seguinte para a metade direita da página: o -2cm cancela
+	% a margem/indentação à esquerda e o 8cm reposiciona o início do minipage
+	% à direita (recuo característico exigido pela ABNT nestes elementos).
 	\noindent\hspace*{-2cm}
-	%Adiciona o espaço da margem
 	\hspace*{8cm}
 	\begin{minipage}{8cm}
 		\begin{SingleSpace}
@@ -845,6 +828,9 @@
 %%             Teoremas                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Recursos OPCIONAIS para conteúdo matemático (operadores e ambientes de
+% teorema). Não são usados pelo template por padrão; ficam à disposição de
+% quem precisar. Remova este bloco se não for utilizá-lo.
 \newcommand{\Lg}{\emph{\sc L}}
 \newcommand{\contem}{\supset}
 \newcommand{\estacontido}{\subset}
@@ -868,6 +854,8 @@
 %%             Questoes                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Recurso OPCIONAL: ambiente para listar questões/exercícios, não usado pelo
+% template por padrão. Mantido à disposição; remova se não for utilizar.
 % Contar as questoes
 \newcounter{quest}
 
@@ -1066,6 +1054,10 @@
 %%         Lista de Códigos-fonte      %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Suporte OPCIONAL a listagens de código. A "Lista de Códigos-Fonte" só
+% aparece preenchida quando há ao menos um ambiente lstlisting no documento;
+% caso contrário, sai vazia (comportamento esperado).
+
 % Comandos para formatar a exibicao de codigos-fonte
 
 \renewcommand{\lstlistingname}{Código-fonte}% Listing -> Algorithm
@@ -1120,7 +1112,7 @@
 	\end{KeepFromToc} %
 	\pagebreak %
 }
-% agora a lista de quadro eh negrito
+% agora a lista de códigos-fonte eh negrito
 \renewcommand{\cftlstlistingfont}{\bfseries}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1163,7 +1155,7 @@
 	\pagebreak %
 }
 
-% agora a lista de quadro eh negrito
+% agora a lista de algoritmos eh negrito
 \renewcommand{\cftalgocffont}{\bfseries}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1350,7 +1342,7 @@
 \newcommand{\imprimiranexos}{ %
 	\imprimirpaginaanexo
 	\anexos %
-	% Retira o negrito da palavra "Apendice"
+	% Retira o negrito da palavra "Anexo"
 	\PRIVATEapendiceconfig{\normalfont\anexoname}{\normalfont\anexosname} %
 
 }
@@ -1361,10 +1353,6 @@
 
 \newcommand{\imprimirindice}{ %
 	\printindex
-}
-
-\newcommand{\citeautoronline}[1]{ %
-	\unskip\citeauthoronline{#1} (\citeyear{#1})\xspace %
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

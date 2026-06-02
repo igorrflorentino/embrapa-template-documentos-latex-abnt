@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Customizações do abnTeX2 (http://abnTeX2.googlecode.com)           %%
+%% Customizações do abnTeX2 (https://www.abntex2.net.br)              %%
 %% para a Empresa Brasileira de Pesquisa Agropecuária (Embrapa)       %%
 %%                                                                    %%
 %% This work may be distributed and/or modified under the             %%
@@ -16,7 +16,7 @@
 %% Contact: igor.lopes@embrapa.br                                    %%
 %%                                                                    %%
 %% Further information about abnTeX2                                  %%
-%% are available on http://abntex2.googlecode.com/                    %%
+%% are available on https://www.abntex2.net.br/                       %%
 %%                                                                    %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -44,31 +44,26 @@
 \usepackage{listings}                               % Utilizar codigo fonte no documento
 \usepackage{xcolor}
 \usepackage[portuguese,ruled,lined]{algorithm2e}    % Escrever algoritmos
-%\usepackage{float}                                  % Utilizado para criação de floats
 \usepackage{amsgen}
-%\usepackage{titlesec}                               % Permite alterar os títulos do documento
 \usepackage{tocloft}                                % Permite alterar a formatação do Sumário
 \usepackage{etoolbox}                               % Usado para alterar a fonte da Section no Sumário
 \usepackage[nogroupskip,nonumberlist,acronym]{glossaries}                % Permite fazer o glossario
 \usepackage{caption}                                % Altera o comportamento da tag caption
 \usepackage[alf, abnt-emphasize=bf, bibjustif, recuo=0cm, abnt-etal-cite=3, abnt-etal-list=0,abnt-etal-text=it]{abntex2cite}  % Citações padrão ABNT
-%\usepackage[bottom]{footmisc}                      % Mantém as notas de rodapé sempre na mesma posição
-%\usepackage{times}                                 % Usa a fonte Times
 \usepackage{mathptmx}                               % Usa a fonte Times New Roman
 \usepackage{microtype}                              % Melhorias de justificação (após a seleção da fonte)
-%\usepackage{lmodern}                               % Usa a fonte Latin Modern
-%\usepackage{subfig}                                % Posicionamento de figuras
-%\usepackage{scalefnt}                              % Permite redimensionar tamanho da fonte
-%\usepackage{color, colortbl}                       % Comandos de cores
-%\usepackage{lscape}                                % Permite páginas em modo "paisagem"
-%\usepackage{ae, aecompl}                           % Fontes de alta qualidade
-%\usepackage{picinpar}                              % Dispor imagens em parágrafos
-%\usepackage{latexsym}                              % Símbolos matemáticos
-%\usepackage{upgreek}                               % Fonte letras gregas
 \usepackage{appendix}                               % Gerar o apendice no final do documento
 \usepackage{paracol}                                % Criar paragrafos sem identacao
 \usepackage{lib/embrapatex}                         % Biblioteca EmbrapaTex para documentos padronizados
 \usepackage{pdfpages}                               % Incluir pdf no documento
+
+% --- Pacotes opcionais (desabilitados) ---
+% Descomente conforme a necessidade do documento:
+%\usepackage{float}            % floats com posicionamento fixo [H]
+%\usepackage[bottom]{footmisc} % fixa as notas de rodapé no rodapé da página
+%\usepackage{lscape}           % páginas isoladas em modo paisagem
+%\usepackage{subcaption}       % subfiguras/subtabelas (substitui o obsoleto subfig)
+%\usepackage{upgreek}          % letras gregas não-itálicas (\upmu, \uppi, ...)
 
 % Organiza e gera a lista de abreviaturas, simbolos e glossario
 \makeglossaries

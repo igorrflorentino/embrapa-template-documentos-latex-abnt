@@ -38,7 +38,7 @@ O **EmbrapaTex** é um template LaTeX baseado no [abnTeX2](http://www.abntex2.ne
    - Orientador/supervisor (se aplicável)
 2. Edite os arquivos nos diretórios `elementos-pre-textuais/`, `elementos-textuais/` e `elementos-pos-textuais/`
 3. Adicione suas figuras ao diretório `figuras/`
-4. Compile o projeto com `pdflatex` + `bibtex` + `makeglossaries` + `makeindex`
+4. Compile o projeto. O modo recomendado é `latexmk -pdf main.tex` (executa todas as passadas e o `makeglossaries` automaticamente). Alternativamente, rode manualmente: `pdflatex` → `bibtex` → `makeglossaries` → `makeindex` → `pdflatex` (2×)
 
 # Dicas de Formatação
 
