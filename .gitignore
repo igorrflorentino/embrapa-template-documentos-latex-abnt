@@ -1,0 +1,47 @@
+# Arquivos gerados automaticamente pela compilação LaTeX.
+# Apenas os arquivos-fonte devem ser versionados.
+# OBS.: ignoramos somente o PDF compilado /main.pdf — PDFs de fonte
+# (ex.: elementos-pre-textuais/folha-aprovacao.pdf e figuras em PDF)
+# continuam versionados normalmente.
+
+# Documento compilado (saída)
+/main.pdf
+
+# Auxiliares gerais do LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.synctex(busy)
+*.fls
+*.fdb_latexmk
+
+# Listas (figuras, tabelas, quadros, algoritmos, códigos-fonte)
+*.lof
+*.lot
+*.loa
+*.lol
+*.loq
+
+# Bibliografia (bibtex)
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+
+# Glossário e lista de siglas (glossaries / makeglossaries)
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.ist
+*.xdy
+
+# Índice remissivo (makeindex)
+*.idx
+*.ilg
+*.ind
