@@ -1,0 +1,44 @@
+name: Compilar LaTeX
+
+# Compila o documento (main.tex) automaticamente a cada Pull Request e a cada
+# push na branch main, garantindo que a ficha catalográfica e o restante do
+# relatório sempre compilem antes do merge. O PDF gerado fica disponível como
+# artefato do build.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Cancela execuções anteriores ainda em andamento para o mesmo ref.
+concurrency:
+  group: latex-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compilar:
+    name: Compilar main.tex
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      # Roda latexmk dentro de uma imagem TeX Live completa (inclui abntex2,
+      # glossaries, makeglossaries, makeindex etc.). O .latexmkrc do repositório
+      # é respeitado, então o glossário e a lista de siglas são gerados.
+      - name: Compilar com latexmk
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+
+      - name: Publicar PDF como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-pdf
+          path: main.pdf
+          if-no-files-found: error

@@ -31,7 +31,7 @@ O `.latexmkrc` registra as dependências personalizadas `.glo → .gls` e `.acn 
 
 As três receitas (recipes) correspondentes do LaTeX Workshop (`latexmk 🔃`, `pdflatex ➞ bibtex ➞ makeglossaries ➞ pdflatex × 2`, `pdflatex (rápido)`) já estão predefinidas no `.vscode/settings.json`.
 
-Não há **CI** nem **conjunto de testes**. O **`.gitignore`** cobre os artefatos gerados pela compilação (`.aux`, `.log`, `.bbl`, `.toc`, `/main.pdf`, glossário/índice etc.), que **não** são versionados — apenas os arquivos-fonte entram no git. PDFs de fonte (ex.: `elementos-pre-textuais/folha-aprovacao.pdf` e eventuais figuras em PDF) continuam versionados, pois só `/main.pdf` é ignorado (nunca `*.pdf`).
+Há **CI** (GitHub Actions): o workflow `.github/workflows/compilar-latex.yml` compila `main.tex` a cada Pull Request e push na `main`, usando `latexmk` numa imagem TeX Live completa, e publica o PDF como artefato. Não há **conjunto de testes**. O **`.gitignore`** cobre os artefatos gerados pela compilação (`.aux`, `.log`, `.bbl`, `.toc`, `/main.pdf`, glossário/índice etc.), que **não** são versionados — apenas os arquivos-fonte entram no git. PDFs de fonte (ex.: `elementos-pre-textuais/folha-aprovacao.pdf` e eventuais figuras em PDF) continuam versionados, pois só `/main.pdf` é ignorado (nunca `*.pdf`).
 
 ## Arquitetura
 
