@@ -1,4 +1,3 @@
-\changetocdepth {4}
 \babel@toc {brazil}{}\relax 
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
@@ -9,73 +8,49 @@
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {1}\MakeTextUppercase []{Introdução}}{17}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Justificativa}{17}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Objetivos}{17}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Objetivo Geral}{17}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Objetivos Específicos}{17}{subsection.1.2.2}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {2}\MakeTextUppercase []{Revisão de Literatura}}{18}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Tema A}{18}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Tema B}{18}{section.2.2}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {3}\MakeTextUppercase []{Estado da Arte}}{19}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Trabalho/Pesquisa A}{19}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Trabalho/Pesquisa B}{19}{section.3.2}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Material e Métodos}}{20}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Área de Estudo}{20}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Procedimentos Metodológicos}{20}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Análise dos Dados}{20}{section.4.3}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {5}\MakeTextUppercase []{Resultados e Discussão}}{21}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Resultados}{21}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Discussão}{21}{section.5.2}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {6}\MakeTextUppercase []{Considerações Finais}}{22}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Contribuições do Trabalho}{22}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Limitações}{22}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Recomendações e Trabalhos Futuros}{22}{section.6.3}%
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {1}\MakeTextUppercase []{Introdução}}{19}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Motivação}{20}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Objetivos}{20}{section.1.2}%
-\contentsline {subsection}{\numberline {1.2.1}Objetivo Geral}{21}{subsection.1.2.1}%
-\contentsline {subsection}{\numberline {1.2.2}Objetivos Específicos}{21}{subsection.1.2.2}%
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {2}\MakeTextUppercase []{Fundamentação Teórica}}{22}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Fundamentação Teórica A}{22}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Fundamentação Teórica B}{23}{section.2.2}%
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {3}\MakeTextUppercase []{Trabalhos Relacionados}}{26}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Trabalho Relacionado A}{26}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Trabalho Relacionado B}{27}{section.3.2}%
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Metodologia}}{29}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Exemplo de Algoritmos e Figuras}{30}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Usando Fórmulas Matemáticas}{33}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Usando Algoritmos}{35}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Usando Código-fonte}{36}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Usando Teoremas, Proposições, etc}{37}{section.4.5}%
-\contentsline {section}{\numberline {4.6}Usando Questões}{38}{section.4.6}%
-\contentsline {section}{\numberline {4.7}Citações}{38}{section.4.7}%
-\contentsline {subsection}{\numberline {4.7.1}Documentos com três autores}{38}{subsection.4.7.1}%
-\contentsline {subsection}{\numberline {4.7.2}Documentos com mais de três autores}{38}{subsection.4.7.2}%
-\contentsline {subsection}{\numberline {4.7.3}Documentos de vários autores}{39}{subsection.4.7.3}%
-\contentsline {section}{\numberline {4.8}Notas de Rodap\'{e}}{39}{section.4.8}%
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {5}\MakeTextUppercase []{Resultados}}{40}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Resultados do Experimento A}{40}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Resultados do Experimento B}{40}{section.5.2}%
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {6}\MakeTextUppercase []{Conclusões e Trabalhos Futuros}}{41}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Contribuições do Trabalho}{41}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Limitações}{41}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Trabalhos Futuros}{42}{section.6.3}%
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\contentsline {chapter}{\MakeTextUppercase []{Refer\^encias}}{43}{section*.41}%
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\contentsline {chapter}{GLOSSÁRIO}{44}{chapter*.44}%
-\contentsline {chapter}{AP\^ENDICES}{45}{chapter*.44}%
+\contentsline {chapter}{\MakeTextUppercase []{Refer\^encias}}{23}{section*.23}%
+\contentsline {chapter}{GLOSSÁRIO}{23}{section*.23}%
+\contentsline {chapter}{AP\^ENDICES}{24}{section*.23}%
 \renewcommand *{\cftappendixname }{AP\^ENDICE \space }
 \renewcommand *{\cftappendixname }{\normalfont AP\^ENDICE \space }
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
 \cftinsert {A}
-\contentsline {appendix}{\chapternumberline {A}\normalfont {Lorem Ipsum}}{46}{appendix.A}%
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\cftinsert {A}
-\contentsline {appendix}{\chapternumberline {B}\normalfont {Modelo de Capa}}{47}{appendix.B}%
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\cftinsert {A}
-\contentsline {appendix}{\chapternumberline {C}\normalfont {Termo de Fiel Depositário}}{48}{appendix.C}%
-\contentsline {chapter}{ANEXOS}{49}{appendix.C}%
+\contentsline {appendix}{\chapternumberline {A}\normalfont {Exemplo de Apêndice}}{25}{chapter.A}%
+\contentsline {chapter}{ANEXOS}{26}{chapter.A}%
 \cftinsert {AAA}
 \renewcommand *{\cftappendixname }{ANEXO \space }
 \renewcommand *{\cftappendixname }{\normalfont ANEXO \space }
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
 \cftinsert {A}
-\contentsline {appendix}{\chapternumberline {A}\normalfont {Exemplo de Anexo}}{50}{appendix.anexochapback.1}%
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\cftinsert {A}
-\contentsline {appendix}{\chapternumberline {B}\normalfont {Dinâmica das classes sociais}}{51}{appendix.anexochapback.2}%
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\contentsline {chapter}{\'Indice}{52}{chapter*.45}%
+\contentsline {appendix}{\chapternumberline {A}\normalfont {Exemplo de Anexo}}{27}{chapter.anexochapback.1}%

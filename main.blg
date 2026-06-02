@@ -1,65 +1,68 @@
-This is BibTeX, Version 0.99e (TeX Live 2026)
+This is BibTeX, Version 0.99e
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
+Reallocating 'name_of_file' (item size: 1) to 16 items.
+Reallocating 'name_of_file' (item size: 1) to 35 items.
+Reallocating 'name_of_file' (item size: 1) to 12 items.
 The style file: abntex2-alf.bst
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 6000 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'wiz_functions' (item size: 4) to 9000 items.
 Database file #1: abntex2-options.bib
 Database file #2: elementos-pos-textuais/referencias.bib
-Reallocated singl_function (elt_size=4) to 100 items from 50.
-Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
-Reallocated global_strs (elt_size=200001) to 20 items from 10.
-Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocating 'singl_function' (item size: 4) to 100 items.
+Reallocating 'glb_str_end' (item size: 4) to 20 items.
+Reallocating 'glb_str_ptr' (item size: 4) to 20 items.
+Reallocating 'global_strs' (item size: 1) to 4000000 items.
 +---------------------------------------------------------+
 | Estilo bibliográfico abntex2-alf.bst versão v-1.9.7           |
 | Em caso de dúvidas ou problemas com este estilo procure |
 | http://www.abntex.net.br/                               |
 +---------------------------------------------------------+
-You've used 15 entries,
+You've used 6 entries,
             6714 wiz_defined-function locations,
-            1264 strings with 11320 characters,
-and the built_in function-call counts, 9887 in all, are:
-= -- 790
-> -- 317
-< -- 9
-+ -- 177
-- -- 93
-* -- 688
-:= -- 1241
-add.period$ -- 39
-call.type$ -- 17
-change.case$ -- 135
-chr.to.int$ -- 26
-cite$ -- 10
-duplicate$ -- 411
-empty$ -- 865
-format.name$ -- 479
-if$ -- 2453
+            1211 strings with 9632 characters,
+and the built_in function-call counts, 2407 in all, are:
+= -- 277
+> -- 3
+< -- 3
++ -- 50
+- -- 3
+* -- 100
+:= -- 300
+add.period$ -- 4
+call.type$ -- 8
+change.case$ -- 21
+chr.to.int$ -- 14
+cite$ -- 1
+duplicate$ -- 49
+empty$ -- 303
+format.name$ -- 0
+if$ -- 658
 int.to.chr$ -- 4
 int.to.str$ -- 3
-missing$ -- 236
-newline$ -- 56
-num.names$ -- 35
-pop$ -- 258
+missing$ -- 66
+newline$ -- 13
+num.names$ -- 0
+pop$ -- 55
 preamble$ -- 1
-purify$ -- 55
+purify$ -- 18
 quote$ -- 0
-skip$ -- 727
+skip$ -- 326
 stack$ -- 1
-substring$ -- 338
-swap$ -- 197
-text.length$ -- 5
+substring$ -- 86
+swap$ -- 14
+text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 4
+type$ -- 0
 warning$ -- 0
-while$ -- 56
+while$ -- 3
 width$ -- 0
-write$ -- 161
+write$ -- 23
