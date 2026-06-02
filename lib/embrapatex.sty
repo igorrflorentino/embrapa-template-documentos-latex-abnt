@@ -718,6 +718,20 @@
 }
 \makeatother
 
+% Correção da ordem folha de rosto / ficha catalográfica.
+% O \imprimirfolhaderosto do abntex2 é definido com \@ifstar + subcomandos que
+% exigem um argumento que o corpo nunca repassa; quando chamado sem argumento
+% (uso padrão), ele acaba consumindo o PRÓXIMO token do documento — no nosso
+% caso \imprimirfichacatalografica — como se fosse seu argumento. Isso fazia a
+% ficha ser processada DENTRO da folha de rosto, aparecendo ANTES dela.
+% Redefinimos para uma versão simples que renderiza a folha de rosto sem
+% consumir o token seguinte, restaurando a ordem (folha de rosto → ficha).
+\renewcommand{\imprimirfolhaderosto}{%
+	\begin{folhaderosto}%
+		\folhaderostocontent
+	\end{folhaderosto}%
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%         Folha de Aprovação          %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -942,8 +956,10 @@
 % Gera a ficha catalográfica em LaTeX a partir dos metadados do documento.
 % Não recebe argumentos: os dados são lidos dos campos definidos no main.tex
 % (autor, título, local, data, \cdd, \descritores, \bibliotecario etc.).
-% A caixa segue o padrão ABNT (~7,5 x 12,5 cm) e é posicionada na parte
-% inferior da página. Campos vazios são omitidos automaticamente.
+% A caixa tem ~12,5 cm de largura e altura ajustável ao conteúdo: cresce
+% conforme o número de campos preenchidos, evitando que linhas (p.ex. o CDD)
+% sejam cortadas pela borda. Fica centralizada na página e os campos vazios
+% são omitidos automaticamente.
 \newcommand{\imprimirfichacatalografica}{%
 	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{%
 		\clearpage
@@ -952,7 +968,7 @@
 		\begin{center}%
 			\setlength{\fboxsep}{0.4cm}%
 			\fbox{%
-				\begin{minipage}[c][6.5cm][t]{11.5cm}%
+				\begin{minipage}{11.5cm}%
 					\small
 					\setlength{\parindent}{0pt}%
 					\setlength{\parskip}{0pt}%
@@ -979,7 +995,7 @@
 					\vspace{4pt}%
 					\ifnotempty{\imprimircdd}{{\raggedleft CDD: \imprimircdd\par}}{}%
 					\ifnotempty{\imprimircdu}{{\raggedleft CDU: \imprimircdu\par}}{}%
-					\vfill
+					\vspace{\onelineskip}
 					\ifnotempty{\imprimirbibliotecario}{%
 						{\centering\footnotesize
 							\imprimirbibliotecario\ifnotempty{\imprimircrb}{\ -- \imprimircrb}{}\par}}{}%
