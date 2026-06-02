@@ -142,6 +142,22 @@ Veja a seguir como inserir alguns elementos no seu texto.
 \end{algorithm}
 ```
 
+### Como preencher a Ficha Catalográfica
+
+A ficha catalográfica é gerada automaticamente em LaTeX a partir dos campos definidos no `main.tex` — **não é mais necessário anexar um PDF externo**. Preencha os campos no bloco *Informação da Ficha Catalográfica*:
+
+```tex
+\autorinvertido{Sobrenome, Nome}   % entrada principal; se vazio, usa o \autor
+\numeropaginas{85}                 % número de páginas
+\ilustracao{il.}                   % il. / il. color. (opcional)
+\descritores{1. Assunto um. 2. Assunto dois. I. Título.}
+\cdd{630}                          % classificação CDD
+\bibliotecario{Nome do Bibliotecário}
+\crb{CRB-1/1234}                   % registro profissional
+```
+
+Os dados de classificação (CDD/CDU), os descritores de assunto e o registro CRB devem ser fornecidos por um(a) **bibliotecário(a)**. Os campos `\autor`, `\titulo`, `\local` e `\data` já configurados no documento são reaproveitados automaticamente, e qualquer campo deixado em branco é omitido.
+
 # Mantenedor
 
 **Igor Lopes** — igor.lopes@embrapa.br

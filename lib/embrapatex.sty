@@ -408,6 +408,22 @@
 \providecommand{\coorientadories}{} \renewcommand{\coorientadories}{\def \@coorientadories}
 \providecommand{\coorientadorcentro}{} \renewcommand{\coorientadorcentro}{\def \@coorientadorcentro}
 
+% Campos da ficha catalográfica
+\providecommand{\autorinvertido}{} \renewcommand{\autorinvertido}{\def \@autorinvertido}
+\providecommand{\edicao}{} \renewcommand{\edicao}{\def \@edicao}
+\providecommand{\editora}{} \renewcommand{\editora}{\def \@editora}
+\providecommand{\numeropaginas}{} \renewcommand{\numeropaginas}{\def \@numeropaginas}
+\providecommand{\ilustracao}{} \renewcommand{\ilustracao}{\def \@ilustracao}
+\providecommand{\dimensao}{} \renewcommand{\dimensao}{\def \@dimensao}
+\providecommand{\isbn}{} \renewcommand{\isbn}{\def \@isbn}
+\providecommand{\notaficha}{} \renewcommand{\notaficha}{\def \@notaficha}
+\providecommand{\incluibibliografia}{} \renewcommand{\incluibibliografia}{\def \@incluibibliografia}
+\providecommand{\descritores}{} \renewcommand{\descritores}{\def \@descritores}
+\providecommand{\cdd}{} \renewcommand{\cdd}{\def \@cdd}
+\providecommand{\cdu}{} \renewcommand{\cdu}{\def \@cdu}
+\providecommand{\bibliotecario}{} \renewcommand{\bibliotecario}{\def \@bibliotecario}
+\providecommand{\crb}{} \renewcommand{\crb}{\def \@crb}
+
 % Compatibilidade com comandos antigos (IES → Unidade)
 \providecommand{\ies}[1]{} \renewcommand{\ies}[1]{\unidade{#1}}
 \providecommand{\iessigla}[1]{} \renewcommand{\iessigla}[1]{\unidadesigla{#1}}
@@ -445,6 +461,22 @@
 \providecommand{\imprimirorientadorcentro}{} \renewcommand{\imprimirorientadorcentro}{\@orientadorcentro}
 \providecommand{\imprimircoorientadories}{} \renewcommand{\imprimircoorientadories}{\@coorientadories}
 \providecommand{\imprimircoorientadorcentro}{} \renewcommand{\imprimircoorientadorcentro}{\@coorientadorcentro}
+
+% Campos da ficha catalográfica
+\providecommand{\imprimirautorinvertido}{} \renewcommand{\imprimirautorinvertido}{\@autorinvertido}
+\providecommand{\imprimiredicao}{} \renewcommand{\imprimiredicao}{\@edicao}
+\providecommand{\imprimireditora}{} \renewcommand{\imprimireditora}{\@editora}
+\providecommand{\imprimirnumeropaginas}{} \renewcommand{\imprimirnumeropaginas}{\@numeropaginas}
+\providecommand{\imprimirilustracao}{} \renewcommand{\imprimirilustracao}{\@ilustracao}
+\providecommand{\imprimirdimensao}{} \renewcommand{\imprimirdimensao}{\@dimensao}
+\providecommand{\imprimirisbn}{} \renewcommand{\imprimirisbn}{\@isbn}
+\providecommand{\imprimirnotaficha}{} \renewcommand{\imprimirnotaficha}{\@notaficha}
+\providecommand{\imprimirincluibibliografia}{} \renewcommand{\imprimirincluibibliografia}{\@incluibibliografia}
+\providecommand{\imprimirdescritores}{} \renewcommand{\imprimirdescritores}{\@descritores}
+\providecommand{\imprimircdd}{} \renewcommand{\imprimircdd}{\@cdd}
+\providecommand{\imprimircdu}{} \renewcommand{\imprimircdu}{\@cdu}
+\providecommand{\imprimirbibliotecario}{} \renewcommand{\imprimirbibliotecario}{\@bibliotecario}
+\providecommand{\imprimircrb}{} \renewcommand{\imprimircrb}{\@crb}
 
 % Compatibilidade
 \providecommand{\imprimiries}{} \renewcommand{\imprimiries}{\@unidade}
@@ -489,6 +521,22 @@
 \membrodabancaseis{}
 \membrodabancaseiscentro{}
 \membrodabancaseisies{}
+
+% Ficha catalográfica
+\autorinvertido{}
+\edicao{}
+\editora{Embrapa}
+\numeropaginas{}
+\ilustracao{}
+\dimensao{21 cm}
+\isbn{}
+\notaficha{}
+\incluibibliografia{sim}
+\descritores{}
+\cdd{}
+\cdu{}
+\bibliotecario{}
+\crb{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%       Definições de Variáveis       %%
@@ -894,9 +942,54 @@
 %%          Ficha Catalografica        %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\imprimirfichacatalografica}[1]{%
+% Gera a ficha catalográfica em LaTeX a partir dos metadados do documento.
+% Não recebe argumentos: os dados são lidos dos campos definidos no main.tex
+% (autor, título, local, data, \cdd, \descritores, \bibliotecario etc.).
+% A caixa segue o padrão ABNT (~7,5 x 12,5 cm) e é posicionada na parte
+% inferior da página. Campos vazios são omitidos automaticamente.
+\newcommand{\imprimirfichacatalografica}{%
 	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{%
-		\includepdf[pages=1]{#1} %
+		\clearpage
+		\thispagestyle{empty}%
+		\vspace*{\fill}%
+		\begin{center}%
+			\setlength{\fboxsep}{0.4cm}%
+			\fbox{%
+				\begin{minipage}[c][6.5cm][t]{11.5cm}%
+					\small
+					\setlength{\parindent}{0pt}%
+					\setlength{\parskip}{0pt}%
+					% Entrada principal: autor invertido (Sobrenome, Nome).
+					% Se \autorinvertido estiver vazio, usa-se \autor.
+					\ifnotempty{\imprimirautorinvertido}{\imprimirautorinvertido}{\imprimirautor}\par
+					% Corpo da ficha com recuo pendente de 0,9 cm
+					\begingroup
+						\setlength{\leftskip}{0.9cm}%
+						\imprimirtitulo\ifnotempty{\imprimirautor}{\ / \imprimirautor}{}.%
+							\ifnotempty{\imprimiredicao}{\ -- \imprimiredicao}{}%
+							\ -- \imprimirlocal\ : \imprimireditora, \imprimirdata.\par
+						\ifnotempty{\imprimirnumeropaginas}{%
+							\imprimirnumeropaginas\ p.%
+							\ifnotempty{\imprimirilustracao}{\ : \imprimirilustracao}{}%
+							\ifnotempty{\imprimirdimensao}{\ ; \imprimirdimensao}{}.\par}{}%
+						\vspace{4pt}%
+						\ifnotempty{\imprimirisbn}{ISBN \imprimirisbn.\par}{}%
+						\ifnotempty{\imprimirnotaficha}{\imprimirnotaficha\par}{}%
+						\ifthenelse{\equal{\imprimirincluibibliografia}{sim}}{Inclui bibliografia.\par}{}%
+						\ifnotempty{\imprimirdescritores}{\vspace{4pt}\imprimirdescritores\par}{}%
+					\endgroup
+					\par\vspace{4pt}%
+					\ifnotempty{\imprimircdd}{{\raggedleft CDD: \imprimircdd\par}}{}%
+					\ifnotempty{\imprimircdu}{{\raggedleft CDU: \imprimircdu\par}}{}%
+					\vfill
+					\ifnotempty{\imprimirbibliotecario}{%
+						{\centering\footnotesize
+							\imprimirbibliotecario\ifnotempty{\imprimircrb}{\ -- \imprimircrb}{}\par}}{}%
+				\end{minipage}%
+			}%
+		\end{center}%
+		\vspace*{\fill}%
+		\clearpage
 	}%
 }
 

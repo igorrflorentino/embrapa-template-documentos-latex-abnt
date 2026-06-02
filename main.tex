@@ -119,12 +119,44 @@
 \membrodabancaseiscentro{}
 \membrodabancaseisies{}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%        Informação da Ficha Catalográfica        %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% A ficha catalográfica é gerada automaticamente em LaTeX a partir dos campos
+% abaixo — não é mais necessário anexar um PDF externo. Os dados de
+% classificação (CDD/CDU), os descritores de assunto e o registro CRB do
+% bibliotecário devem ser fornecidos por um(a) bibliotecário(a).
+
+% Nome do autor invertido para a entrada principal (Sobrenome, Nome).
+% Se ficar em branco, será usado o \autor definido acima.
+\autorinvertido{}
+
+% Dados da publicação
+\edicao{}                 % Ex.: 1. ed. (deixe em branco se não houver)
+\editora{Embrapa}         % Editora responsável
+\numeropaginas{}          % Número total de páginas (ex.: 85)
+\ilustracao{il.}          % Ex.: il. / il. color. (deixe em branco se não houver)
+\dimensao{21 cm}          % Altura da publicação
+
+% Informações complementares
+\isbn{}                   % ISBN, se houver
+\notaficha{}              % Nota livre (ex.: tipo do trabalho, orientador)
+\incluibibliografia{sim}  % 'sim' imprime "Inclui bibliografia."
+
+% Dados fornecidos pelo(a) bibliotecário(a)
+\descritores{}            % Ex.: 1. Agricultura digital. 2. Sensoriamento remoto. I. Título.
+\cdd{}                    % Classificação Decimal de Dewey (ex.: 630)
+\cdu{}                    % Classificação Decimal Universal (opcional)
+\bibliotecario{}          % Nome do(a) bibliotecário(a)
+\crb{}                    % Registro profissional (ex.: CRB-1/1234)
+
 \begin{document}
 
 	% Elementos pré-textuais
 	\imprimircapa
 	\imprimirfolhaderosto{}
-	\imprimirfichacatalografica{elementos-pre-textuais/ficha-catalografica}
+	\imprimirfichacatalografica
 	\imprimirerrata{elementos-pre-textuais/errata}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
