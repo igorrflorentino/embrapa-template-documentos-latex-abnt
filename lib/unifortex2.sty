@@ -610,7 +610,7 @@
         \noindent\begin{minipage}{0.19\textwidth} 
         \includegraphics[scale=.9]{lib/Imagem1.png}
         \end{minipage}
-        \begin{minipage}{0.9\textwidth}        % \vspace{1cm}
+        \begin{minipage}{0.78\textwidth}        % \vspace{1cm}
         \MakeUppercase{\vspace{1cm}\imprimirfundacao}\\
 		\MakeUppercase{\imprimiries   \space-  \imprimiriessigla} \\
 		\MakeUppercase{\imprimircentro} \\
@@ -666,7 +666,7 @@
 	\vspace{2.5cm}
 
 	%Retira o espaço do parágrafo
-	\hspace*{-2cm}
+	\noindent\hspace*{-2cm}
 	%Adiciona o espaço da margem
 	\hspace*{8cm}
 	\begin{minipage}{8cm}
@@ -719,10 +719,10 @@
 	\vspace{\onelineskip}
 
 	%Retira o espaço do parágrafo
-	\hspace*{-2cm}
+	\noindent\hspace*{-2cm}
 	%Adiciona o espaço da margem
 	\hspace*{8cm}
-	\begin{minipage}{7.5cm}
+	\begin{minipage}{8cm}
 		\begin{SingleSpace}
 			\imprimirpreambulo \\
 		\end{SingleSpace}
@@ -815,7 +815,7 @@
 	\vspace{\onelineskip}
 
 	%Retira o espaço do parágrafo
-	\hspace*{-2cm}
+	\noindent\hspace*{-2cm}
 	%Adiciona o espaço da margem
 	\hspace*{8cm}
 	\begin{minipage}{8cm}
@@ -874,7 +874,7 @@
 	\vspace{\onelineskip}
 
 	%Retira o espaço do parágrafo
-	\hspace*{-2cm}
+	\noindent\hspace*{-2cm}
 	%Adiciona o espaço da margem
 	\hspace*{8cm}
 	\begin{minipage}{8cm}
@@ -991,7 +991,7 @@
 		\vspace*{20cm}
 		\vfill
 		%Retira o espaço do parágrafo
-		\hspace*{-2cm}
+		\noindent\hspace*{-2cm}
 		%Adiciona o espaço da margem
 		\hspace*{8cm}
 		\begin{minipage}{8cm}
@@ -1037,7 +1037,7 @@
 		\vspace*{\fill}
 		\vfill
 		%Retira o espaço do parágrafo
-		\hspace*{-2cm}
+		\noindent\hspace*{-2cm}
 		%Adiciona o espaço da margem
 		\hspace*{8cm}
 		\begin{minipage}{8cm}
@@ -1250,8 +1250,8 @@
 %%    Lista de Abreviaturas e Siglas   %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Largura da lista de abreviaturas
-\setlength{\glsdescwidth}{\linewidth}
+% Largura da lista de abreviaturas (desconta a coluna da sigla e padding da tabela)
+\setlength{\glsdescwidth}{\dimexpr\linewidth-3cm\relax}
 
 \newcommand{\imprimirlistadeabreviaturasesiglas}{ %
 	\printglossary[type=\acronymtype,style=long,nonumberlist,title={Lista de Abreviaturas e Siglas\vspace{-0.3cm}}] %
@@ -1287,13 +1287,13 @@
 	%
 	\renewcommand*{\glsgroupskip}{}%
 	% Depois da palavra, colocar o ":" e no fim o ponto final "."
-	\renewcommand*{\glossaryentryfield}[5]{%
-		\item[\glstarget{##1}{##2}:] ##3.%
+	\renewcommand*{\glossentry}[2]{%
+		\item[\glstarget{##1}{\glossentryname{##1}}:] \glossentrydesc{##1}.%
 	}%
 }
 
 \newcommand{\imprimirglossario}{ %
-	\glossarystyle{glossario-unifor} %
+	\setglossarystyle{glossario-unifor} %
 	\printglossary[title=GLOSSÁRIO,toctitle=GLOSSÁRIO] %
 	\addcontentsline{toc}{chapter}{GLOSSÁRIO}
 }
