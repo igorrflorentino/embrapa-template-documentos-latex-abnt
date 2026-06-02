@@ -942,8 +942,10 @@
 % Gera a ficha catalográfica em LaTeX a partir dos metadados do documento.
 % Não recebe argumentos: os dados são lidos dos campos definidos no main.tex
 % (autor, título, local, data, \cdd, \descritores, \bibliotecario etc.).
-% A caixa segue o padrão ABNT (~7,5 x 12,5 cm) e é posicionada na parte
-% inferior da página. Campos vazios são omitidos automaticamente.
+% A caixa tem ~12,5 cm de largura e altura ajustável ao conteúdo: cresce
+% conforme o número de campos preenchidos, evitando que linhas (p.ex. o CDD)
+% sejam cortadas pela borda. Fica centralizada na página e os campos vazios
+% são omitidos automaticamente.
 \newcommand{\imprimirfichacatalografica}{%
 	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{%
 		\clearpage
@@ -952,7 +954,7 @@
 		\begin{center}%
 			\setlength{\fboxsep}{0.4cm}%
 			\fbox{%
-				\begin{minipage}[c][6.5cm][t]{11.5cm}%
+				\begin{minipage}{11.5cm}%
 					\small
 					\setlength{\parindent}{0pt}%
 					\setlength{\parskip}{0pt}%
@@ -979,7 +981,7 @@
 					\vspace{4pt}%
 					\ifnotempty{\imprimircdd}{{\raggedleft CDD: \imprimircdd\par}}{}%
 					\ifnotempty{\imprimircdu}{{\raggedleft CDU: \imprimircdu\par}}{}%
-					\vfill
+					\vspace{\onelineskip}
 					\ifnotempty{\imprimirbibliotecario}{%
 						{\centering\footnotesize
 							\imprimirbibliotecario\ifnotempty{\imprimircrb}{\ -- \imprimircrb}{}\par}}{}%
