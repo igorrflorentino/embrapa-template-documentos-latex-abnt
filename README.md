@@ -1,22 +1,47 @@
-# UniforTeX2 - O que é?
+# EmbrapaTex - Template LaTeX para Publicações da Embrapa
 
-O **UniforTeX2** é um projeto baseado no [abnTeX2] desenvolvido para auxiliar os alunos da Universidade de Fortaleza em seus trabalhos de monografias de graduação, dissertações de mestrado e teses de doutorado. Embora tenha sido escrita para ser utilizada principalmente pelos alunos da Computação, o UniforTeX2 é suficientemente configurável e facilmente adaptável para ser utilizada em praticamente todos os cursos da UNIFOR. Espera-se que o projeto seja um modelo de trabalho acadêmico que implemente todas as exigências das normas da ABNT sem a necessidade de se preocupar com o estilo ou formatação do documento.
+O **EmbrapaTex** é um template LaTeX baseado no [abnTeX2](http://www.abntex2.net.br/) desenvolvido para auxiliar pesquisadores e analistas da **Empresa Brasileira de Pesquisa Agropecuária (Embrapa)** na elaboração padronizada de seus trabalhos, relatórios e publicações técnicas. O template implementa as normas da ABNT, permitindo que o autor se concentre no conteúdo sem se preocupar com formatação.
 
-### Modelos Disponíveis
+### Tipos de Documento Disponíveis
 
-**Trabalhos Acadêmicos**
+- **Relatório Técnico** (`relatorio`) — Relatórios técnicos e relatórios finais de pesquisa
+- **Boletim de Pesquisa e Desenvolvimento** (`boletim`) — Boletins de pesquisa
+- **Comunicado Técnico** (`comunicado`) — Comunicados técnicos
+- **Documento** (`documento`) — Documento genérico
 
- - Trabalho de Conclusão de Curso de Graduação
- - Trabalho de Conclusão de Curso de Especialização
- - Dissertação de Mestrado Acadêmico e Profissional
- - Tese de Doutorado
- 
+### Estrutura do Projeto
+
+```
+├── main.tex                          # Arquivo principal
+├── lib/
+│   ├── preambulo.tex                 # Configurações de pacotes
+│   ├── embrapatex.sty                # Pacote de estilos EmbrapaTex
+│   └── logo-embrapa-*.png            # Logos da Embrapa
+├── elementos-pre-textuais/           # Resumo, abstract, agradecimentos, etc.
+├── elementos-textuais/               # Capítulos do documento
+│   ├── introducao.tex
+│   ├── revisao-de-literatura.tex
+│   ├── estado-da-arte.tex
+│   ├── material-e-metodos.tex
+│   ├── resultados-e-discussao.tex
+│   └── consideracoes-finais.tex
+├── elementos-pos-textuais/           # Referências, glossário, apêndices, anexos
+└── figuras/                          # Diretório para figuras
+```
+
 # Por onde começo?
-Para utilizar o UniforTeX2 você precisa seguir os seguintes passos:
-1. Crie uma conta no editor online de LaTeX [Overleaf](https://www.overleaf.com/);
-2. Após criar a conta, clique [AQUI](https://www.overleaf.com/docs?snip_uri=https://github.com/bruno-unifor/unifortex2/archive/master.zip) para criar um novo template na sua conta Overleaf;
 
-# Dicas
+1. Abra o arquivo `main.tex` e configure os dados do seu documento:
+   - Tipo de documento (`\tipodocumento{relatorio}`)
+   - Unidade Embrapa (`\unidade{...}`)
+   - Autor, título, data e local
+   - Orientador/supervisor (se aplicável)
+2. Edite os arquivos nos diretórios `elementos-pre-textuais/`, `elementos-textuais/` e `elementos-pos-textuais/`
+3. Adicione suas figuras ao diretório `figuras/`
+4. Compile o projeto com `pdflatex` + `bibtex` + `makeglossaries` + `makeindex`
+
+# Dicas de Formatação
+
 Veja a seguir como inserir alguns elementos no seu texto.
 
 ### Como inserir uma Tabela
@@ -24,17 +49,12 @@ Veja a seguir como inserir alguns elementos no seu texto.
 \begin{table}[h!]	
 	\centering
 	\Caption{\label{tab:label_da_tabela} Legenda da Tabela}
-	\UNIFORtab{}{
+	\EMBRAPAtab{}{
 		\begin{tabular}{ccll}
 			\toprule
-	    		Quisque & pharetra & tempus & vulputate \\
+		    	Coluna 1 & Coluna 2 & Coluna 3 & Coluna 4 \\
 			\midrule \midrule
-				E1 & Complete coverage & Both splice sites \\
-				E2 & Complete coverage & Both splice sites \\
-				E3 & Partial coverage & Both splice sites & Both \\
-				E4 & Partial coverage & One splice site & Both \\
-				E5 & Complete or coverage & No splice & Both \\
-				E6 & No coverage & No splice sites\\
+				Dado 1 & Dado 2 & Dado 3 & Dado 4 \\
 			\bottomrule
 		\end{tabular}
 	}{
@@ -48,14 +68,12 @@ Veja a seguir como inserir alguns elementos no seu texto.
 \begin{quadro}[h!]	
 	\centering
 	\Caption{\label{qua:label_do_quadro} Legenda do Quadro}
-	\UNIFORqua{}{
+	\EMBRAPAqua{}{
 		\begin{tabular}{|c|c|}
 			\hline
-			Quisque & pharetra \\
+			Coluna 1 & Coluna 2 \\
 			\hline
-			E1 & Complete coverage  \\
-			\hline
-			E2 & Complete coverage \\
+			Dado 1 & Dado 2 \\
 			\hline
 		\end{tabular}
 	}{
@@ -64,21 +82,21 @@ Veja a seguir como inserir alguns elementos no seu texto.
 \end{quadro}
 ```
 
-### Como inserir uma figura
+### Como inserir uma Figura
 ```tex
 \begin{figure}[h!]
 	\centering
-	\UNIFORfig{
+	\EMBRAPAfig{
 	    \Caption{\label{fig:label_da_figura} Legenda da Figura}	
 	}{
-	    \includegraphics[width=8cm]{figuras/figura-1}
+	    \includegraphics[width=8cm]{figuras/nome-da-figura}
 	}{
 	    \Fonte{Elaborado pelo autor}
 	}	
 \end{figure}
 ```
 
-### Como inserir uma alínea
+### Como inserir uma Alínea
 ```tex
 \begin{alineas}
 	\item Lorem ipsum dolor sit amet;
@@ -92,52 +110,58 @@ Veja a seguir como inserir alguns elementos no seu texto.
 \end{alineas}
 ```
 
-### Como criar Capítulos
+### Como criar Capítulos e Seções
 ```tex
-\chapter{Fundamentação Teórica}
-\label{cap:fundamentacao-teorica}
-```
+\chapter{Nome do Capítulo}
+\label{cap:nome-do-capitulo}
 
-### Como criar Seções
-```tex
 % Seções Secundárias
-\section{Objetivo Geral 2}
-\label{sec:objetivo-geral-2}
+\section{Nome da Seção}
+\label{sec:nome-da-secao}
 
 % Seções Terciárias
-\subsection{Objetivo Geral 3}
-\label{sec:objetivo-geral-3}
+\subsection{Nome da Subseção}
+\label{sec:nome-da-subsecao}
 
 % Seções Quaternárias
-\subsubsection{Objetivo Geral 4}
-\label{sec:objetivo-geral-4}
-
-% Seções Quinárias
-\subsubsubsection{Objetivo Geral 5}
-\label{sec:objetivo-geral-5}
+\subsubsection{Nome da Sub-subseção}
+\label{sec:nome-da-sub-subsecao}
 ```
 
-### Como inserir um algoritmo
+### Como inserir um Algoritmo
 ```tex
 \begin{algorithm}[h!]
 	\SetSpacedAlgorithm
-	\caption{\label{alg:algoritmo_de_colonica_de_formigas}Algoritmo de Otimização por Colônia de Formiga}
+	\caption{\label{alg:exemplo}Descrição do Algoritmo}
 	\Entrada{Entrada do Algoritmo}
-	\Saida{Saida do Algoritmo}
+	\Saida{Saída do Algoritmo}
 	\Inicio{
-		Atribua os valores dos parâmetros\;
-		Inicialize as trilhas de feromônios\;
-		\Enqto{não atingir o critério de parada}{
-			\Para{cada formiga}{
-				Construa as Soluções\;
-			}
-			Aplique Busca Local (Opcional)\;
-			Atualize o Feromônio\;
-		}	
+		Passo 1\;
+		Passo 2\;
 	}
 \end{algorithm}
 ```
 
-# Atenção
+### Como preencher a Ficha Catalográfica
 
-O UniforTeX2 é fornecido gratuitamente e sem garantias e pode ser redistribuído livremente para fins acadêmicos. O UniforTeX2 é um produto extra-oficial e não está oficialmente vinculada à Universidade de Fortaleza - Unifor.
+A ficha catalográfica é gerada automaticamente em LaTeX a partir dos campos definidos no `main.tex` — **não é mais necessário anexar um PDF externo**. Preencha os campos no bloco *Informação da Ficha Catalográfica*:
+
+```tex
+\autorinvertido{Sobrenome, Nome}   % entrada principal; se vazio, usa o \autor
+\numeropaginas{85}                 % número de páginas
+\ilustracao{il.}                   % il. / il. color. (opcional)
+\descritores{1. Assunto um. 2. Assunto dois. I. Título.}
+\cdd{630}                          % classificação CDD
+\bibliotecario{Nome do Bibliotecário}
+\crb{CRB-1/1234}                   % registro profissional
+```
+
+Os dados de classificação (CDD/CDU), os descritores de assunto e o registro CRB devem ser fornecidos por um(a) **bibliotecário(a)**. Os campos `\autor`, `\titulo`, `\local` e `\data` já configurados no documento são reaproveitados automaticamente, e qualquer campo deixado em branco é omitido.
+
+# Mantenedor
+
+**Igor Lopes** — igor.lopes@embrapa.br
+
+# Licença
+
+O EmbrapaTex é fornecido gratuitamente sob a [LaTeX Project Public License (LPPL)](http://www.latex-project.org/lppl.txt) e pode ser redistribuído livremente para fins de pesquisa e publicação.

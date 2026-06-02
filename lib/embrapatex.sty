@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Customizações do abnTeX2 (http://abnTeX2.googlecode.com)           %%
-%% para a Universidade de Fortaleza						              %%
+%% para a Empresa Brasileira de Pesquisa Agropecuária (Embrapa)       %%
 %%                                                                    %%
 %% This work may be distributed and/or modified under the             %%
 %% conditions of the LaTeX Project Public License, either version 1.3 %%
@@ -12,9 +12,8 @@
 %%                                                                    %%
 %% This work has the LPPL maintenance status `maintained'.            %%
 %%                                                                    %%
-%% The Current Maintainer of this work is Bruno Lopes                 %%
-%%                                                                    %%
-%% Project available on: https://github.com/bruno-unifor/unifortex2   %%
+%% The Current Maintainer of this work is Igor Lopes                  %%
+%% Contact: igor.lopes@embrapa.br                                    %%
 %%                                                                    %%
 %% Further information about abnTeX2                                  %%
 %% are available on http://abntex2.googlecode.com/                    %%
@@ -91,7 +90,7 @@
 \renewcommand{\ABNTEXsubsubsectionfont}{\normalfont}
 \renewcommand{\ABNTEXsubsubsectionfontsize}{\normalsize}
 
-% Estilo da subsection 1.1.1.1
+% Estilo da subsection 1.1.1.1.1
 \renewcommand{\ABNTEXsubsubsubsectionfont}{\normalfont\itshape}
 \renewcommand{\ABNTEXsubsubsubsectionfontsize}{\normalsize}
 
@@ -215,26 +214,28 @@
 % Adiciona o sexo do orientador e do co-orientador no documento atraves
 % do artigo "a".
 
-\provideboolean{unifortex2@orientadorfeminino}
-\provideboolean{unifortex2@coorientadorfeminino}
+\provideboolean{embrapatex@orientadorfeminino}
+\provideboolean{embrapatex@coorientadorfeminino}
 
-\setboolean{unifortex2@orientadorfeminino}{false}
-\setboolean{unifortex2@coorientadorfeminino}{false}
+\setboolean{embrapatex@orientadorfeminino}{false}
+\setboolean{embrapatex@coorientadorfeminino}{false}
 
-\newcommand{\orientadorfeminino}[1]{
+\providecommand{\orientadorfeminino}[1]{}
+\renewcommand{\orientadorfeminino}[1]{
 	 \ifthenelse{\equal{#1}{sim}}{%
-	 	\setboolean{unifortex2@orientadorfeminino}{true}
+	 	\setboolean{embrapatex@orientadorfeminino}{true}
 	 }
 }
 
-\newcommand{\coorientadorfeminino}[1]{
+\providecommand{\coorientadorfeminino}[1]{}
+\renewcommand{\coorientadorfeminino}[1]{
 	\ifthenelse{\equal{#1}{sim}}{%
-		\setboolean{unifortex2@coorientadorfeminino}{true}
+		\setboolean{embrapatex@coorientadorfeminino}{true}
 	}
 }
 
 \newcommand{\artigoorientador}{ %
-	\ifthenelse{\boolean{unifortex2@orientadorfeminino}}{ %
+	\ifthenelse{\boolean{embrapatex@orientadorfeminino}}{ %
 		\unskip Orientadora\ignorespaces%
 	}{ %
 		\unskip Orientador\ignorespaces%
@@ -242,7 +243,7 @@
 }
 
 \newcommand{\artigocoorientador}{ %
-	\ifthenelse{\boolean{unifortex2@coorientadorfeminino}}{ %
+	\ifthenelse{\boolean{embrapatex@coorientadorfeminino}}{ %
 		Co-Orientadora\ignorespaces%
 	}{ %
 		Co-Orientador\ignorespaces%
@@ -250,7 +251,7 @@
 }
 
 \newcommand{\artigoorientadorcomparenteses}{ %
-	\ifthenelse{\boolean{unifortex2@orientadorfeminino}}{ %
+	\ifthenelse{\boolean{embrapatex@orientadorfeminino}}{ %
 		(Orientadora)\ignorespaces%
 	}{ %
 		(Orientador)\ignorespaces%
@@ -258,7 +259,7 @@
 }
 
 \newcommand{\artigocoorientadorcomparenteses}{ %
-	\ifthenelse{\boolean{unifortex2@coorientadorfeminino}}{ %
+	\ifthenelse{\boolean{embrapatex@coorientadorfeminino}}{ %
 		(Co-Orientadora)\ignorespaces%
 	}{ %
 		(Co-Orientador)\ignorespaces%
@@ -266,59 +267,68 @@
 }
 
 % Variaveis utilizada para gerar o documento de qualificacao
-\provideboolean{unifortex2@ehqualificacao}
-\setboolean{unifortex2@ehqualificacao}{false}
+\provideboolean{embrapatex@ehqualificacao}
+\setboolean{embrapatex@ehqualificacao}{false}
 
 \newcommand{\ehqualificacao}[1]{
 	\ifthenelse{\equal{#1}{sim}}{%
-		\setboolean{unifortex2@ehqualificacao}{true}
+		\setboolean{embrapatex@ehqualificacao}{true}
 	}
 }
 
 % Determina o tipo do trabalho apresentado
+% Tipos de documento da Embrapa:
+%   relatorio    - Relatório Técnico / Relatório Final
+%   boletim      - Boletim de Pesquisa e Desenvolvimento
+%   comunicado   - Comunicado Técnico
+%   documento    - Documento (genérico)
+
 % Definicao das variaveis
-\provideboolean{unifortex2@ehtccgraduacao}
-\provideboolean{unifortex2@ehtccespecializacao}
-\provideboolean{unifortex2@ehdissertacao}
-\provideboolean{unifortex2@ehtese}
+\provideboolean{embrapatex@ehrelatorio}
+\provideboolean{embrapatex@ehboletim}
+\provideboolean{embrapatex@ehcomunicado}
+\provideboolean{embrapatex@ehdocumento}
 
 % Valores Iniciais
-\setboolean{unifortex2@ehtccgraduacao}{false}
-\setboolean{unifortex2@ehtccespecializacao}{false}
-\setboolean{unifortex2@ehdissertacao}{true}
-\setboolean{unifortex2@ehtese}{false}
+\setboolean{embrapatex@ehrelatorio}{true}
+\setboolean{embrapatex@ehboletim}{false}
+\setboolean{embrapatex@ehcomunicado}{false}
+\setboolean{embrapatex@ehdocumento}{false}
 
-\newcommand{\trabalhoacademico}[1]{
-	\setboolean{unifortex2@ehtccgraduacao}{false}
-	\setboolean{unifortex2@ehtccespecializacao}{false}
-	\setboolean{unifortex2@ehdissertacao}{false}
-	\setboolean{unifortex2@ehtese}{false}
+\newcommand{\tipodocumento}[1]{
+	\setboolean{embrapatex@ehrelatorio}{false}
+	\setboolean{embrapatex@ehboletim}{false}
+	\setboolean{embrapatex@ehcomunicado}{false}
+	\setboolean{embrapatex@ehdocumento}{false}
 
-	\ifthenelse{\equal{#1}{tccgraduacao}}{%
-		\setboolean{unifortex2@ehtccgraduacao}{true}
+	\ifthenelse{\equal{#1}{relatorio}}{%
+		\setboolean{embrapatex@ehrelatorio}{true}
 	}{
-		\ifthenelse{\equal{#1}{tccespecializacao}}{%
-			\setboolean{unifortex2@ehtccespecializacao}{true}
+		\ifthenelse{\equal{#1}{boletim}}{%
+			\setboolean{embrapatex@ehboletim}{true}
 		}{
-			\ifthenelse{\equal{#1}{dissertacao}}{%
-				\setboolean{unifortex2@ehdissertacao}{true}
+			\ifthenelse{\equal{#1}{comunicado}}{%
+				\setboolean{embrapatex@ehcomunicado}{true}
 			}{
-				\ifthenelse{\equal{#1}{tese}}{%
-					\setboolean{unifortex2@ehtese}{true}
+				\ifthenelse{\equal{#1}{documento}}{%
+					\setboolean{embrapatex@ehdocumento}{true}
 				}{
-					\setboolean{unifortex2@ehdissertacao}{true}
+					\setboolean{embrapatex@ehrelatorio}{true}
 				}
 			}
 		}
 	}
 }
 
+% Mantém compatibilidade - apelido para o comando antigo
+\newcommand{\trabalhoacademico}[1]{\tipodocumento{#1}}
+
 \AtBeginDocument{ %
 	% Adiciona os metadados do documento gerado
 	\hypersetup{ %
 		pdftitle={\imprimirtitulo},%
 		pdfauthor={\imprimirautor}, %
-		pdfsubject={Powered by uniforTeX2 - Acesse https://github.com/bruno-unifor/unifortex2} %
+		pdfsubject={Powered by EmbrapaTex} %
 	}%
 	% Define a altura das equacoes matematicas
 %	\abovedisplayskip=-1pt plus 3pt minus 9pt
@@ -334,9 +344,9 @@
 \setcounter{table}{-1}
 
 % Comandos para inserir figuras, tabelas e quadros
-\newcommand{\UNIFORfig}[3]{\IBGEtab{#1}{#2}{#3}}
-\newcommand{\UNIFORtab}[3]{\IBGEtab{#1}{#2}{#3}}
-\newcommand{\UNIFORqua}[3]{\IBGEtab{#1}{#2}{#3}}
+\newcommand{\EMBRAPAfig}[3]{\IBGEtab{#1}{#2}{#3}}
+\newcommand{\EMBRAPAtab}[3]{\IBGEtab{#1}{#2}{#3}}
+\newcommand{\EMBRAPAqua}[3]{\IBGEtab{#1}{#2}{#3}}
 
 % Ambiente para alineas e e subalineas (incisos) com ponto
 \newlist{alineascomponto}{itemize}{2}
@@ -367,106 +377,122 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%             Variáveis               %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\fundacao}{\def \@fundacao}
-\newcommand{\ies}{\def \@ies}
-\newcommand{\iessigla}{\def \@iessigla}
-\newcommand{\centro}{\def \@centro}
-\newcommand{\programamestrado}{\def \@programamestrado}
-\newcommand{\programadoutorado}{\def \@programadoutorado}
-\newcommand{\nomedomestrado}{\def \@mestrado}
-\newcommand{\nomedodoutorado}{\def \@doutorado}
-\newcommand{\mestreem}{\def \@mestreem}
-\newcommand{\doutorem}{\def \@doutorem}
-\newcommand{\areadeconcentracaomestrado}{\def \@areadeconcentracaomestrado}
-\newcommand{\areadeconcentracaodoutorado}{\def \@areadeconcentracaodoutorado}
-\newcommand{\dataaprovacao}{\def \@dataaprovacao}
-\newcommand{\epigrafee}{\def \@epigrafee}
-\newcommand{\autordaepigrafe}{\def \@autordaepigrafe}
-\newcommand{\graduacaoem}{\def \@graduacaoem}
-\newcommand{\especializacaoem}{\def \@especializacaoem}
-\newcommand{\habilitacao}{\def \@habilitacao}
-\newcommand{\membrodabancadois}{\def \@membrodabancadois}
-\newcommand{\membrodabancatres}{\def \@membrodabancatres}
-\newcommand{\membrodabancaquatro}{\def \@membrodabancaquatro}
-\newcommand{\membrodabancacinco}{\def \@membrodabancacinco}
-\newcommand{\membrodabancaseis}{\def \@membrodabancaseis}
-\newcommand{\membrodabancaumies}{\def \@membrodabancaumies}
-\newcommand{\membrodabancadoisies}{\def \@membrodabancadoisies}
-\newcommand{\membrodabancatresies}{\def \@membrodabancatresies}
-\newcommand{\membrodabancaquatroies}{\def \@membrodabancaquatroies}
-\newcommand{\membrodabancacincoies}{\def \@membrodabancacincoies}
-\newcommand{\membrodabancaseisies}{\def \@membrodabancaseisies}
-\newcommand{\membrodabancadoiscentro}{\def \@membrodabancadoiscentro}
-\newcommand{\membrodabancatrescentro}{\def \@membrodabancatrescentro}
-\newcommand{\membrodabancaquatrocentro}{\def \@membrodabancaquatrocentro}
-\newcommand{\membrodabancacincocentro}{\def \@membrodabancacincocentro}
-\newcommand{\membrodabancaseiscentro}{\def \@membrodabancaseiscentro}
-\newcommand{\orientadories}{\def \@orientadories}
-\newcommand{\orientadorcentro}{\def \@orientadorcentro}
-\newcommand{\coorientadories}{\def \@coorientadories}
-\newcommand{\coorientadorcentro}{\def \@coorientadorcentro}
+\providecommand{\unidade}{} \renewcommand{\unidade}{\def \@unidade}
+\providecommand{\unidadesigla}{} \renewcommand{\unidadesigla}{\def \@unidadesigla}
+\providecommand{\centro}{} \renewcommand{\centro}{\def \@centro}
+\providecommand{\areadepesquisa}{} \renewcommand{\areadepesquisa}{\def \@areadepesquisa}
+\providecommand{\programapesquisa}{} \renewcommand{\programapesquisa}{\def \@programapesquisa}
+\providecommand{\linhapesquisa}{} \renewcommand{\linhapesquisa}{\def \@linhapesquisa}
+\providecommand{\dataaprovacao}{} \renewcommand{\dataaprovacao}{\def \@dataaprovacao}
+\providecommand{\epigrafee}{} \renewcommand{\epigrafee}{\def \@epigrafee}
+\providecommand{\autordaepigrafe}{} \renewcommand{\autordaepigrafe}{\def \@autordaepigrafe}
+\providecommand{\numerodocumento}{} \renewcommand{\numerodocumento}{\def \@numerodocumento}
+\providecommand{\membrodabancadois}{} \renewcommand{\membrodabancadois}{\def \@membrodabancadois}
+\providecommand{\membrodabancatres}{} \renewcommand{\membrodabancatres}{\def \@membrodabancatres}
+\providecommand{\membrodabancaquatro}{} \renewcommand{\membrodabancaquatro}{\def \@membrodabancaquatro}
+\providecommand{\membrodabancacinco}{} \renewcommand{\membrodabancacinco}{\def \@membrodabancacinco}
+\providecommand{\membrodabancaseis}{} \renewcommand{\membrodabancaseis}{\def \@membrodabancaseis}
+\providecommand{\membrodabancaumies}{} \renewcommand{\membrodabancaumies}{\def \@membrodabancaumies}
+\providecommand{\membrodabancadoisies}{} \renewcommand{\membrodabancadoisies}{\def \@membrodabancadoisies}
+\providecommand{\membrodabancatresies}{} \renewcommand{\membrodabancatresies}{\def \@membrodabancatresies}
+\providecommand{\membrodabancaquatroies}{} \renewcommand{\membrodabancaquatroies}{\def \@membrodabancaquatroies}
+\providecommand{\membrodabancacincoies}{} \renewcommand{\membrodabancacincoies}{\def \@membrodabancacincoies}
+\providecommand{\membrodabancaseisies}{} \renewcommand{\membrodabancaseisies}{\def \@membrodabancaseisies}
+\providecommand{\membrodabancadoiscentro}{} \renewcommand{\membrodabancadoiscentro}{\def \@membrodabancadoiscentro}
+\providecommand{\membrodabancatrescentro}{} \renewcommand{\membrodabancatrescentro}{\def \@membrodabancatrescentro}
+\providecommand{\membrodabancaquatrocentro}{} \renewcommand{\membrodabancaquatrocentro}{\def \@membrodabancaquatrocentro}
+\providecommand{\membrodabancacincocentro}{} \renewcommand{\membrodabancacincocentro}{\def \@membrodabancacincocentro}
+\providecommand{\membrodabancaseiscentro}{} \renewcommand{\membrodabancaseiscentro}{\def \@membrodabancaseiscentro}
+\providecommand{\orientadories}{} \renewcommand{\orientadories}{\def \@orientadories}
+\providecommand{\orientadorcentro}{} \renewcommand{\orientadorcentro}{\def \@orientadorcentro}
+\providecommand{\coorientadories}{} \renewcommand{\coorientadories}{\def \@coorientadories}
+\providecommand{\coorientadorcentro}{} \renewcommand{\coorientadorcentro}{\def \@coorientadorcentro}
+
+% Campos da ficha catalográfica
+\providecommand{\autorinvertido}{} \renewcommand{\autorinvertido}{\def \@autorinvertido}
+\providecommand{\edicao}{} \renewcommand{\edicao}{\def \@edicao}
+\providecommand{\editora}{} \renewcommand{\editora}{\def \@editora}
+\providecommand{\numeropaginas}{} \renewcommand{\numeropaginas}{\def \@numeropaginas}
+\providecommand{\ilustracao}{} \renewcommand{\ilustracao}{\def \@ilustracao}
+\providecommand{\dimensao}{} \renewcommand{\dimensao}{\def \@dimensao}
+\providecommand{\isbn}{} \renewcommand{\isbn}{\def \@isbn}
+\providecommand{\notaficha}{} \renewcommand{\notaficha}{\def \@notaficha}
+\providecommand{\incluibibliografia}{} \renewcommand{\incluibibliografia}{\def \@incluibibliografia}
+\providecommand{\descritores}{} \renewcommand{\descritores}{\def \@descritores}
+\providecommand{\cdd}{} \renewcommand{\cdd}{\def \@cdd}
+\providecommand{\cdu}{} \renewcommand{\cdu}{\def \@cdu}
+\providecommand{\bibliotecario}{} \renewcommand{\bibliotecario}{\def \@bibliotecario}
+\providecommand{\crb}{} \renewcommand{\crb}{\def \@crb}
+
+% Compatibilidade com comandos antigos (IES → Unidade)
+\providecommand{\ies}[1]{} \renewcommand{\ies}[1]{\unidade{#1}}
+\providecommand{\iessigla}[1]{} \renewcommand{\iessigla}[1]{\unidadesigla{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%        Imprimir as Variáveis        %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\imprimirfundacao}{\@fundacao}
-\newcommand{\imprimiries}{\@ies}
-\newcommand{\imprimiriessigla}{\@iessigla}
-\newcommand{\imprimircentro}{\@centro}
-\newcommand{\imprimirprogramamestrado}{\@programamestrado}
-\newcommand{\imprimirprogramadoutorado}{\@programadoutorado}
-\newcommand{\imprimirmestrado}{\@mestrado}
-\newcommand{\imprimirdoutorado}{\@doutorado}
-\newcommand{\imprimirmestreem}{\@mestreem}
-\newcommand{\imprimirdoutorem}{\@doutorem}
-\newcommand{\imprimirareadeconcentracaomestrado}{\@areadeconcentracaomestrado}
-\newcommand{\imprimirareadeconcentracaodoutorado}{\@areadeconcentracaodoutorado}
-\newcommand{\imprimirdataaprovacao}{\@dataaprovacao}
-\newcommand{\imprimirepigrafee}{\@epigrafee}
-\newcommand{\imprimirautordaepigrafe}{\@autordaepigrafe}
-\newcommand{\imprimirgraduacaoem}{\@graduacaoem}
-\newcommand{\imprimirespecializacaoem}{\@especializacaoem}
-\newcommand{\imprimirhabilitacao}{\@habilitacao}
-\newcommand{\imprimirmembrodabancadois}{\@membrodabancadois}
-\newcommand{\imprimirmembrodabancatres}{\@membrodabancatres}
-\newcommand{\imprimirmembrodabancaquatro}{\@membrodabancaquatro}
-\newcommand{\imprimirmembrodabancacinco}{\@membrodabancacinco}
-\newcommand{\imprimirmembrodabancaseis}{\@membrodabancaseis}
-\newcommand{\imprimirmembrodabancaumies}{\@membrodabancaumies}
-\newcommand{\imprimirmembrodabancadoisies}{\@membrodabancadoisies}
-\newcommand{\imprimirmembrodabancatresies}{\@membrodabancatresies}
-\newcommand{\imprimirmembrodabancaquatroies}{\@membrodabancaquatroies}
-\newcommand{\imprimirmembrodabancacincoies}{\@membrodabancacincoies}
-\newcommand{\imprimirmembrodabancaseisies}{\@membrodabancaseisies}
-\newcommand{\imprimirmembrodabancadoiscentro}{\@membrodabancadoiscentro}
-\newcommand{\imprimirmembrodabancatrescentro}{\@membrodabancatrescentro}
-\newcommand{\imprimirmembrodabancaquatrocentro}{\@membrodabancaquatrocentro}
-\newcommand{\imprimirmembrodabancacincocentro}{\@membrodabancacincocentro}
-\newcommand{\imprimirmembrodabancaseiscentro}{\@membrodabancaseiscentro}
-\newcommand{\imprimirorientadories}{\@orientadories}
-\newcommand{\imprimirorientadorcentro}{\@orientadorcentro}
-\newcommand{\imprimircoorientadories}{\@coorientadories}
-\newcommand{\imprimircoorientadorcentro}{\@coorientadorcentro}
+\providecommand{\imprimirunidade}{} \renewcommand{\imprimirunidade}{\@unidade}
+\providecommand{\imprimirunidadesigla}{} \renewcommand{\imprimirunidadesigla}{\@unidadesigla}
+\providecommand{\imprimircentro}{} \renewcommand{\imprimircentro}{\@centro}
+\providecommand{\imprimirareadepesquisa}{} \renewcommand{\imprimirareadepesquisa}{\@areadepesquisa}
+\providecommand{\imprimirprogramapesquisa}{} \renewcommand{\imprimirprogramapesquisa}{\@programapesquisa}
+\providecommand{\imprimirlinhapesquisa}{} \renewcommand{\imprimirlinhapesquisa}{\@linhapesquisa}
+\providecommand{\imprimirdataaprovacao}{} \renewcommand{\imprimirdataaprovacao}{\@dataaprovacao}
+\providecommand{\imprimirepigrafee}{} \renewcommand{\imprimirepigrafee}{\@epigrafee}
+\providecommand{\imprimirautordaepigrafe}{} \renewcommand{\imprimirautordaepigrafe}{\@autordaepigrafe}
+\providecommand{\imprimirnumerodocumento}{} \renewcommand{\imprimirnumerodocumento}{\@numerodocumento}
+\providecommand{\imprimirmembrodabancadois}{} \renewcommand{\imprimirmembrodabancadois}{\@membrodabancadois}
+\providecommand{\imprimirmembrodabancatres}{} \renewcommand{\imprimirmembrodabancatres}{\@membrodabancatres}
+\providecommand{\imprimirmembrodabancaquatro}{} \renewcommand{\imprimirmembrodabancaquatro}{\@membrodabancaquatro}
+\providecommand{\imprimirmembrodabancacinco}{} \renewcommand{\imprimirmembrodabancacinco}{\@membrodabancacinco}
+\providecommand{\imprimirmembrodabancaseis}{} \renewcommand{\imprimirmembrodabancaseis}{\@membrodabancaseis}
+\providecommand{\imprimirmembrodabancaumies}{} \renewcommand{\imprimirmembrodabancaumies}{\@membrodabancaumies}
+\providecommand{\imprimirmembrodabancadoisies}{} \renewcommand{\imprimirmembrodabancadoisies}{\@membrodabancadoisies}
+\providecommand{\imprimirmembrodabancatresies}{} \renewcommand{\imprimirmembrodabancatresies}{\@membrodabancatresies}
+\providecommand{\imprimirmembrodabancaquatroies}{} \renewcommand{\imprimirmembrodabancaquatroies}{\@membrodabancaquatroies}
+\providecommand{\imprimirmembrodabancacincoies}{} \renewcommand{\imprimirmembrodabancacincoies}{\@membrodabancacincoies}
+\providecommand{\imprimirmembrodabancaseisies}{} \renewcommand{\imprimirmembrodabancaseisies}{\@membrodabancaseisies}
+\providecommand{\imprimirmembrodabancadoiscentro}{} \renewcommand{\imprimirmembrodabancadoiscentro}{\@membrodabancadoiscentro}
+\providecommand{\imprimirmembrodabancatrescentro}{} \renewcommand{\imprimirmembrodabancatrescentro}{\@membrodabancatrescentro}
+\providecommand{\imprimirmembrodabancaquatrocentro}{} \renewcommand{\imprimirmembrodabancaquatrocentro}{\@membrodabancaquatrocentro}
+\providecommand{\imprimirmembrodabancacincocentro}{} \renewcommand{\imprimirmembrodabancacincocentro}{\@membrodabancacincocentro}
+\providecommand{\imprimirmembrodabancaseiscentro}{} \renewcommand{\imprimirmembrodabancaseiscentro}{\@membrodabancaseiscentro}
+\providecommand{\imprimirorientadories}{} \renewcommand{\imprimirorientadories}{\@orientadories}
+\providecommand{\imprimirorientadorcentro}{} \renewcommand{\imprimirorientadorcentro}{\@orientadorcentro}
+\providecommand{\imprimircoorientadories}{} \renewcommand{\imprimircoorientadories}{\@coorientadories}
+\providecommand{\imprimircoorientadorcentro}{} \renewcommand{\imprimircoorientadorcentro}{\@coorientadorcentro}
+
+% Campos da ficha catalográfica
+\providecommand{\imprimirautorinvertido}{} \renewcommand{\imprimirautorinvertido}{\@autorinvertido}
+\providecommand{\imprimiredicao}{} \renewcommand{\imprimiredicao}{\@edicao}
+\providecommand{\imprimireditora}{} \renewcommand{\imprimireditora}{\@editora}
+\providecommand{\imprimirnumeropaginas}{} \renewcommand{\imprimirnumeropaginas}{\@numeropaginas}
+\providecommand{\imprimirilustracao}{} \renewcommand{\imprimirilustracao}{\@ilustracao}
+\providecommand{\imprimirdimensao}{} \renewcommand{\imprimirdimensao}{\@dimensao}
+\providecommand{\imprimirisbn}{} \renewcommand{\imprimirisbn}{\@isbn}
+\providecommand{\imprimirnotaficha}{} \renewcommand{\imprimirnotaficha}{\@notaficha}
+\providecommand{\imprimirincluibibliografia}{} \renewcommand{\imprimirincluibibliografia}{\@incluibibliografia}
+\providecommand{\imprimirdescritores}{} \renewcommand{\imprimirdescritores}{\@descritores}
+\providecommand{\imprimircdd}{} \renewcommand{\imprimircdd}{\@cdd}
+\providecommand{\imprimircdu}{} \renewcommand{\imprimircdu}{\@cdu}
+\providecommand{\imprimirbibliotecario}{} \renewcommand{\imprimirbibliotecario}{\@bibliotecario}
+\providecommand{\imprimircrb}{} \renewcommand{\imprimircrb}{\@crb}
+
+% Compatibilidade
+\providecommand{\imprimiries}{} \renewcommand{\imprimiries}{\@unidade}
+\providecommand{\imprimiriessigla}{} \renewcommand{\imprimiriessigla}{\@unidadesigla}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%           Valor de Padrão           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\fundacao{Fundação Edson Queiroz}
-\ies{Universidade de Fortaleza}
-\iessigla{UNIFOR}
+\unidade{Embrapa}
+\unidadesigla{EMBRAPA}
 \centro{}
-\graduacaoem{}
-\habilitacao{} % Pode colocar tambem 'licenciada'
-\especializacaoem{}
-\programamestrado{}
-\nomedomestrado{}
-\mestreem{}
-\areadeconcentracaomestrado{}
-\programadoutorado{}
-\nomedodoutorado{}
-\doutorem{}
-\areadeconcentracaodoutorado{}
+\areadepesquisa{}
+\programapesquisa{}
+\linhapesquisa{}
+\numerodocumento{}
 \autor{}
 \titulo{}
 \data{}
@@ -475,7 +501,7 @@
 \orientador{}
 \orientadories{}
 \orientadorcentro{}
-\orientadorfeminino{nao} % Coloque 'sim' se for do sexo feminin
+\orientadorfeminino{nao} % Coloque 'sim' se for do sexo feminino
 \coorientador{}
 \coorientadories{}
 \coorientadorcentro{}
@@ -496,41 +522,56 @@
 \membrodabancaseiscentro{}
 \membrodabancaseisies{}
 
+% Ficha catalográfica
+\autorinvertido{}
+\edicao{}
+\editora{Embrapa}
+\numeropaginas{}
+\ilustracao{}
+\dimensao{21 cm}
+\isbn{}
+\notaficha{}
+\incluibibliografia{sim}
+\descritores{}
+\cdd{}
+\cdu{}
+\bibliotecario{}
+\crb{}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%       Definições de Variáveis       %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\preambulotese}{
-	Tese apresentada ao Curso de \imprimirdoutorado\ do \imprimirprogramadoutorado\ do \imprimircentro\ da \imprimiries, como requisito parcial à obtenção do título de doutor em \imprimirdoutorem. Área de Concentração: \imprimirareadeconcentracaodoutorado \\
+\newcommand{\preambulodocumento}{
+	Documento da \imprimirunidade\ (\imprimirunidadesigla).
 }
 
-\newcommand{\preambulodissertacao}{
-	Dissertação apresentada ao Curso de \imprimirmestrado\ do \imprimirprogramamestrado\ do \imprimircentro\ da \imprimiries, como requisito parcial à obtenção do título de mestre em \imprimirmestreem. Área de Concentração: \imprimirareadeconcentracaomestrado \\
+\newcommand{\preambulorelatorio}{
+	Relatório Técnico apresentado à \imprimirunidade\ (\imprimirunidadesigla).
 }
 
-\newcommand{\preambulotccgraduacao}{
-	Trabalho de Conclusão de Curso apresentado ao Curso de Graduação em \imprimirgraduacaoem\ do \imprimircentro\ da \imprimiries, como requisito parcial à obtenção do grau de \imprimirhabilitacao\ em \imprimirgraduacaoem. \\
+\newcommand{\preambuloboletim}{
+	Boletim de Pesquisa e Desenvolvimento da \imprimirunidade\ (\imprimirunidadesigla).
 }
 
-\newcommand{\preambulotccespecializacao}{
-	Trabalho de Conclusão de Curso apresentado ao Curso de Especialização em \imprimirespecializacaoem\ do \imprimircentro\ da \imprimiries, como requisito parcial à obtenção da certificação de especialista em \imprimirespecializacaoem.
-%Trabalho de Conclusão de Curso apresentado ao Curso de Graduação em \imprimirgraduacaoem\ do \imprimircentro\ da \imprimiries, como requisito parcial à obtenção do grau de \imprimirhabilitacao\ em \imprimirgraduacaoem. \\
+\newcommand{\preambulocomunicado}{
+	Comunicado Técnico da \imprimirunidade\ (\imprimirunidadesigla).
 }
 
 \preambulo{
-	\ifthenelse{\boolean{unifortex2@ehqualificacao}}{ %
-		Proposta de qualificação apresentada ao Curso de \imprimirmestrado\  da \imprimiries\ (\imprimiriessigla) como requisito parcial para a defesa de dissertação.
+	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{ %
+		Proposta de qualificação apresentada à \imprimirunidade\ (\imprimirunidadesigla).
 	}{ %
-		\ifthenelse{\boolean{unifortex2@ehdissertacao}}{ %
-			\preambulodissertacao %
+		\ifthenelse{\boolean{embrapatex@ehrelatorio}}{ %
+			\preambulorelatorio %
 		}{
-			\ifthenelse{\boolean{unifortex2@ehtese}}{ %
-				\preambulotese	 %
+			\ifthenelse{\boolean{embrapatex@ehboletim}}{ %
+				\preambuloboletim %
 			}{
-				\ifthenelse{\boolean{unifortex2@ehtccgraduacao}}{ %
-					\preambulotccgraduacao	 %
+				\ifthenelse{\boolean{embrapatex@ehcomunicado}}{ %
+					\preambulocomunicado %
 				}{
-					\preambulotccespecializacao %
+					\preambulodocumento %
 				}
 			}
 		}
@@ -541,21 +582,19 @@
 %%                Capa                 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\imprimircapatese}{%
+\newcommand{\imprimircapadocumento}{%
 	\begin{capa}%
 		% Todos os elementos da capa devem esta centralizado
 		\center
 		% Todos os elementos da capa devem esta em negrito
 		\bfseries
 
-        \includegraphics[scale=0.08]{lib/Imagem1.png} \\
-        \vspace{0.1cm}
-		\MakeUppercase{\imprimiries} \\
-		\MakeUppercase{\imprimircentro} \\
-		\abntex@ifnotempty{\imprimirprogramadoutorado}{
-			\MakeUppercase{\imprimirprogramadoutorado} \\
+        \includegraphics[scale=0.15]{lib/logo-embrapa-color-cropped.png} \\
+        \vspace{0.3cm}
+		\MakeUppercase{\imprimirunidade} \\
+		\abntex@ifnotempty{\imprimircentro}{
+			\MakeUppercase{\imprimircentro} \\
 		}
-		\MakeUppercase{\imprimirdoutorado} \\
 
 		\vspace{2cm}
 
@@ -571,21 +610,17 @@
 	\end{capa}
 }
 
-\newcommand{\imprimircapadissertacao}{%
+\newcommand{\imprimircaparelatorio}{%
 	\begin{capa}%
-		% Todos os elementos da capa devem esta centralizado
 		\center
-		% Todos os elementos da capa devem esta em negrito
 		\bfseries
 
-        \includegraphics[scale=0.08]{lib/Imagem1.png} \\
-        \vspace{0.1cm}
-		\MakeUppercase{\imprimiries} \\
-		\MakeUppercase{\imprimircentro} \\
-		\abntex@ifnotempty{\imprimirprogramamestrado}{
-			\MakeUppercase{\imprimirprogramamestrado} \\
+        \includegraphics[scale=0.15]{lib/logo-embrapa-color-cropped.png} \\
+        \vspace{0.3cm}
+		\MakeUppercase{\imprimirunidade} \\
+		\abntex@ifnotempty{\imprimircentro}{
+			\MakeUppercase{\imprimircentro} \\
 		}
-		\MakeUppercase{\imprimirmestrado} \\
 
 		\vspace{2cm}
 
@@ -601,31 +636,53 @@
 	\end{capa}
 }
 
-\newcommand{\imprimircapatcc}[2]{%
+\newcommand{\imprimircapaboletim}{%
 	\begin{capa}%
-		% Todos os elementos da capa devem esta centralizado
-		
-		% Todos os elementos da capa devem esta em negrito
-		\bfseries        
-        \noindent\begin{minipage}{0.19\textwidth} 
-        \includegraphics[scale=.9]{lib/Imagem1.png}
-        \end{minipage}
-        \begin{minipage}{0.78\textwidth}        % \vspace{1cm}
-        \MakeUppercase{\vspace{1cm}\imprimirfundacao}\\
-		\MakeUppercase{\imprimiries   \space-  \imprimiriessigla} \\
-		\MakeUppercase{\imprimircentro} \\
-		\MakeUppercase{Curso de #1 em #2} \\
-  \end{minipage}
-\center
-		\vspace{5cm}
-        \MakeUppercase{\imprimirtitulo}
+		\center
+		\bfseries
 
-        \vspace{4cm}
+        \includegraphics[scale=0.15]{lib/logo-embrapa-color-cropped.png} \\
+        \vspace{0.3cm}
+		\MakeUppercase{\imprimirunidade} \\
+		\abntex@ifnotempty{\imprimircentro}{
+			\MakeUppercase{\imprimircentro} \\
+		}
+		\MakeUppercase{Boletim de Pesquisa e Desenvolvimento} \\
+
+		\vspace{2cm}
+
 		\MakeUppercase{\imprimirautor}
 
 		\vspace{5cm}
 
-		
+		\MakeUppercase{\imprimirtitulo}
+
+		\vfill
+		\normalsize\MakeUppercase\imprimirlocal\par
+		\normalsize\imprimirdata
+	\end{capa}
+}
+
+\newcommand{\imprimircapacomunicado}{%
+	\begin{capa}%
+		\center
+		\bfseries
+
+        \includegraphics[scale=0.15]{lib/logo-embrapa-color-cropped.png} \\
+        \vspace{0.3cm}
+		\MakeUppercase{\imprimirunidade} \\
+		\abntex@ifnotempty{\imprimircentro}{
+			\MakeUppercase{\imprimircentro} \\
+		}
+		\MakeUppercase{Comunicado Técnico} \\
+
+		\vspace{2cm}
+
+		\MakeUppercase{\imprimirautor}
+
+		\vspace{5cm}
+
+		\MakeUppercase{\imprimirtitulo}
 
 		\vfill
 		\normalsize\MakeUppercase\imprimirlocal\par
@@ -636,16 +693,16 @@
 \renewcommand{\imprimircapa}{%
 	% Toda capa deve ter pagina 0
 	\setcounter{page}{0}
-	\ifthenelse{\boolean{unifortex2@ehdissertacao}}{ %
-			\imprimircapadissertacao %
+	\ifthenelse{\boolean{embrapatex@ehrelatorio}}{ %
+			\imprimircaparelatorio %
 	}{
-		\ifthenelse{\boolean{unifortex2@ehtese}}{ %
-			\imprimircapatese	 %
+		\ifthenelse{\boolean{embrapatex@ehboletim}}{ %
+			\imprimircapaboletim %
 		}{
-			\ifthenelse{\boolean{unifortex2@ehtccgraduacao}}{ %
-				\imprimircapatcc{Graduação}{\imprimirgraduacaoem}	 %
+			\ifthenelse{\boolean{embrapatex@ehcomunicado}}{ %
+				\imprimircapacomunicado %
 			}{
-				\imprimircapatcc{Especialização}{\imprimirespecializacaoem} %
+				\imprimircapadocumento %
 			}
 		}
 	}
@@ -701,12 +758,7 @@
 % Espaço entre uma assintura e outra
 \setlength{\ABNTEXsignskip}{\onelineskip}
 
-\newcommand{\imprimirfolhadeaprovacaotese}{
-	% Define o comprimento da linha das assinaturas na Folha de Aprovacao
-	\setlength{\ABNTEXsignwidth}{8cm}
-
-	% Espaço entre uma assintura e outra
-	\setlength{\ABNTEXsignskip}{18pt}
+\newcommand{\imprimirfolhadeaprovacaopadrao}{
 
 	\begin{center}
 		\MakeUppercase{\imprimirautor}\par
@@ -724,7 +776,7 @@
 	\hspace*{8cm}
 	\begin{minipage}{8cm}
 		\begin{SingleSpace}
-			\imprimirpreambulo \\
+			\imprimirpreambulo
 		\end{SingleSpace}
 	\end{minipage}
 
@@ -735,167 +787,16 @@
 	\vspace{\onelineskip}
 
 	\begin{center}
-		BANCA EXAMINADORA
+		BANCA EXAMINADORA / REVISORES
 	\end{center}
-
-	\vspace{\onelineskip}
+		\vspace{\onelineskip}
 
 	% Membro Um da banca é sempre o Orientador
-	% Membro Dois da banca pode ser o coorientador ou outro membro
-	\ifnotempty{\imprimircoorientador}{
-		\hspace*{-2.5cm}
-		\assinatura*{\imprimirorientador\  \artigoorientadorcomparenteses \\ \imprimirorientadories}
-		\hspace*{0.7cm}
-		\assinatura*{\imprimircoorientador\ \artigocoorientadorcomparenteses \\ \imprimircoorientadories}
-
-		\hspace*{-2.6cm}
-		% Membro Três da banca pode ser o coorientador ou outro membro
-		\ifnotempty{\imprimirmembrodabancadois}{
-			\assinatura*{\imprimirmembrodabancadois \\ \imprimirmembrodabancadoisies}
-		}{}
-		\hspace*{0.7cm}
-		% Membro Três da banca pode ser o coorientador ou outro membro
-		\ifnotempty{\imprimirmembrodabancatres}{
-			\assinatura*{\imprimirmembrodabancatres \\ \imprimirmembrodabancatresies}
-		}{}
-		\hspace*{-0.6cm}
-		% Membro Quatro da banca pode ser o coorientador ou outro membro
-		\ifnotempty{\imprimirmembrodabancaquatro}{
-			\assinatura*{\imprimirmembrodabancaquatro \\ \imprimirmembrodabancaquatroies}
-		}{}
-		\hspace*{0.7cm}
-		\ifnotempty{\imprimirmembrodabancacinco}{
-			\assinatura*{\imprimirmembrodabancacinco \\ \imprimirmembrodabancacincoies}
-		}{}
+	\ifnotempty{\imprimirorientadorcentro}{
+		\assinatura{\imprimirorientador\  \artigoorientadorcomparenteses \\ \imprimirorientadorcentro \\  \imprimirorientadories}
 	}{
-		% Espaço entre uma assintura e outra
-		\setlength{\ABNTEXsignskip}{2pt}
-		\hspace*{-2.5cm}
-		\assinatura*{\imprimirorientador\  \artigoorientadorcomparenteses \\ \imprimirorientadories}
-		\hspace*{0.7cm}
-		% Membro Três da banca pode ser o coorientador ou outro membro
-		\ifnotempty{\imprimirmembrodabancadois}{
-			\assinatura*{\imprimirmembrodabancadois \\ \imprimirmembrodabancadoisies}
-		}{}
-
-		\hspace*{-2.6cm}
-		% Membro Três da banca pode ser o coorientador ou outro membro
-		\ifnotempty{\imprimirmembrodabancatres}{
-			\assinatura*{\imprimirmembrodabancatres \\ \imprimirmembrodabancatresies}
-		}{}
-		\hspace*{0.7cm}
-		% Membro Quatro da banca pode ser o coorientador ou outro membro
-		\ifnotempty{\imprimirmembrodabancaquatro}{
-			\assinatura*{\imprimirmembrodabancaquatro \\ \imprimirmembrodabancaquatroies}
-		}{}
-
-		\hspace*{-2.65cm}
-		\ifnotempty{\imprimirmembrodabancacinco}{
-			\assinatura*{\imprimirmembrodabancacinco \\ \imprimirmembrodabancacincoies}
-		}{}
-		\hspace*{0.7cm}
-		% Membro Quatro da banca pode ser o coorientador ou outro membro
-		\ifnotempty{\imprimirmembrodabancaseis}{
-			\assinatura*{\imprimirmembrodabancaseis \\ \imprimirmembrodabancaseisies}
-		}{}
+		\assinatura{\imprimirorientador\  \artigoorientadorcomparenteses \\  \imprimirorientadories}
 	}
-	\pagebreak
-}
-
-\newcommand{\imprimirfolhadeaprovacaodissertacao}{
-
-	\begin{center}
-		\MakeUppercase{\imprimirautor}\par
-		\vspace{\onelineskip}
-		\vspace{\onelineskip}
-		\MakeUppercase{\imprimirtitulo}
-	\end{center}
-
-	\vspace{\onelineskip}
-	\vspace{\onelineskip}
-
-	%Retira o espaço do parágrafo
-	\noindent\hspace*{-2cm}
-	%Adiciona o espaço da margem
-	\hspace*{8cm}
-	\begin{minipage}{8cm}
-		\begin{SingleSpace}
-			\imprimirpreambulo \\
-		\end{SingleSpace}
-	\end{minipage}
-
-	\vspace{\onelineskip}
-
-	\noindent Aprovada em: \imprimirdataaprovacao
-
-	\vspace{\onelineskip}
-
-	\begin{center}
-		BANCA EXAMINADORA
-	\end{center}
-		\vspace{\onelineskip}
-
-	% Membro Um da banca é sempre o Orientador
-	\assinatura{\imprimirorientador\  \artigoorientadorcomparenteses \\ \imprimirorientadories}
-
-	% Membro Dois da banca pode ser o coorientador ou outro membro
-	\ifnotempty{\imprimircoorientador}{
-		\assinatura{\imprimircoorientador\ \artigocoorientadorcomparenteses \\ \imprimircoorientadories}
-	}
-
-	% Membro Três da banca pode ser o coorientador ou outro membro
-	\ifnotempty{\imprimirmembrodabancadois}{
-		\assinatura{\imprimirmembrodabancadois \\ \imprimirmembrodabancadoisies}
-	}
-
-	% Membro Três da banca pode ser o coorientador ou outro membro
-	\ifnotempty{\imprimirmembrodabancatres}{
-		\assinatura{\imprimirmembrodabancatres \\ \imprimirmembrodabancatresies}
-	}
-
-	% Membro Quatro da banca pode ser o coorientador ou outro membro
-	\ifnotempty{\imprimirmembrodabancaquatro}{
-		\assinatura{\imprimirmembrodabancaquatro \\ \imprimirmembrodabancaquatroies}
-	}
-
-	\pagebreak
-}
-
-\newcommand{\imprimirfolhadeaprovacaotcc}{
-
-	\begin{center}
-		\MakeUppercase{\imprimirautor}\par
-		\vspace{\onelineskip}
-		\vspace{\onelineskip}
-		\MakeUppercase{\imprimirtitulo}
-	\end{center}
-
-	\vspace{\onelineskip}
-	\vspace{\onelineskip}
-
-	%Retira o espaço do parágrafo
-	\noindent\hspace*{-2cm}
-	%Adiciona o espaço da margem
-	\hspace*{8cm}
-	\begin{minipage}{8cm}
-		\begin{SingleSpace}
-			\imprimirpreambulo \\
-		\end{SingleSpace}
-	\end{minipage}
-
-	\vspace{\onelineskip}
-
-	\noindent Aprovada em: \imprimirdataaprovacao
-
-	\vspace{\onelineskip}
-
-	\begin{center}
-		BANCA EXAMINADORA
-	\end{center}
-		\vspace{\onelineskip}
-
-	% Membro Um da banca é sempre o Orientador
-	\assinatura{\imprimirorientador\  \artigoorientadorcomparenteses \\ \imprimirorientadorcentro \\  \imprimirorientadories}
 
 	% Membro Dois da banca pode ser o coorientador ou outro membro
 	\ifnotempty{\imprimircoorientador}{
@@ -907,12 +808,12 @@
 		\assinatura{\imprimirmembrodabancadois \\ \imprimirmembrodabancadoiscentro \\ \imprimirmembrodabancadoisies}
 	}
 
-	% Membro Três da banca pode ser o coorientador ou outro membro
+	% Membro Quatro
 	\ifnotempty{\imprimirmembrodabancatres}{
 		\assinatura{\imprimirmembrodabancatres \\ \imprimirmembrodabancatrescentro \\ \imprimirmembrodabancatresies}
 	}
 
-	% Membro Quatro da banca pode ser o coorientador ou outro membro
+	% Membro Cinco
 	\ifnotempty{\imprimirmembrodabancaquatro}{
 		\assinatura{\imprimirmembrodabancaquatro \\ \imprimirmembrodabancaquatrocentro \\ \imprimirmembrodabancaquatroies}
 	}
@@ -921,19 +822,7 @@
 }
 
 \newcommand{\imprimirfolhadeaprovacao}{
-	\ifthenelse{\boolean{unifortex2@ehdissertacao}}{ %
-    	\imprimirfolhadeaprovacaodissertacao %
-    }{
-    	\ifthenelse{\boolean{unifortex2@ehtese}}{ %
-    		\imprimirfolhadeaprovacaotese	 %
-    	}{
-    		\ifthenelse{\boolean{unifortex2@ehtccgraduacao}}{ %
-    			\imprimirfolhadeaprovacaotcc	 %
-    		}{
-    			\imprimirfolhadeaprovacaotcc
-    		}
-    	}
-	}
+	\imprimirfolhadeaprovacaopadrao
 }
 
 
@@ -987,7 +876,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\imprimirdedicatoria}[1]{
-	\ifthenelse{\boolean{unifortex2@ehqualificacao}}{}{
+	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{
 		\vspace*{20cm}
 		\vfill
 		%Retira o espaço do parágrafo
@@ -1006,7 +895,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\imprimirerrata}[1]{%
-	\ifthenelse{\boolean{unifortex2@ehqualificacao}}{}{%
+	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{%
 		\begin{errata} %
 		\input{#1}%
 		\end{errata}%
@@ -1018,7 +907,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\imprimiragradecimentos}[1]{
-	\ifthenelse{\boolean{unifortex2@ehqualificacao}}{}{
+	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{
 		\begin{agradecimentos}
 			\begin{paracol}{1}
 				\setlength{\parindent}{0pt}%
@@ -1033,7 +922,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\imprimirepigrafe}[1]{
-	\ifthenelse{\boolean{unifortex2@ehqualificacao}}{}{
+	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{
 		\vspace*{\fill}
 		\vfill
 		%Retira o espaço do parágrafo
@@ -1053,9 +942,54 @@
 %%          Ficha Catalografica        %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\imprimirfichacatalografica}[1]{%
-	\ifthenelse{\boolean{unifortex2@ehqualificacao}}{}{%
-		\includepdf[pages=1]{#1} %
+% Gera a ficha catalográfica em LaTeX a partir dos metadados do documento.
+% Não recebe argumentos: os dados são lidos dos campos definidos no main.tex
+% (autor, título, local, data, \cdd, \descritores, \bibliotecario etc.).
+% A caixa segue o padrão ABNT (~7,5 x 12,5 cm) e é posicionada na parte
+% inferior da página. Campos vazios são omitidos automaticamente.
+\newcommand{\imprimirfichacatalografica}{%
+	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{%
+		\clearpage
+		\thispagestyle{empty}%
+		\vspace*{\fill}%
+		\begin{center}%
+			\setlength{\fboxsep}{0.4cm}%
+			\fbox{%
+				\begin{minipage}[c][6.5cm][t]{11.5cm}%
+					\small
+					\setlength{\parindent}{0pt}%
+					\setlength{\parskip}{0pt}%
+					% Entrada principal: autor invertido (Sobrenome, Nome).
+					% Se \autorinvertido estiver vazio, usa-se \autor.
+					\ifnotempty{\imprimirautorinvertido}{\imprimirautorinvertido}{\imprimirautor}\par
+					% Corpo da ficha com recuo pendente de 0,9 cm
+					\begingroup
+						\setlength{\leftskip}{0.9cm}%
+						\imprimirtitulo\ifnotempty{\imprimirautor}{\ / \imprimirautor}{}.%
+							\ifnotempty{\imprimiredicao}{\ -- \imprimiredicao}{}%
+							\ -- \imprimirlocal\ : \imprimireditora, \imprimirdata.\par
+						\ifnotempty{\imprimirnumeropaginas}{%
+							\imprimirnumeropaginas\ p.%
+							\ifnotempty{\imprimirilustracao}{\ : \imprimirilustracao}{}%
+							\ifnotempty{\imprimirdimensao}{\ ; \imprimirdimensao}{}.\par}{}%
+						\vspace{4pt}%
+						\ifnotempty{\imprimirisbn}{ISBN \imprimirisbn.\par}{}%
+						\ifnotempty{\imprimirnotaficha}{\imprimirnotaficha\par}{}%
+						\ifthenelse{\equal{\imprimirincluibibliografia}{sim}}{Inclui bibliografia.\par}{}%
+						\ifnotempty{\imprimirdescritores}{\vspace{4pt}\imprimirdescritores\par}{}%
+					\endgroup
+					\par\vspace{4pt}%
+					\ifnotempty{\imprimircdd}{{\raggedleft CDD: \imprimircdd\par}}{}%
+					\ifnotempty{\imprimircdu}{{\raggedleft CDU: \imprimircdu\par}}{}%
+					\vfill
+					\ifnotempty{\imprimirbibliotecario}{%
+						{\centering\footnotesize
+							\imprimirbibliotecario\ifnotempty{\imprimircrb}{\ -- \imprimircrb}{}\par}}{}%
+				\end{minipage}%
+			}%
+		\end{center}%
+		\vspace*{\fill}%
+		\clearpage
 	}%
 }
 
@@ -1270,9 +1204,9 @@
 %%              Glossário              %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Glossario desenvolvido para a UNIFOR
+%% Glossario desenvolvido para o EmbrapaTex
 \setlist{nosep}
-\newglossarystyle{glossario-unifor}{%
+\newglossarystyle{glossario-embrapa}{%
 	%
 	\renewenvironment{theglossary}%
 	{\vspace{-0.3cm}\begin{description}[leftmargin=0cm]\itemsep -1pt}{\end{description}}%
@@ -1293,7 +1227,7 @@
 }
 
 \newcommand{\imprimirglossario}{ %
-	\setglossarystyle{glossario-unifor} %
+	\setglossarystyle{glossario-embrapa} %
 	\printglossary[title=GLOSSÁRIO,toctitle=GLOSSÁRIO] %
 	\addcontentsline{toc}{chapter}{GLOSSÁRIO}
 }
