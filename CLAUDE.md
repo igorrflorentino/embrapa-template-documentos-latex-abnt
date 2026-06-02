@@ -20,6 +20,7 @@ latexmk -synctex=1 -interaction=nonstopmode -file-line-error -pdf main.tex
 pdflatex main.tex
 bibtex   main
 makeglossaries main
+makeindex main
 pdflatex main.tex
 pdflatex main.tex
 
@@ -44,13 +45,13 @@ O modelo separa orquestração, configuração de pacotes, estilo e conteúdo:
 - **`elementos-textuais/`** — capítulos do corpo do texto, incluídos um a um via `\input{}` no `main.tex`. Capítulos atuais: `introducao`, `revisao-de-literatura`, `estado-da-arte`, `material-e-metodos`, `resultados-e-discussao`, `consideracoes-finais`. Cada arquivo de capítulo começa com `\chapter{...}` e é autocontido. **A maioria dos arquivos de capítulo são, no momento, esqueletos (placeholders)** (orientações comentadas em PT-BR + seções vazias) aguardando preenchimento.
 - **`elementos-pos-textuais/`** — elementos pós-textuais: `referencias.bib` (BibTeX), `glossario.tex` e as subpastas `apendices/` e `anexos/`. Os arquivos de apêndice/anexo são incluídos via `\input` a partir do `main.tex`.
 
-**A macro `\textual` em `main.tex:155` é importante** — marca a transição dos elementos pré-textuais (numeração de páginas em algarismos romanos, capítulos sem numeração) para o corpo do texto (numeração em arábicos, capítulos numerados). Mover conteúdo de um lado para o outro dessa fronteira renumera tudo.
+**A macro `\textual` em `main.tex:187` é importante** — marca a transição dos elementos pré-textuais (numeração de páginas em algarismos romanos, capítulos sem numeração) para o corpo do texto (numeração em arábicos, capítulos numerados). Mover conteúdo de um lado para o outro dessa fronteira renumera tudo.
 
-**O diretório `figuras/` mencionado no `README.md` ainda não existe** — crie-o na primeira vez que adicionar uma figura. As referências de `\includegraphics` usam `figuras/<nome>` sem extensão.
+**O diretório `figuras/`** guarda as figuras do documento. Como o git não versiona diretórios vazios, ele pode não aparecer no repositório enquanto estiver vazio. As referências de `\includegraphics` usam `figuras/<nome>` sem extensão.
 
 ## Convenções de escrita
 
-- **Idioma**: todo o texto, comentários e argumentos de comando são em PT-BR. Mantenha esse padrão em qualquer conteúdo novo. As opções `english` e `spanish` do `\documentclass` ativam apenas a hifenização — `brazil` é o idioma principal. (Exceção: o `elementos-pre-textuais/abstract.tex` é o resumo em língua estrangeira exigido pela ABNT e seu texto deve ser escrito em inglês.)
+- **Idioma**: todo o texto, comentários e argumentos de comando são em PT-BR. Mantenha esse padrão em qualquer conteúdo novo. As opções `english` e `spanish` do `\documentclass` ativam apenas a hifenização — `brazilian` é o idioma principal. (Exceção: o `elementos-pre-textuais/abstract.tex` é o resumo em língua estrangeira exigido pela ABNT e seu texto deve ser escrito em inglês.)
 - **Nomes de arquivo**: kebab-case em PT-BR para os arquivos de capítulo (`material-e-metodos.tex`, não `methodsAndMaterials.tex`).
 - **Rótulos (`\label`)**: prefixe pelo tipo de elemento — `\label{cap:...}` para capítulos, `\label{sec:...}` para seções/subseções, `\label{fig:...}`, `\label{tab:...}`, `\label{qua:...}` para quadros, `\label{alg:...}` para algoritmos.
 - **Figuras, tabelas e quadros** — **não** chame `\includegraphics` ou `tabular` diretamente. Use os encapsuladores de `lib/embrapatex.sty`:
@@ -68,4 +69,4 @@ O modelo separa orquestração, configuração de pacotes, estilo e conteúdo:
 - **Ficha catalográfica**: gerada em LaTeX pela macro `\imprimirfichacatalografica` (definida em `lib/embrapatex.sty`), a partir dos campos de metadados preenchidos no bloco "Informação da Ficha Catalográfica" do `main.tex` (`\autorinvertido`, `\edicao`, `\editora`, `\numeropaginas`, `\ilustracao`, `\dimensao`, `\isbn`, `\notaficha`, `\incluibibliografia`, `\descritores`, `\cdd`, `\cdu`, `\bibliotecario`, `\crb`). Reaproveita `\autor`/`\titulo`/`\local`/`\data`. A macro **não recebe argumentos** e campos vazios são omitidos automaticamente. CDD/CDU, descritores e o registro CRB devem ser fornecidos por um(a) bibliotecário(a). Não anexe PDF externo.
 - A origem é o Overleaf (commit inicial `de81c57` — "Initial Overleaf Import"). A estrutura atual foi introduzida no commit `de7d665` (02/06/2026). Prefira mudanças aditivas a mover arquivos, para facilitar a verificação de paridade com o Overleaf.
 - O "Current Maintainer" (mantenedor atual) da LPPL nos cabeçalhos dos arquivos é **Igor Lopes <igor.lopes@embrapa.br>** — mantenha atualizado ao modificar os blocos de cabeçalho. O texto jurídico da licença LPPL nesses cabeçalhos permanece em inglês, por ser o texto oficial padrão da licença.
-- Há suporte a uma folha de aprovação assinada em PDF como alternativa à versão tipografada: comente `\imprimirfolhadeaprovacao` (`main.tex:138`) e descomente `\includepdf{...folha-aprovacao.pdf}` (`main.tex:137`).
+- Há suporte a uma folha de aprovação assinada em PDF como alternativa à versão tipografada: comente `\imprimirfolhadeaprovacao` (`main.tex:170`) e descomente `\includepdf{...folha-aprovacao.pdf}` (`main.tex:169`).
