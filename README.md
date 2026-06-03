@@ -63,6 +63,8 @@ Há **três tipos fundamentais**, escolhidos por `\tipodocumento{...}`. Cada tip
 
 > **Atalhos:** há um `Makefile` com `make` (compila), `make exemplos`, `make lint` (chktex), `make verificar` (rede de regressão) e `make limpar`. Rode `make ajuda` para a lista.
 
+> **Usando o template num documento real (CI sem atrito):** `make verificar` (rede de regressão) e `make exemplos` (showcase) — e os passos correspondentes da CI — são **testes do próprio template**, calibrados para o conteúdo-exemplo padrão. Num repositório **derivado** do template (o seu documento), a CI **pula esses passos automaticamente**: você só vê o lint + a compilação do seu `main.tex` + o PDF publicado, sem falsos vermelhos. Não precisa rodar `make verificar` para o seu documento. (Criou o seu repositório a partir de uma cópia **antiga** do template? Basta copiar o `.github/workflows/compilar-latex.yml` atualizado — a guarda `if:` já pula os passos só-do-template no seu repo.)
+
 # Dicas de Formatação
 
 Veja a seguir como inserir alguns elementos no seu texto.
