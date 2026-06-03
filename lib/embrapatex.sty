@@ -266,7 +266,7 @@
 }
 
 % Tipo de documento — a escolha estrutural fundamental:
-%   publicacao   - Publicação técnico-científica em formato ABNT completo
+%   academico    - Publicação técnico-científica em formato ABNT completo
 %                  (banca, ficha catalográfica, resumo/abstract etc.). É o
 %                  PADRÃO. A variação específica é escolhida por \subtipo.
 %   corporativo  - Relatório corporativo/empresarial (modo NÃO acadêmico:
@@ -275,7 +275,7 @@
 %                  elementos ABNT). Ativa o condicional \ifcorporativo, usado
 %                  no main.tex para trocar o conjunto de pré-textuais.
 %
-% \subtipo (apenas no modo publicacao) — preenche duas variáveis de DADOS a
+% \subtipo (apenas no modo academico) — preenche duas variáveis de DADOS a
 % partir da série de publicação da Embrapa: o subtítulo da capa
 % (\subtitulodacapa) e a natureza da publicação no preâmbulo da folha de rosto
 % (\naturezadapublicacao). Não há lógica/comportamento por série — só valores.
@@ -296,7 +296,7 @@
 \newif\ifcorporativo
 \corporativofalse
 
-% \tipodocumento{publicacao|corporativo}
+% \tipodocumento{academico|corporativo}
 \newcommand{\tipodocumento}[1]{
 	\setboolean{embrapatex@ehcorporativo}{false}
 	\corporativofalse
@@ -304,11 +304,11 @@
 		\setboolean{embrapatex@ehcorporativo}{true}
 		\corporativotrue
 	}{%
-		\ifthenelse{\equal{#1}{publicacao}}{}{%
+		\ifthenelse{\equal{#1}{academico}}{}{%
 			\PackageWarning{embrapatex}{Tipo de documento '#1' desconhecido;
-				use 'publicacao' ou 'corporativo' (a serie -- boletim, comunicado
+				use 'academico' ou 'corporativo' (a serie -- boletim, comunicado
 				etc. -- agora e definida por \string\subtipo). Assumindo
-				'publicacao'}%
+				'academico'}%
 		}%
 	}%
 }
@@ -656,7 +656,7 @@
 %%       Definições de Variáveis       %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Preâmbulo (natureza do trabalho na folha de rosto). No modo publicacao, o
+% Preâmbulo (natureza do trabalho na folha de rosto). No modo academico, o
 % texto vem da variável \naturezadapublicacao (definida por \subtipo ou
 % sobrescrita manualmente); qualificação e corporativo têm frases próprias.
 \newcommand{\preambulocorporativo}{

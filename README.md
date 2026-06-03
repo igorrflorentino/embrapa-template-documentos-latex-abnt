@@ -6,7 +6,7 @@ O **EmbrapaTex** é um template LaTeX baseado no [abnTeX2](http://www.abntex2.ne
 
 Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
 
-- **`publicacao`** (padrão) — publicação técnico-científica em formato ABNT completo (banca, ficha catalográfica, resumo/abstract etc.). A variação específica é dada por `\subtipo{...}`:
+- **`academico`** (padrão) — publicação técnico-científica em formato ABNT completo (banca, ficha catalográfica, resumo/abstract etc.). A variação específica é dada por `\subtipo{...}`:
   - `relatorio` — Relatório Técnico / Relatório Final (padrão)
   - `boletim` — Boletim de Pesquisa e Desenvolvimento
   - `comunicado` — Comunicado Técnico
@@ -43,7 +43,7 @@ Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
 # Por onde começo?
 
 1. Abra o arquivo `main.tex` e configure os dados do seu documento:
-   - Tipo de documento (`\tipodocumento{publicacao}`) e, no modo publicação, a série (`\subtipo{relatorio}`)
+   - Tipo de documento (`\tipodocumento{academico}`) e, no modo acadêmico, a série (`\subtipo{relatorio}`)
    - Unidade Embrapa (`\unidade{...}`)
    - Autor, título, data e local
    - Orientador/supervisor (se aplicável)
@@ -51,7 +51,7 @@ Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
 3. Adicione suas figuras ao diretório `figuras/`
 4. Compile o projeto. O modo recomendado é `latexmk -pdf main.tex` (executa todas as passadas e o `makeglossaries` automaticamente). Alternativamente, rode manualmente: `pdflatex` → `bibtex` → `makeglossaries` → `makeindex` → `pdflatex` (2×)
 
-> **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-publicacao.pdf` e `exemplo-corporativo.pdf` — uma amostra de cada modo, com o mesmo conteúdo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
+> **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-academico.pdf` e `exemplo-corporativo.pdf` — uma amostra de cada modo, com o mesmo conteúdo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
 
 > **Atalhos:** há um `Makefile` com `make` (compila), `make exemplos`, `make lint` (chktex), `make verificar` (rede de regressão) e `make limpar`. Rode `make ajuda` para a lista.
 
@@ -187,7 +187,7 @@ Nesse modo, o template:
 - substitui o par **Resumo/Abstract** (acadêmico) por um **Sumário executivo**, escrito em `elementos-pre-textuais/sumario-executivo.tex`;
 - **omite** os elementos de trabalho acadêmico: banca, folha de aprovação e ficha catalográfica.
 
-Os metadados acadêmicos (orientador, banca, campos da ficha) podem continuar preenchidos no `main.tex` — eles são simplesmente ignorados enquanto o tipo for `corporativo`. Para voltar ao formato ABNT, troque de volta para `\tipodocumento{publicacao}` (e escolha a série com `\subtipo{...}`).
+Os metadados acadêmicos (orientador, banca, campos da ficha) podem continuar preenchidos no `main.tex` — eles são simplesmente ignorados enquanto o tipo for `corporativo`. Para voltar ao formato ABNT, troque de volta para `\tipodocumento{academico}` (e escolha a série com `\subtipo{...}`).
 
 # Elementos que aparecem só quando preenchidos
 
