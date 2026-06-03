@@ -265,65 +265,81 @@
 	}
 }
 
-% Determina o tipo do trabalho apresentado
-% Tipos de documento da Embrapa:
-%   relatorio    - Relatório Técnico / Relatório Final
+% Tipo de documento — a escolha estrutural fundamental:
+%   publicacao   - Publicação técnico-científica em formato ABNT completo
+%                  (banca, ficha catalográfica, resumo/abstract etc.). É o
+%                  PADRÃO. A variação específica é escolhida por \subtipo.
+%   corporativo  - Relatório corporativo/empresarial (modo NÃO acadêmico:
+%                  sumário executivo no lugar de resumo/abstract; dispensa
+%                  banca, folha de aprovação, ficha catalográfica e demais
+%                  elementos ABNT). Ativa o condicional \ifcorporativo, usado
+%                  no main.tex para trocar o conjunto de pré-textuais.
+%
+% \subtipo (apenas no modo publicacao) — define o rótulo da capa e a frase do
+% preâmbulo da folha de rosto, conforme a série de publicação da Embrapa:
+%   relatorio    - Relatório Técnico / Relatório Final (PADRÃO)
 %   boletim      - Boletim de Pesquisa e Desenvolvimento
 %   comunicado   - Comunicado Técnico
 %   documento    - Documento (genérico)
-%   corporativo  - Relatório corporativo/empresarial (modo não acadêmico:
-%                  dispensa banca, ficha catalográfica, resumo/abstract ABNT
-%                  e demais elementos de trabalho acadêmico)
-%
-% Os quatro primeiros tipos compartilham a estrutura acadêmica/ABNT completa.
-% O tipo 'corporativo' ativa, além do booleano específico, o condicional
-% \ifcorporativo — usado no main.tex para trocar o conjunto de elementos
-% pré-textuais (sumário executivo no lugar de resumo/abstract, sem banca etc.).
 
 % Definicao das variaveis
-\provideboolean{embrapatex@ehrelatorio}
-\provideboolean{embrapatex@ehboletim}
-\provideboolean{embrapatex@ehcomunicado}
-\provideboolean{embrapatex@ehdocumento}
 \provideboolean{embrapatex@ehcorporativo}
+\provideboolean{embrapatex@subrelatorio}
+\provideboolean{embrapatex@subboletim}
+\provideboolean{embrapatex@subcomunicado}
+\provideboolean{embrapatex@subdocumento}
 
-% Valores Iniciais
-\setboolean{embrapatex@ehrelatorio}{true}
-\setboolean{embrapatex@ehboletim}{false}
-\setboolean{embrapatex@ehcomunicado}{false}
-\setboolean{embrapatex@ehdocumento}{false}
+% Valores Iniciais: publicação + subtipo relatório
 \setboolean{embrapatex@ehcorporativo}{false}
+\setboolean{embrapatex@subrelatorio}{true}
+\setboolean{embrapatex@subboletim}{false}
+\setboolean{embrapatex@subcomunicado}{false}
+\setboolean{embrapatex@subdocumento}{false}
 
 % Condicional TeX exposto para uso no main.tex (\ifcorporativo ... \else ... \fi)
 \newif\ifcorporativo
 \corporativofalse
 
+% \tipodocumento{publicacao|corporativo}
 \newcommand{\tipodocumento}[1]{
-	\setboolean{embrapatex@ehrelatorio}{false}
-	\setboolean{embrapatex@ehboletim}{false}
-	\setboolean{embrapatex@ehcomunicado}{false}
-	\setboolean{embrapatex@ehdocumento}{false}
 	\setboolean{embrapatex@ehcorporativo}{false}
 	\corporativofalse
+	\ifthenelse{\equal{#1}{corporativo}}{%
+		\setboolean{embrapatex@ehcorporativo}{true}
+		\corporativotrue
+	}{%
+		\ifthenelse{\equal{#1}{publicacao}}{}{%
+			\PackageWarning{embrapatex}{Tipo de documento '#1' desconhecido;
+				use 'publicacao' ou 'corporativo' (a serie -- boletim, comunicado
+				etc. -- agora e definida por \string\subtipo). Assumindo
+				'publicacao'}%
+		}%
+	}%
+}
+
+% \subtipo{relatorio|boletim|comunicado|documento} — relevante no modo publicacao
+\newcommand{\subtipo}[1]{
+	\setboolean{embrapatex@subrelatorio}{false}
+	\setboolean{embrapatex@subboletim}{false}
+	\setboolean{embrapatex@subcomunicado}{false}
+	\setboolean{embrapatex@subdocumento}{false}
 
 	\ifthenelse{\equal{#1}{relatorio}}{%
-		\setboolean{embrapatex@ehrelatorio}{true}
+		\setboolean{embrapatex@subrelatorio}{true}
 	}{
 		\ifthenelse{\equal{#1}{boletim}}{%
-			\setboolean{embrapatex@ehboletim}{true}
+			\setboolean{embrapatex@subboletim}{true}
 		}{
 			\ifthenelse{\equal{#1}{comunicado}}{%
-				\setboolean{embrapatex@ehcomunicado}{true}
+				\setboolean{embrapatex@subcomunicado}{true}
 			}{
 				\ifthenelse{\equal{#1}{documento}}{%
-					\setboolean{embrapatex@ehdocumento}{true}
+					\setboolean{embrapatex@subdocumento}{true}
 				}{
-					\ifthenelse{\equal{#1}{corporativo}}{%
-						\setboolean{embrapatex@ehcorporativo}{true}
-						\corporativotrue
-					}{
-						\setboolean{embrapatex@ehrelatorio}{true}
-					}
+					\PackageWarning{embrapatex}{Subtipo '#1' desconhecido; use
+						relatorio, boletim, comunicado ou documento. Assumindo
+						'relatorio'}%
+					\setboolean{embrapatex@subrelatorio}{true}
 				}
 			}
 		}
@@ -659,13 +675,13 @@
 		\ifthenelse{\boolean{embrapatex@ehcorporativo}}{ %
 			\preambulocorporativo %
 		}{
-			\ifthenelse{\boolean{embrapatex@ehrelatorio}}{ %
+			\ifthenelse{\boolean{embrapatex@subrelatorio}}{ %
 				\preambulorelatorio %
 			}{
-				\ifthenelse{\boolean{embrapatex@ehboletim}}{ %
+				\ifthenelse{\boolean{embrapatex@subboletim}}{ %
 					\preambuloboletim %
 				}{
-					\ifthenelse{\boolean{embrapatex@ehcomunicado}}{ %
+					\ifthenelse{\boolean{embrapatex@subcomunicado}}{ %
 						\preambulocomunicado %
 					}{
 						\preambulodocumento %
@@ -821,13 +837,13 @@
 	\ifthenelse{\boolean{embrapatex@ehcorporativo}}{ %
 		\imprimircapacorporativo %
 	}{
-		\ifthenelse{\boolean{embrapatex@ehrelatorio}}{ %
+		\ifthenelse{\boolean{embrapatex@subrelatorio}}{ %
 				\imprimircaparelatorio %
 		}{
-			\ifthenelse{\boolean{embrapatex@ehboletim}}{ %
+			\ifthenelse{\boolean{embrapatex@subboletim}}{ %
 				\imprimircapaboletim %
 			}{
-				\ifthenelse{\boolean{embrapatex@ehcomunicado}}{ %
+				\ifthenelse{\boolean{embrapatex@subcomunicado}}{ %
 					\imprimircapacomunicado %
 				}{
 					\imprimircapadocumento %

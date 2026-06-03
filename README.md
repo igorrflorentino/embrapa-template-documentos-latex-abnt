@@ -4,11 +4,16 @@ O **EmbrapaTex** é um template LaTeX baseado no [abnTeX2](http://www.abntex2.ne
 
 ### Tipos de Documento Disponíveis
 
-- **Relatório Técnico** (`relatorio`) — Relatórios técnicos e relatórios finais de pesquisa
-- **Boletim de Pesquisa e Desenvolvimento** (`boletim`) — Boletins de pesquisa
-- **Comunicado Técnico** (`comunicado`) — Comunicados técnicos
-- **Documento** (`documento`) — Documento genérico
-- **Relatório Corporativo** (`corporativo`) — Relatórios empresariais/não acadêmicos (ex.: análise exploratória de dados de uma commodity). Usa um **Sumário executivo** no lugar de resumo/abstract e dispensa banca, folha de aprovação e ficha catalográfica — veja [Modo corporativo](#modo-corporativo).
+Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
+
+- **`publicacao`** (padrão) — publicação técnico-científica em formato ABNT completo (banca, ficha catalográfica, resumo/abstract etc.). A variação específica é dada por `\subtipo{...}`:
+  - `relatorio` — Relatório Técnico / Relatório Final (padrão)
+  - `boletim` — Boletim de Pesquisa e Desenvolvimento
+  - `comunicado` — Comunicado Técnico
+  - `documento` — Documento genérico
+- **`corporativo`** — Relatórios empresariais/não acadêmicos (ex.: análise exploratória de dados de uma commodity). Usa um **Sumário executivo** no lugar de resumo/abstract e dispensa banca, folha de aprovação e ficha catalográfica — veja [Modo corporativo](#modo-corporativo).
+
+> O `\subtipo` afeta apenas o rótulo da capa e a frase do preâmbulo; a estrutura ABNT é a mesma para todas as séries.
 
 ### Estrutura do Projeto
 
@@ -33,7 +38,7 @@ O **EmbrapaTex** é um template LaTeX baseado no [abnTeX2](http://www.abntex2.ne
 # Por onde começo?
 
 1. Abra o arquivo `main.tex` e configure os dados do seu documento:
-   - Tipo de documento (`\tipodocumento{relatorio}`)
+   - Tipo de documento (`\tipodocumento{publicacao}`) e, no modo publicação, a série (`\subtipo{relatorio}`)
    - Unidade Embrapa (`\unidade{...}`)
    - Autor, título, data e local
    - Orientador/supervisor (se aplicável)
@@ -173,7 +178,7 @@ Nesse modo, o template:
 - substitui o par **Resumo/Abstract** (acadêmico) por um **Sumário executivo**, escrito em `elementos-pre-textuais/sumario-executivo.tex`;
 - **omite** os elementos de trabalho acadêmico: banca, folha de aprovação e ficha catalográfica.
 
-Os metadados acadêmicos (orientador, banca, campos da ficha) podem continuar preenchidos no `main.tex` — eles são simplesmente ignorados enquanto o tipo for `corporativo`. Para voltar ao formato acadêmico, basta trocar de volta para `\tipodocumento{relatorio}` (ou outro tipo ABNT).
+Os metadados acadêmicos (orientador, banca, campos da ficha) podem continuar preenchidos no `main.tex` — eles são simplesmente ignorados enquanto o tipo for `corporativo`. Para voltar ao formato ABNT, troque de volta para `\tipodocumento{publicacao}` (e escolha a série com `\subtipo{...}`).
 
 # Elementos que aparecem só quando preenchidos
 
