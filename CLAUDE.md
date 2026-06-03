@@ -13,7 +13,7 @@ Este arquivo fornece orientações ao Claude Code (claude.ai/code) ao trabalhar 
 
 A cópia de trabalho atual está configurada como `academico` + `\subtipo{relatorio}` (relatório final) para um probatório.
 
-Houve **ruptura limpa** de API: os valores antigos `\tipodocumento{relatorio|boletim|comunicado|documento}` não são mais aceitos — agora são `\subtipo`. Usá-los emite um `\PackageWarning` e assume `academico`. Há ainda o modificador ortogonal `\ehqualificacao{sim}`, que marca proposta de qualificação e suprime vários pré-textuais (combinável com `academico`).
+Houve **ruptura limpa** de API: **apenas `academico` e `corporativo` são tipos válidos** em `\tipodocumento`. Qualquer outro valor (o antigo `publicacao` ou as séries `relatorio|boletim|comunicado|documento`) é **rejeitado com `\PackageError`** — a série agora é definida por `\subtipo`, não por `\tipodocumento`. Há ainda o modificador ortogonal `\ehqualificacao{sim}`, que marca proposta de qualificação e suprime vários pré-textuais (combinável com `academico`).
 
 ## Compilação
 

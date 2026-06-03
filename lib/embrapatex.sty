@@ -296,7 +296,9 @@
 \newif\ifcorporativo
 \corporativofalse
 
-% \tipodocumento{academico|corporativo}
+% \tipodocumento{academico|corporativo} — apenas estes dois valores são válidos.
+% Qualquer outro valor (incluindo o antigo 'publicacao' ou as séries
+% 'relatorio/boletim/...') é REJEITADO com erro; a série é definida por \subtipo.
 \newcommand{\tipodocumento}[1]{
 	\setboolean{embrapatex@ehcorporativo}{false}
 	\corporativofalse
@@ -305,10 +307,10 @@
 		\corporativotrue
 	}{%
 		\ifthenelse{\equal{#1}{academico}}{}{%
-			\PackageWarning{embrapatex}{Tipo de documento '#1' desconhecido;
-				use 'academico' ou 'corporativo' (a serie -- boletim, comunicado
-				etc. -- agora e definida por \string\subtipo). Assumindo
-				'academico'}%
+			\PackageError{embrapatex}{Tipo de documento '#1' invalido}{%
+				Os unicos tipos validos sao 'academico' e 'corporativo'. A serie
+				(relatorio, boletim, comunicado, documento) agora e definida por
+				\string\subtipo, nao por \string\tipodocumento.}%
 		}%
 	}%
 }
