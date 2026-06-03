@@ -53,6 +53,8 @@ Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
 
 > **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-publicacao.pdf` e `exemplo-corporativo.pdf` — uma amostra de cada modo, com o mesmo conteúdo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
 
+> **Atalhos:** há um `Makefile` com `make` (compila), `make exemplos`, `make lint` (chktex), `make verificar` (rede de regressão) e `make limpar`. Rode `make ajuda` para a lista.
+
 # Dicas de Formatação
 
 Veja a seguir como inserir alguns elementos no seu texto.
