@@ -9,8 +9,9 @@
 #     ./gerar-exemplos.sh
 #
 # Saída (na raiz do repositório):
-#     exemplo-academico.pdf    — modo academico (ABNT completo)
-#     exemplo-corporativo.pdf  — modo corporativo (relatório empresarial)
+#     exemplo-academico.pdf    — modo academico (dissertação, ABNT completo)
+#     exemplo-publicacao.pdf   — modo publicacao (série Embrapa: boletim)
+#     exemplo-corporativo.pdf  — modo corporativo (análise empresarial)
 #
 # Requer: latexmk (mesma cadeia usada para compilar o main.tex).
 set -euo pipefail
@@ -19,7 +20,7 @@ set -euo pipefail
 # caminhos relativos do main.tex (lib/, elementos-*/, figuras/) resolvam.
 cd "$(dirname "$0")"
 
-exemplos=(exemplo-academico exemplo-corporativo)
+exemplos=(exemplo-academico exemplo-publicacao exemplo-corporativo)
 
 for exemplo in "${exemplos[@]}"; do
     echo ">>> Gerando ${exemplo}.pdf"

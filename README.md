@@ -4,16 +4,22 @@ O **EmbrapaTex** é um template LaTeX baseado no [abnTeX2](http://www.abntex2.ne
 
 ### Tipos de Documento Disponíveis
 
-Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
+Há **três tipos fundamentais**, escolhidos por `\tipodocumento{...}`. Cada tipo tem seu **próprio seletor de subtipo**:
 
-- **`academico`** (padrão) — publicação técnico-científica em formato ABNT completo (banca, ficha catalográfica, resumo/abstract etc.). A variação específica é dada por `\subtipo{...}`:
-  - `relatorio` — Relatório Técnico / Relatório Final (padrão)
+- **`academico`** (padrão) — trabalhos de graduação/pós (TCC, dissertação, tese…), em formato ABNT completo, com orientador, **banca**, campos de pesquisa e **instituição de ensino**. Subtipo via `\nivel{...}`:
+  - `tcc` — Trabalho de Conclusão de Curso
+  - `monografia` — Monografia (especialização)
+  - `dissertacao` — Dissertação (mestrado)
+  - `tese` — Tese (doutorado)
+  - `relatorio` — Relatório acadêmico avaliado (ex.: probatório)
+- **`publicacao`** — publicações técnico-científicas da Embrapa (séries). Subtipo via `\serie{...}`; o `\numerodocumento` é impresso na capa:
+  - `relatorio` — Relatório Técnico
   - `boletim` — Boletim de Pesquisa e Desenvolvimento
   - `comunicado` — Comunicado Técnico
   - `documento` — Documento genérico
-- **`corporativo`** — Relatórios empresariais/não acadêmicos (ex.: análise exploratória de dados de uma commodity). Usa um **Sumário executivo** no lugar de resumo/abstract e dispensa banca, folha de aprovação e ficha catalográfica — veja [Modo corporativo](#modo-corporativo).
+- **`corporativo`** — relatórios e análises empresariais (ex.: análise exploratória de dados de uma commodity). Subtipo via `\categoria{relatorio|analise}`. Usa um **Sumário executivo** no lugar de resumo/abstract e dispensa banca/ficha — veja [Modo corporativo](#modo-corporativo).
 
-> O `\subtipo` afeta apenas o rótulo da capa e a frase do preâmbulo; a estrutura ABNT é a mesma para todas as séries. Por baixo, ele só preenche dois campos — para uma **série não prevista** (ex.: Circular Técnica), defina-os direto no `main.tex`, sem `\subtipo`:
+> Cada seletor afeta apenas o rótulo da capa e a frase do preâmbulo; por baixo, só preenche dois campos. Para um caso não previsto, defina-os direto no `main.tex`:
 >
 > ```tex
 > \subtitulodacapa{Circular Técnica}
@@ -43,7 +49,7 @@ Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
 # Por onde começo?
 
 1. Abra o arquivo `main.tex` e configure os dados do seu documento:
-   - Tipo de documento (`\tipodocumento{academico}`) e, no modo acadêmico, a série (`\subtipo{relatorio}`)
+   - Tipo de documento (`\tipodocumento{academico}`) e o subtipo do seu tipo: `\nivel{...}` (academico), `\serie{...}` (publicacao) ou `\categoria{...}` (corporativo)
    - Unidade Embrapa (`\unidade{...}`)
    - Autor, título, data e local
    - Orientador/supervisor (se aplicável)
@@ -51,7 +57,7 @@ Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
 3. Adicione suas figuras ao diretório `figuras/`
 4. Compile o projeto. O modo recomendado é `latexmk -pdf main.tex` (executa todas as passadas e o `makeglossaries` automaticamente). Alternativamente, rode manualmente: `pdflatex` → `bibtex` → `makeglossaries` → `makeindex` → `pdflatex` (2×)
 
-> **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-academico.pdf` e `exemplo-corporativo.pdf` — uma amostra de cada modo, com o mesmo conteúdo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
+> **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-academico.pdf` (dissertação), `exemplo-publicacao.pdf` (boletim) e `exemplo-corporativo.pdf` (análise) — uma amostra de cada tipo, com o mesmo conteúdo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
 
 > **Atalhos:** há um `Makefile` com `make` (compila), `make exemplos`, `make lint` (chktex), `make verificar` (rede de regressão) e `make limpar`. Rode `make ajuda` para a lista.
 
@@ -183,11 +189,11 @@ Para relatórios empresariais/não acadêmicos (por exemplo, uma análise explor
 
 Nesse modo, o template:
 
-- coloca o subtítulo **RELATÓRIO** na capa e usa uma folha de rosto com texto próprio;
+- coloca na capa um subtítulo conforme `\categoria{relatorio|analise}` (**RELATÓRIO** ou **ANÁLISE**) e usa uma folha de rosto com texto próprio;
 - substitui o par **Resumo/Abstract** (acadêmico) por um **Sumário executivo**, escrito em `elementos-pre-textuais/sumario-executivo.tex`;
 - **omite** os elementos de trabalho acadêmico: banca, folha de aprovação e ficha catalográfica.
 
-Os metadados acadêmicos (orientador, banca, campos da ficha) podem continuar preenchidos no `main.tex` — eles são simplesmente ignorados enquanto o tipo for `corporativo`. Para voltar ao formato ABNT, troque de volta para `\tipodocumento{academico}` (e escolha a série com `\subtipo{...}`).
+Os metadados acadêmicos (orientador, banca, campos da ficha) podem continuar preenchidos no `main.tex` — eles são simplesmente ignorados enquanto o tipo for `corporativo`. Para voltar ao formato ABNT, troque o tipo para `\tipodocumento{academico}` ou `\tipodocumento{publicacao}` (e escolha o subtipo com `\nivel{...}` ou `\serie{...}`).
 
 # Elementos que aparecem só quando preenchidos
 
