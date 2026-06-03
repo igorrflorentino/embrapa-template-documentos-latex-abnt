@@ -20,11 +20,11 @@ pdf:
 
 ## exemplos Gera um PDF por tipo de documento (showcase)
 exemplos:
-	./gerar-exemplos.sh
+	bash gerar-exemplos.sh
 
 ## verificar Roda a rede de regressão do ocultamento de elementos opcionais
 verificar:
-	./verificar-ocultamento.sh
+	bash verificar-ocultamento.sh
 
 ## lint     Análise estática (chktex) dos arquivos de prosa
 lint:
