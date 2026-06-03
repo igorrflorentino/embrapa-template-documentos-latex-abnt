@@ -4,10 +4,21 @@ O **EmbrapaTex** é um template LaTeX baseado no [abnTeX2](http://www.abntex2.ne
 
 ### Tipos de Documento Disponíveis
 
-- **Relatório Técnico** (`relatorio`) — Relatórios técnicos e relatórios finais de pesquisa
-- **Boletim de Pesquisa e Desenvolvimento** (`boletim`) — Boletins de pesquisa
-- **Comunicado Técnico** (`comunicado`) — Comunicados técnicos
-- **Documento** (`documento`) — Documento genérico
+Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
+
+- **`publicacao`** (padrão) — publicação técnico-científica em formato ABNT completo (banca, ficha catalográfica, resumo/abstract etc.). A variação específica é dada por `\subtipo{...}`:
+  - `relatorio` — Relatório Técnico / Relatório Final (padrão)
+  - `boletim` — Boletim de Pesquisa e Desenvolvimento
+  - `comunicado` — Comunicado Técnico
+  - `documento` — Documento genérico
+- **`corporativo`** — Relatórios empresariais/não acadêmicos (ex.: análise exploratória de dados de uma commodity). Usa um **Sumário executivo** no lugar de resumo/abstract e dispensa banca, folha de aprovação e ficha catalográfica — veja [Modo corporativo](#modo-corporativo).
+
+> O `\subtipo` afeta apenas o rótulo da capa e a frase do preâmbulo; a estrutura ABNT é a mesma para todas as séries. Por baixo, ele só preenche dois campos — para uma **série não prevista** (ex.: Circular Técnica), defina-os direto no `main.tex`, sem `\subtipo`:
+>
+> ```tex
+> \subtitulodacapa{Circular Técnica}
+> \naturezadapublicacao{Circular Técnica da \imprimirunidade\ (\imprimirunidadesigla).}
+> ```
 
 ### Estrutura do Projeto
 
@@ -17,7 +28,7 @@ O **EmbrapaTex** é um template LaTeX baseado no [abnTeX2](http://www.abntex2.ne
 │   ├── preambulo.tex                 # Configurações de pacotes
 │   ├── embrapatex.sty                # Pacote de estilos EmbrapaTex
 │   └── logo-embrapa-*.png            # Logos da Embrapa
-├── elementos-pre-textuais/           # Resumo, abstract, agradecimentos, etc.
+├── elementos-pre-textuais/           # Resumo, abstract, sumário executivo, etc.
 ├── elementos-textuais/               # Capítulos do documento
 │   ├── introducao.tex
 │   ├── revisao-de-literatura.tex
@@ -32,13 +43,15 @@ O **EmbrapaTex** é um template LaTeX baseado no [abnTeX2](http://www.abntex2.ne
 # Por onde começo?
 
 1. Abra o arquivo `main.tex` e configure os dados do seu documento:
-   - Tipo de documento (`\tipodocumento{relatorio}`)
+   - Tipo de documento (`\tipodocumento{publicacao}`) e, no modo publicação, a série (`\subtipo{relatorio}`)
    - Unidade Embrapa (`\unidade{...}`)
    - Autor, título, data e local
    - Orientador/supervisor (se aplicável)
 2. Edite os arquivos nos diretórios `elementos-pre-textuais/`, `elementos-textuais/` e `elementos-pos-textuais/`
 3. Adicione suas figuras ao diretório `figuras/`
 4. Compile o projeto. O modo recomendado é `latexmk -pdf main.tex` (executa todas as passadas e o `makeglossaries` automaticamente). Alternativamente, rode manualmente: `pdflatex` → `bibtex` → `makeglossaries` → `makeindex` → `pdflatex` (2×)
+
+> **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-publicacao.pdf` e `exemplo-corporativo.pdf` — uma amostra de cada modo, com o mesmo conteúdo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
 
 # Dicas de Formatação
 
@@ -157,6 +170,56 @@ A ficha catalográfica é gerada automaticamente em LaTeX a partir dos campos de
 ```
 
 Os dados de classificação (CDD/CDU), os descritores de assunto e o registro CRB devem ser fornecidos por um(a) **bibliotecário(a)**. Os campos `\autor`, `\titulo`, `\local` e `\data` já configurados no documento são reaproveitados automaticamente, e qualquer campo deixado em branco é omitido.
+
+# Modo corporativo
+
+Para relatórios empresariais/não acadêmicos (por exemplo, uma análise exploratória de dados comerciais de uma commodity), defina o tipo de documento como `corporativo` no `main.tex`:
+
+```tex
+\tipodocumento{corporativo}
+```
+
+Nesse modo, o template:
+
+- coloca o subtítulo **RELATÓRIO** na capa e usa uma folha de rosto com texto próprio;
+- substitui o par **Resumo/Abstract** (acadêmico) por um **Sumário executivo**, escrito em `elementos-pre-textuais/sumario-executivo.tex`;
+- **omite** os elementos de trabalho acadêmico: banca, folha de aprovação e ficha catalográfica.
+
+Os metadados acadêmicos (orientador, banca, campos da ficha) podem continuar preenchidos no `main.tex` — eles são simplesmente ignorados enquanto o tipo for `corporativo`. Para voltar ao formato ABNT, troque de volta para `\tipodocumento{publicacao}` (e escolha a série com `\subtipo{...}`).
+
+# Elementos que aparecem só quando preenchidos
+
+Os elementos abaixo ficam sempre disponíveis no `main.tex`, mas só aparecem no PDF quando há conteúdo correspondente — caso contrário são omitidos automaticamente, sem deixar um título em página vazia:
+
+| Elemento | Aparece quando… |
+|---|---|
+| **Referências** | há `\cite`/`\citeonline` (ou `\nocite`) no texto |
+| **Glossário** | algum termo do glossário principal é usado com `\gls`/`\Gls` |
+| **Lista de Abreviaturas e Siglas** | alguma sigla é usada com `\gls`/`\acrshort` |
+| **Lista de Ilustrações** | há ao menos uma figura com legenda |
+| **Lista de Tabelas** | há ao menos uma tabela com legenda |
+| **Lista de Quadros** | há ao menos um quadro com legenda |
+| **Lista de Algoritmos** | há ao menos um algoritmo com legenda |
+| **Lista de Códigos-Fonte** | há ao menos uma listagem `lstlisting` com legenda |
+| **Lista de Símbolos** | o arquivo `lista-de-simbolos.tex` tem ao menos um `\item` |
+| **Errata** | o arquivo `errata.tex` tem conteúdo (fora comentários) |
+| **Dedicatória** / **Agradecimentos** / **Epígrafe** | o respectivo arquivo tem conteúdo (fora comentários) |
+| **Apêndices** / **Anexos** | o argumento de `\imprimirapendices{...}` / `\imprimiranexos{...}` não está vazio |
+| **Índice remissivo** | há entradas `\index{}` no texto |
+
+Apêndices e anexos recebem o conteúdo **entre chaves** no `main.tex`; deixe as chaves vazias para omitir a seção:
+
+```tex
+% Com apêndices:
+\imprimirapendices{%
+    \input{elementos-pos-textuais/apendices/exemplo-de-apendice}%
+}
+
+% Sem apêndices (seção omitida):
+\imprimirapendices{}
+```
+
+> As listas pré-textuais (abreviaturas/siglas, ilustrações, tabelas, quadros, algoritmos, códigos-fonte) têm sua exibição decidida com base na compilação anterior. Ao usar o `latexmk` (recomendado), a recompilação acontece automaticamente até estabilizar — não é preciso rodar à mão.
 
 # Mantenedor
 

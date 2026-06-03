@@ -4,6 +4,10 @@ name: Compilar LaTeX
 # push na branch main, garantindo que a ficha catalográfica e o restante do
 # relatório sempre compilem antes do merge. O PDF gerado fica disponível como
 # artefato do build.
+#
+# Além do main.tex, compila os exemplos de demonstração (exemplo-publicacao e
+# exemplo-corporativo) e os publica como artefato "exemplos-pdf" — assim é
+# possível ver cada tipo de documento sem compilar nada localmente.
 
 on:
   push:
@@ -41,4 +45,23 @@ jobs:
         with:
           name: main-pdf
           path: main.pdf
+          if-no-files-found: error
+
+      # Showcase: gera uma amostra de cada tipo de documento estruturalmente
+      # distinto, reaproveitando o conteúdo do main.tex (os drivers exemplo-*.tex
+      # apenas injetam o tipo). Veja gerar-exemplos.sh para o equivalente local.
+      - name: Compilar exemplos (publicacao e corporativo)
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: |
+            exemplo-publicacao.tex
+            exemplo-corporativo.tex
+
+      - name: Publicar exemplos como artefato
+        uses: actions/upload-artifact@v7
+        with:
+          name: exemplos-pdf
+          path: |
+            exemplo-publicacao.pdf
+            exemplo-corporativo.pdf
           if-no-files-found: error

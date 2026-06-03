@@ -26,14 +26,35 @@
 %%          Configurações do EmbrapaTex            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Tipo de documento da Embrapa
-% Opções disponíveis:
+% Tipo de documento — a escolha estrutural fundamental:
+%   publicacao  - Publicação técnico-científica em formato ABNT completo
+%                 (com banca, ficha catalográfica, resumo/abstract etc.).
+%   corporativo - Relatório corporativo/empresarial (modo não acadêmico:
+%                 usa "Sumário executivo" no lugar de resumo/abstract e
+%                 dispensa banca, folha de aprovação e ficha catalográfica).
+%
+% O tipo e o subtipo abaixo usam \providecommand para que os arquivos de
+% demonstração (exemplo-*.tex) possam sobrescrevê-los via \def antes do
+% \input{main.tex} — veja ./gerar-exemplos.sh. Na compilação normal, valem
+% os padrões definidos aqui.
+
+\providecommand{\TipoDoc}{publicacao}
+\tipodocumento{\TipoDoc}
+
+% Subtipo (relevante no modo 'publicacao') — define o rótulo da capa e a
+% frase do preâmbulo, conforme a série de publicação da Embrapa:
 %   relatorio   - Relatório Técnico / Relatório Final
 %   boletim     - Boletim de Pesquisa e Desenvolvimento
 %   comunicado  - Comunicado Técnico
 %   documento   - Documento genérico
 
-\tipodocumento{relatorio}
+\providecommand{\SubTipo}{relatorio}
+\subtipo{\SubTipo}
+
+% Série não prevista? Em vez de \subtipo, defina os dois campos diretamente
+% (eles são o que o \subtipo preenche por baixo). Ex.: Circular Técnica:
+%   \subtitulodacapa{Circular Técnica}
+%   \naturezadapublicacao{Circular Técnica da \imprimirunidade\ (\imprimirunidadesigla).}
 
 % Remove as bordas vermelhas e verdes do PDF gerado
 % Coloque 'sim' para remover
@@ -156,24 +177,40 @@
 	% Elementos pré-textuais
 	\imprimircapa
 	\imprimirfolhaderosto
-	\imprimirfichacatalografica
-	\imprimirerrata{elementos-pre-textuais/errata}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	%%  Folha de aprovação:                                                 %%
-	%%  Caso possua uma folha de aprovação assinada em PDF,                 %%
-	%%  descomente a linha \includepdf abaixo e comente                     %%
-	%%  a linha \imprimirfolhadeaprovacao.                                   %%
+	%%  Os elementos pré-textuais variam conforme \tipodocumento:           %%
+	%%   - corporativo  -> sumário executivo (modo empresarial)             %%
+	%%   - demais tipos -> estrutura acadêmica/ABNT completa                %%
+	%%  O condicional \ifcorporativo é definido em lib/embrapatex.sty.      %%
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
-	%\includepdf{elementos-pre-textuais/folha-aprovacao.pdf}
-	\imprimirfolhadeaprovacao
-	
-	\imprimirdedicatoria{elementos-pre-textuais/dedicatoria}
-	\imprimiragradecimentos{elementos-pre-textuais/agradecimentos}
-	\imprimirepigrafe{elementos-pre-textuais/epigrafe}
-	\imprimirresumo{elementos-pre-textuais/resumo}
-	\imprimirabstract{elementos-pre-textuais/abstract}
+	\ifcorporativo
+		%% ----- Modo corporativo/empresarial -----
+		\imprimirsumarioexecutivo{elementos-pre-textuais/sumario-executivo}
+	\else
+		%% ----- Modo acadêmico/científico (ABNT) -----
+		\imprimirfichacatalografica
+		\imprimirerrata{elementos-pre-textuais/errata}
+
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%%  Folha de aprovação:                                             %%
+		%%  Caso possua uma folha de aprovação assinada em PDF,             %%
+		%%  descomente a linha \includepdf abaixo e comente                 %%
+		%%  a linha \imprimirfolhadeaprovacao.                              %%
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+		%\includepdf{elementos-pre-textuais/folha-aprovacao.pdf}
+		\imprimirfolhadeaprovacao
+
+		\imprimirdedicatoria{elementos-pre-textuais/dedicatoria}
+		\imprimiragradecimentos{elementos-pre-textuais/agradecimentos}
+		\imprimirepigrafe{elementos-pre-textuais/epigrafe}
+		\imprimirresumo{elementos-pre-textuais/resumo}
+		\imprimirabstract{elementos-pre-textuais/abstract}
+	\fi
+
+	% Listas e sumário (comuns aos dois modos; cada lista sai vazia se o
+	% documento não tiver o elemento correspondente).
 	\imprimirlistadeilustracoes
 	\imprimirlistadetabelas
 	\imprimirlistadequadros
@@ -193,15 +230,29 @@
 	\input{elementos-textuais/consideracoes-finais}
 
 	% Elementos pós-textuais
-	\nocite{NBR14724:2005}
-	\bibliography{elementos-pos-textuais/referencias}
+	% Todos abaixo aparecem no PDF SOMENTE quando há conteúdo correspondente;
+	% caso contrário, são omitidos automaticamente (sem título em página vazia).
+
+	% Referências: impressas se houver \cite/\citeonline no texto. Para forçar
+	% a inclusão de uma obra não citada (ex.: a norma ABNT NBR 14724), adicione
+	% \nocite{NBR14724:2005} antes da linha abaixo.
+	\imprimirreferencias{elementos-pos-textuais/referencias}
+
+	% Glossário: impresso se algum termo do glossário principal for usado no
+	% texto com \gls/\Gls (siglas vão para a Lista de Abreviaturas e Siglas).
 	\imprimirglossario
-	\imprimirapendices
-		% Adicione aqui os apêndices do seu trabalho
-		\input{elementos-pos-textuais/apendices/exemplo-de-apendice}
-	\imprimiranexos
-		% Adicione aqui os anexos do seu trabalho
-		\input{elementos-pos-textuais/anexos/exemplo-de-anexo}
+
+	% Apêndices: passe os \input dentro das chaves. Deixe vazio para omitir.
+	\imprimirapendices{%
+		\input{elementos-pos-textuais/apendices/exemplo-de-apendice}%
+	}
+
+	% Anexos: passe os \input dentro das chaves. Deixe vazio para omitir.
+	\imprimiranexos{%
+		\input{elementos-pos-textuais/anexos/exemplo-de-anexo}%
+	}
+
+	% Índice remissivo: impresso apenas se houver entradas \index{} no texto.
 	\imprimirindice
 
 \end{document}
