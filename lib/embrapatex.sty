@@ -1205,8 +1205,8 @@
 %
 % Flags SEM '@' no nome (catcode-seguro ao gravar/ler no .aux):
 %   \ifembhas<ext> = usada na passada atual ; \ifembhad<ext> = na anterior.
-% Obs.: '@' não é letra nesta região do arquivo (há um \makeatother antes),
-% então protegemos com \makeatletter os trechos que usam \@... internos.
+% Obs.: num .sty '@' já é letra; os \makeatletter abaixo são apenas defensivos
+% (mantêm os trechos que usam \@... internos válidos mesmo fora deste contexto).
 \newif\ifembhaslof \newif\ifembhadlof  % ilustrações (figuras)
 \newif\ifembhaslot \newif\ifembhadlot  % tabelas
 \newif\ifembhasloq \newif\ifembhadloq  % quadros
