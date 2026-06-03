@@ -14,6 +14,12 @@ name: Compilar LaTeX
 # (não bloqueia o build) e (b) executa verificar-ocultamento.sh como rede de
 # REGRESSÃO da exibição automática de elementos opcionais (este BLOQUEIA o build
 # se algum elemento passar a aparecer/sumir indevidamente).
+#
+# CONTEXTO (importante para quem USA o template): os passos só-do-template — a
+# rede de regressão e o showcase de exemplos — rodam APENAS neste repositório,
+# via guarda `if: github.repository == '<repo do template>'`. Em documentos
+# DERIVADOS do template, esses passos são pulados automaticamente; o usuário vê
+# só lint + compilar o seu main.tex + publicar o PDF, sem atrito.
 
 on:
   push:
@@ -65,15 +71,19 @@ jobs:
           path: main.pdf
           if-no-files-found: error
 
-      # Rede de REGRESSÃO (bloqueante): confere, sobre os artefatos recém
-      # compilados, que cada elemento opcional apareceu/sumiu como esperado.
+      # Rede de REGRESSÃO (SÓ-DO-TEMPLATE, bloqueante): confere que cada elemento
+      # opcional apareceu/sumiu como esperado PARA O CONTEÚDO-EXEMPLO PADRÃO. Por
+      # ser calibrada ao conteúdo do template, roda só neste repo — em documentos
+      # derivados (outro github.repository) é pulada, p/ não travar o build real.
       - name: Verificar ocultamento de elementos (regressão)
+        if: github.repository == 'igorrflorentino/embrapa-template-documentos-latex-abnt'
         run: bash verificar-ocultamento.sh --check-only
 
-      # Showcase: gera uma amostra de cada tipo de documento estruturalmente
-      # distinto, reaproveitando o conteúdo do main.tex (os drivers exemplo-*.tex
-      # apenas injetam o tipo). Veja gerar-exemplos.sh para o equivalente local.
+      # Showcase (SÓ-DO-TEMPLATE): gera uma amostra de cada tipo de documento,
+      # reaproveitando o conteúdo do main.tex (os drivers exemplo-*.tex apenas
+      # injetam o tipo). Pulado em documentos derivados. Veja gerar-exemplos.sh.
       - name: Compilar exemplos (academico, publicacao, corporativo e probatorio)
+        if: github.repository == 'igorrflorentino/embrapa-template-documentos-latex-abnt'
         uses: xu-cheng/latex-action@v3
         with:
           root_file: |
@@ -83,6 +93,7 @@ jobs:
             exemplo-probatorio.tex
 
       - name: Publicar exemplos como artefato
+        if: github.repository == 'igorrflorentino/embrapa-template-documentos-latex-abnt'
         uses: actions/upload-artifact@v7
         with:
           name: exemplos-pdf
