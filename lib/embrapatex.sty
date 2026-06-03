@@ -275,26 +275,22 @@
 %                  elementos ABNT). Ativa o condicional \ifcorporativo, usado
 %                  no main.tex para trocar o conjunto de pré-textuais.
 %
-% \subtipo (apenas no modo publicacao) — define o rótulo da capa e a frase do
-% preâmbulo da folha de rosto, conforme a série de publicação da Embrapa:
+% \subtipo (apenas no modo publicacao) — preenche duas variáveis de DADOS a
+% partir da série de publicação da Embrapa: o subtítulo da capa
+% (\subtitulodacapa) e a natureza da publicação no preâmbulo da folha de rosto
+% (\naturezadapublicacao). Não há lógica/comportamento por série — só valores.
 %   relatorio    - Relatório Técnico / Relatório Final (PADRÃO)
 %   boletim      - Boletim de Pesquisa e Desenvolvimento
 %   comunicado   - Comunicado Técnico
 %   documento    - Documento (genérico)
+% Para uma série não prevista (ex.: "Circular Técnica"), defina
+% \subtitulodacapa{...} e \naturezadapublicacao{...} diretamente no main.tex —
+% dispensa o \subtipo.
 
-% Definicao das variaveis
+% Definicao das variaveis — apenas o TIPO precisa de booleano; o subtipo passou
+% a ser orientado a dados (ver \subtipo, que só preenche variáveis de texto).
 \provideboolean{embrapatex@ehcorporativo}
-\provideboolean{embrapatex@subrelatorio}
-\provideboolean{embrapatex@subboletim}
-\provideboolean{embrapatex@subcomunicado}
-\provideboolean{embrapatex@subdocumento}
-
-% Valores Iniciais: publicação + subtipo relatório
 \setboolean{embrapatex@ehcorporativo}{false}
-\setboolean{embrapatex@subrelatorio}{true}
-\setboolean{embrapatex@subboletim}{false}
-\setboolean{embrapatex@subcomunicado}{false}
-\setboolean{embrapatex@subdocumento}{false}
 
 % Condicional TeX exposto para uso no main.tex (\ifcorporativo ... \else ... \fi)
 \newif\ifcorporativo
@@ -317,33 +313,36 @@
 	}%
 }
 
-% \subtipo{relatorio|boletim|comunicado|documento} — relevante no modo publicacao
-\newcommand{\subtipo}[1]{
-	\setboolean{embrapatex@subrelatorio}{false}
-	\setboolean{embrapatex@subboletim}{false}
-	\setboolean{embrapatex@subcomunicado}{false}
-	\setboolean{embrapatex@subdocumento}{false}
-
+% \subtipo{relatorio|boletim|comunicado|documento} — tabela de dados: só define
+% \subtitulodacapa (vazio = capa sem subtítulo) e \naturezadapublicacao (frase
+% do preâmbulo). Adicionar uma série = mais um ramo de 2 linhas aqui.
+\newcommand{\subtipo}[1]{%
 	\ifthenelse{\equal{#1}{relatorio}}{%
-		\setboolean{embrapatex@subrelatorio}{true}
-	}{
+		\subtitulodacapa{}%
+		\naturezadapublicacao{Relatório Técnico apresentado à \imprimirunidade\ (\imprimirunidadesigla).}%
+	}{%
 		\ifthenelse{\equal{#1}{boletim}}{%
-			\setboolean{embrapatex@subboletim}{true}
-		}{
+			\subtitulodacapa{Boletim de Pesquisa e Desenvolvimento}%
+			\naturezadapublicacao{Boletim de Pesquisa e Desenvolvimento da \imprimirunidade\ (\imprimirunidadesigla).}%
+		}{%
 			\ifthenelse{\equal{#1}{comunicado}}{%
-				\setboolean{embrapatex@subcomunicado}{true}
-			}{
+				\subtitulodacapa{Comunicado Técnico}%
+				\naturezadapublicacao{Comunicado Técnico da \imprimirunidade\ (\imprimirunidadesigla).}%
+			}{%
 				\ifthenelse{\equal{#1}{documento}}{%
-					\setboolean{embrapatex@subdocumento}{true}
-				}{
+					\subtitulodacapa{}%
+					\naturezadapublicacao{Documento da \imprimirunidade\ (\imprimirunidadesigla).}%
+				}{%
 					\PackageWarning{embrapatex}{Subtipo '#1' desconhecido; use
-						relatorio, boletim, comunicado ou documento. Assumindo
-						'relatorio'}%
-					\setboolean{embrapatex@subrelatorio}{true}
-				}
-			}
-		}
-	}
+						relatorio, boletim, comunicado ou documento -- ou defina
+						\string\subtitulodacapa/\string\naturezadapublicacao
+						manualmente. Assumindo 'relatorio'}%
+					\subtitulodacapa{}%
+					\naturezadapublicacao{Relatório Técnico apresentado à \imprimirunidade\ (\imprimirunidadesigla).}%
+				}%
+			}%
+		}%
+	}%
 }
 
 \AtBeginDocument{ %
@@ -494,6 +493,10 @@
 \providecommand{\programapesquisa}{} \renewcommand{\programapesquisa}{\def \@programapesquisa}
 \providecommand{\linhapesquisa}{} \renewcommand{\linhapesquisa}{\def \@linhapesquisa}
 \providecommand{\dataaprovacao}{} \renewcommand{\dataaprovacao}{\def \@dataaprovacao}
+% Subtítulo da capa e natureza da publicação (preenchidos por \subtipo ou
+% sobrescritos manualmente para uma série não prevista)
+\providecommand{\subtitulodacapa}{} \renewcommand{\subtitulodacapa}{\def \@subtitulodacapa}
+\providecommand{\naturezadapublicacao}{} \renewcommand{\naturezadapublicacao}{\def \@naturezadapublicacao}
 \providecommand{\epigrafee}{} \renewcommand{\epigrafee}{\def \@epigrafee}
 \providecommand{\autordaepigrafe}{} \renewcommand{\autordaepigrafe}{\def \@autordaepigrafe}
 \providecommand{\numerodocumento}{} \renewcommand{\numerodocumento}{\def \@numerodocumento}
@@ -543,6 +546,8 @@
 \providecommand{\imprimirprogramapesquisa}{} \renewcommand{\imprimirprogramapesquisa}{\@programapesquisa}
 \providecommand{\imprimirlinhapesquisa}{} \renewcommand{\imprimirlinhapesquisa}{\@linhapesquisa}
 \providecommand{\imprimirdataaprovacao}{} \renewcommand{\imprimirdataaprovacao}{\@dataaprovacao}
+\providecommand{\imprimirsubtitulodacapa}{} \renewcommand{\imprimirsubtitulodacapa}{\@subtitulodacapa}
+\providecommand{\imprimirnaturezadapublicacao}{} \renewcommand{\imprimirnaturezadapublicacao}{\@naturezadapublicacao}
 \providecommand{\imprimirepigrafee}{} \renewcommand{\imprimirepigrafee}{\@epigrafee}
 \providecommand{\imprimirautordaepigrafe}{} \renewcommand{\imprimirautordaepigrafe}{\@autordaepigrafe}
 \providecommand{\imprimirnumerodocumento}{} \renewcommand{\imprimirnumerodocumento}{\@numerodocumento}
@@ -628,6 +633,9 @@
 \membrodabancaseiscentro{}
 \membrodabancaseisies{}
 
+% Subtipo padrão: relatório (preenche \subtitulodacapa e \naturezadapublicacao)
+\subtipo{relatorio}
+
 % Ficha catalográfica
 \autorinvertido{}
 \edicao{}
@@ -648,22 +656,9 @@
 %%       Definições de Variáveis       %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\preambulodocumento}{
-	Documento da \imprimirunidade\ (\imprimirunidadesigla).
-}
-
-\newcommand{\preambulorelatorio}{
-	Relatório Técnico apresentado à \imprimirunidade\ (\imprimirunidadesigla).
-}
-
-\newcommand{\preambuloboletim}{
-	Boletim de Pesquisa e Desenvolvimento da \imprimirunidade\ (\imprimirunidadesigla).
-}
-
-\newcommand{\preambulocomunicado}{
-	Comunicado Técnico da \imprimirunidade\ (\imprimirunidadesigla).
-}
-
+% Preâmbulo (natureza do trabalho na folha de rosto). No modo publicacao, o
+% texto vem da variável \naturezadapublicacao (definida por \subtipo ou
+% sobrescrita manualmente); qualificação e corporativo têm frases próprias.
 \newcommand{\preambulocorporativo}{
 	Relatório elaborado pela \imprimirunidade\ (\imprimirunidadesigla).
 }
@@ -674,20 +669,8 @@
 	}{ %
 		\ifthenelse{\boolean{embrapatex@ehcorporativo}}{ %
 			\preambulocorporativo %
-		}{
-			\ifthenelse{\boolean{embrapatex@subrelatorio}}{ %
-				\preambulorelatorio %
-			}{
-				\ifthenelse{\boolean{embrapatex@subboletim}}{ %
-					\preambuloboletim %
-				}{
-					\ifthenelse{\boolean{embrapatex@subcomunicado}}{ %
-						\preambulocomunicado %
-					}{
-						\preambulodocumento %
-					}
-				}
-			}
+		}{ %
+			\imprimirnaturezadapublicacao %
 		}
 	} %
 }
@@ -696,36 +679,12 @@
 %%                Capa                 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\imprimircapadocumento}{%
+% Capa ÚNICA para todas as séries e para o modo corporativo. A única coisa que
+% muda entre elas é o subtítulo — que é DADO (\subtitulodacapa), impresso só
+% quando não vazio (relatório/documento ficam sem subtítulo).
+\newcommand{\imprimircapapublicacao}{%
 	\begin{capa}%
-		% Todos os elementos da capa devem esta centralizado
-		\center
-		% Todos os elementos da capa devem esta em negrito
-		\bfseries
-
-        \includegraphics[scale=0.15]{lib/logo-embrapa-color-cropped.png} \\
-        \vspace{0.3cm}
-		\MakeUppercase{\imprimirunidade} \\
-		\abntex@ifnotempty{\imprimircentro}{
-			\MakeUppercase{\imprimircentro} \\
-		}
-
-		\vspace{2cm}
-
-		\MakeUppercase{\imprimirautor}
-
-		\vspace{5cm}
-
-		\MakeUppercase{\imprimirtitulo}
-
-		\vfill
-		\normalsize\MakeUppercase\imprimirlocal\par
-		\normalsize\imprimirdata
-	\end{capa}
-}
-
-\newcommand{\imprimircaparelatorio}{%
-	\begin{capa}%
+		% Todos os elementos da capa centralizados (\center) e em negrito
 		\center
 		\bfseries
 
@@ -735,87 +694,9 @@
 		\abntex@ifnotempty{\imprimircentro}{
 			\MakeUppercase{\imprimircentro} \\
 		}
-
-		\vspace{2cm}
-
-		\MakeUppercase{\imprimirautor}
-
-		\vspace{5cm}
-
-		\MakeUppercase{\imprimirtitulo}
-
-		\vfill
-		\normalsize\MakeUppercase\imprimirlocal\par
-		\normalsize\imprimirdata
-	\end{capa}
-}
-
-\newcommand{\imprimircapaboletim}{%
-	\begin{capa}%
-		\center
-		\bfseries
-
-        \includegraphics[scale=0.15]{lib/logo-embrapa-color-cropped.png} \\
-        \vspace{0.3cm}
-		\MakeUppercase{\imprimirunidade} \\
-		\abntex@ifnotempty{\imprimircentro}{
-			\MakeUppercase{\imprimircentro} \\
+		\abntex@ifnotempty{\imprimirsubtitulodacapa}{
+			\MakeUppercase{\imprimirsubtitulodacapa} \\
 		}
-		\MakeUppercase{Boletim de Pesquisa e Desenvolvimento} \\
-
-		\vspace{2cm}
-
-		\MakeUppercase{\imprimirautor}
-
-		\vspace{5cm}
-
-		\MakeUppercase{\imprimirtitulo}
-
-		\vfill
-		\normalsize\MakeUppercase\imprimirlocal\par
-		\normalsize\imprimirdata
-	\end{capa}
-}
-
-\newcommand{\imprimircapacomunicado}{%
-	\begin{capa}%
-		\center
-		\bfseries
-
-        \includegraphics[scale=0.15]{lib/logo-embrapa-color-cropped.png} \\
-        \vspace{0.3cm}
-		\MakeUppercase{\imprimirunidade} \\
-		\abntex@ifnotempty{\imprimircentro}{
-			\MakeUppercase{\imprimircentro} \\
-		}
-		\MakeUppercase{Comunicado Técnico} \\
-
-		\vspace{2cm}
-
-		\MakeUppercase{\imprimirautor}
-
-		\vspace{5cm}
-
-		\MakeUppercase{\imprimirtitulo}
-
-		\vfill
-		\normalsize\MakeUppercase\imprimirlocal\par
-		\normalsize\imprimirdata
-	\end{capa}
-}
-
-\newcommand{\imprimircapacorporativo}{%
-	\begin{capa}%
-		\center
-		\bfseries
-
-        \includegraphics[scale=0.15]{lib/logo-embrapa-color-cropped.png} \\
-        \vspace{0.3cm}
-		\MakeUppercase{\imprimirunidade} \\
-		\abntex@ifnotempty{\imprimircentro}{
-			\MakeUppercase{\imprimircentro} \\
-		}
-		\MakeUppercase{Relatório} \\
 
 		\vspace{2cm}
 
@@ -833,24 +714,11 @@
 
 \renewcommand{\imprimircapa}{%
 	% Toda capa deve ter pagina 0
-	\setcounter{page}{0}
-	\ifthenelse{\boolean{embrapatex@ehcorporativo}}{ %
-		\imprimircapacorporativo %
-	}{
-		\ifthenelse{\boolean{embrapatex@subrelatorio}}{ %
-				\imprimircaparelatorio %
-		}{
-			\ifthenelse{\boolean{embrapatex@subboletim}}{ %
-				\imprimircapaboletim %
-			}{
-				\ifthenelse{\boolean{embrapatex@subcomunicado}}{ %
-					\imprimircapacomunicado %
-				}{
-					\imprimircapadocumento %
-				}
-			}
-		}
-	}
+	\setcounter{page}{0}%
+	% No modo corporativo, o subtítulo da capa é fixo ("Relatório"); nas demais
+	% séries, vale o \subtitulodacapa definido por \subtipo.
+	\ifthenelse{\boolean{embrapatex@ehcorporativo}}{\subtitulodacapa{Relatório}}{}%
+	\imprimircapapublicacao
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -13,7 +13,12 @@ Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
   - `documento` — Documento genérico
 - **`corporativo`** — Relatórios empresariais/não acadêmicos (ex.: análise exploratória de dados de uma commodity). Usa um **Sumário executivo** no lugar de resumo/abstract e dispensa banca, folha de aprovação e ficha catalográfica — veja [Modo corporativo](#modo-corporativo).
 
-> O `\subtipo` afeta apenas o rótulo da capa e a frase do preâmbulo; a estrutura ABNT é a mesma para todas as séries.
+> O `\subtipo` afeta apenas o rótulo da capa e a frase do preâmbulo; a estrutura ABNT é a mesma para todas as séries. Por baixo, ele só preenche dois campos — para uma **série não prevista** (ex.: Circular Técnica), defina-os direto no `main.tex`, sem `\subtipo`:
+>
+> ```tex
+> \subtitulodacapa{Circular Técnica}
+> \naturezadapublicacao{Circular Técnica da \imprimirunidade\ (\imprimirunidadesigla).}
+> ```
 
 ### Estrutura do Projeto
 
