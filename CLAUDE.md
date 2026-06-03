@@ -40,7 +40,7 @@ O `.latexmkrc` registra as dependências personalizadas `.glo → .gls` e `.acn 
 
 As três receitas (recipes) correspondentes do LaTeX Workshop (`latexmk 🔃`, `pdflatex ➞ bibtex ➞ makeglossaries ➞ pdflatex × 2`, `pdflatex (rápido)`) já estão predefinidas no `.vscode/settings.json`.
 
-**Showcase de tipos** — `./gerar-exemplos.sh` gera um PDF de demonstração por tipo: `exemplo-academico.pdf` (dissertação), `exemplo-publicacao.pdf` (boletim) e `exemplo-corporativo.pdf` (análise). Os drivers `exemplo-*.tex` (na raiz) apenas injetam valores via `\def` (`\TipoDoc`, `\Nivel`/`\Serie`/`\Categoria`, e campos como `\Instituicao`) e dão `\input{main.tex}` — **sem duplicar conteúdo** (o `main.tex` usa `\providecommand` para todos esses). Compile-os a partir da raiz do repositório. Os PDFs gerados são ignorados pelo git (`/exemplo-*.pdf`); os drivers `.tex` são versionados.
+**Showcase de tipos** — `./gerar-exemplos.sh` gera um PDF de demonstração por tipo: `exemplo-academico.pdf` (tese), `exemplo-publicacao.pdf` (boletim) e `exemplo-corporativo.pdf` (análise). Os drivers `exemplo-*.tex` (na raiz) apenas injetam valores via `\def` (`\TipoDoc`, `\Nivel`/`\Serie`/`\Categoria`, e campos como `\Instituicao`) e dão `\input{main.tex}` — **sem duplicar conteúdo** (o `main.tex` usa `\providecommand` para todos esses). Compile-os a partir da raiz do repositório. Os PDFs gerados são ignorados pelo git (`/exemplo-*.pdf`); os drivers `.tex` são versionados.
 
 **Atalhos (`Makefile`)** — `make` (= `make pdf`) compila o `main.tex`; `make exemplos` roda o showcase; `make verificar` roda a rede de regressão; `make lint` roda o chktex; `make limpar` remove artefatos; `make ajuda` lista os alvos.
 

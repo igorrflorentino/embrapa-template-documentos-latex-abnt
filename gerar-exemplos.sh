@@ -9,7 +9,7 @@
 #     ./gerar-exemplos.sh
 #
 # Saída (na raiz do repositório):
-#     exemplo-academico.pdf    — modo academico (dissertação, ABNT completo)
+#     exemplo-academico.pdf    — modo academico (tese, ABNT completo)
 #     exemplo-publicacao.pdf   — modo publicacao (série Embrapa: boletim)
 #     exemplo-corporativo.pdf  — modo corporativo (análise empresarial)
 #
