@@ -265,84 +265,120 @@
 	}
 }
 
-% Tipo de documento — a escolha estrutural fundamental:
-%   publicacao   - Publicação técnico-científica em formato ABNT completo
-%                  (banca, ficha catalográfica, resumo/abstract etc.). É o
-%                  PADRÃO. A variação específica é escolhida por \subtipo.
-%   corporativo  - Relatório corporativo/empresarial (modo NÃO acadêmico:
-%                  sumário executivo no lugar de resumo/abstract; dispensa
-%                  banca, folha de aprovação, ficha catalográfica e demais
-%                  elementos ABNT). Ativa o condicional \ifcorporativo, usado
-%                  no main.tex para trocar o conjunto de pré-textuais.
+% Tipo de documento — a escolha estrutural fundamental (três tipos):
+%   academico    - Trabalhos de graduação/pós (TCC, monografia, dissertação,
+%                  tese, relatório acadêmico/probatório). Banca, orientador,
+%                  campos de pesquisa e instituição de ensino. É o PADRÃO.
+%                  Subtipo via \nivel. Ativa \ifacademico.
+%   publicacao   - Publicações técnico-científicas da Embrapa (séries).
+%                  Subtipo via \serie; número do documento na capa.
+%                  Ativa \ifpublicacao.
+%   corporativo  - Relatórios e análises empresariais (modo NÃO acadêmico:
+%                  sumário executivo; sem banca/ficha). Subtipo via \categoria.
+%                  Ativa \ifcorporativo.
 %
-% \subtipo (apenas no modo publicacao) — preenche duas variáveis de DADOS a
-% partir da série de publicação da Embrapa: o subtítulo da capa
-% (\subtitulodacapa) e a natureza da publicação no preâmbulo da folha de rosto
-% (\naturezadapublicacao). Não há lógica/comportamento por série — só valores.
-%   relatorio    - Relatório Técnico / Relatório Final (PADRÃO)
-%   boletim      - Boletim de Pesquisa e Desenvolvimento
-%   comunicado   - Comunicado Técnico
-%   documento    - Documento (genérico)
-% Para uma série não prevista (ex.: "Circular Técnica"), defina
-% \subtitulodacapa{...} e \naturezadapublicacao{...} diretamente no main.tex —
-% dispensa o \subtipo.
+% Cada tipo tem seu PRÓPRIO seletor de subtipo (separação de responsabilidades):
+%   \nivel{tcc|monografia|dissertacao|tese|relatorio}        (academico)
+%   \serie{relatorio|boletim|comunicado|documento}           (publicacao)
+%   \categoria{relatorio|analise}                            (corporativo)
+% Os três só preenchem as variáveis de DADOS \subtitulodacapa (subtítulo da
+% capa; vazio = sem subtítulo) e \naturezadapublicacao (frase do preâmbulo da
+% folha de rosto). Para um caso não previsto, defina essas duas variáveis
+% diretamente no main.tex.
 
-% Definicao das variaveis — apenas o TIPO precisa de booleano; o subtipo passou
-% a ser orientado a dados (ver \subtipo, que só preenche variáveis de texto).
+% Definicao dos booleanos de tipo. \ifcorporativo é exposto ao main.tex (ramo
+% pré-textual); \ifacademico/\ifpublicacao distinguem capa/folha/banca.
+% O booleano embrapatex@ehcorporativo é consumido por \preambulo e \imprimircapa.
 \provideboolean{embrapatex@ehcorporativo}
 \setboolean{embrapatex@ehcorporativo}{false}
+\newif\ifacademico  \academicotrue   % academico é o PADRÃO
+\newif\ifpublicacao \publicacaofalse
+\newif\ifcorporativo \corporativofalse
 
-% Condicional TeX exposto para uso no main.tex (\ifcorporativo ... \else ... \fi)
-\newif\ifcorporativo
-\corporativofalse
-
-% \tipodocumento{publicacao|corporativo}
+% \tipodocumento{academico|publicacao|corporativo} — só estes 3 valores valem.
+% Qualquer outro é REJEITADO com erro.
 \newcommand{\tipodocumento}[1]{
+	\academicofalse \publicacaofalse \corporativofalse
 	\setboolean{embrapatex@ehcorporativo}{false}
-	\corporativofalse
-	\ifthenelse{\equal{#1}{corporativo}}{%
-		\setboolean{embrapatex@ehcorporativo}{true}
-		\corporativotrue
-	}{%
-		\ifthenelse{\equal{#1}{publicacao}}{}{%
-			\PackageWarning{embrapatex}{Tipo de documento '#1' desconhecido;
-				use 'publicacao' ou 'corporativo' (a serie -- boletim, comunicado
-				etc. -- agora e definida por \string\subtipo). Assumindo
-				'publicacao'}%
+	\ifthenelse{\equal{#1}{academico}}{\academicotrue}{%
+		\ifthenelse{\equal{#1}{publicacao}}{\publicacaotrue}{%
+			\ifthenelse{\equal{#1}{corporativo}}{%
+				\corporativotrue
+				\setboolean{embrapatex@ehcorporativo}{true}%
+			}{%
+				\PackageError{embrapatex}{Tipo de documento '#1' invalido}{%
+					Os unicos tipos validos sao 'academico', 'publicacao' e
+					'corporativo'. O subtipo e definido por \string\nivel
+					(academico), \string\serie (publicacao) ou \string\categoria
+					(corporativo).}%
+			}%
 		}%
 	}%
 }
 
-% \subtipo{relatorio|boletim|comunicado|documento} — tabela de dados: só define
-% \subtitulodacapa (vazio = capa sem subtítulo) e \naturezadapublicacao (frase
-% do preâmbulo). Adicionar uma série = mais um ramo de 2 linhas aqui.
-\newcommand{\subtipo}[1]{%
+% Aviso leve quando um seletor é usado fora do seu tipo (reforça a separação;
+% no uso normal o main.tex chama cada seletor dentro do \if<tipo> correspondente).
+\newcommand{\embrapatex@avisotipo}[2]{%
+	\PackageWarning{embrapatex}{\string#1\space so faz sentido no tipo '#2';
+		verifique o \string\tipodocumento}%
+}
+
+% \nivel{...} — subtipo do tipo ACADEMICO (nível do trabalho).
+\newcommand{\nivel}[1]{%
+	\ifacademico\else\embrapatex@avisotipo{\nivel}{academico}\fi
+	\subtitulodacapa{}%
+	\ifthenelse{\equal{#1}{tese}}{%
+		\naturezadapublicacao{Tese apresentada ao Programa de Pós-Graduação em \imprimirprogramapesquisa\ da \imprimirinstituicao, como requisito parcial para a obtenção do título de Doutor.}%
+	}{\ifthenelse{\equal{#1}{dissertacao}}{%
+		\naturezadapublicacao{Dissertação apresentada ao Programa de Pós-Graduação em \imprimirprogramapesquisa\ da \imprimirinstituicao, como requisito parcial para a obtenção do título de Mestre.}%
+	}{\ifthenelse{\equal{#1}{monografia}}{%
+		\naturezadapublicacao{Monografia apresentada ao curso de \imprimirprogramapesquisa\ da \imprimirinstituicao, como requisito parcial para a obtenção do título de Especialista.}%
+	}{\ifthenelse{\equal{#1}{tcc}}{%
+		\naturezadapublicacao{Trabalho de Conclusão de Curso apresentado ao curso de \imprimirprogramapesquisa\ da \imprimirinstituicao, como requisito parcial para a obtenção do grau de Bacharel.}%
+	}{\ifthenelse{\equal{#1}{relatorio}}{%
+		\naturezadapublicacao{Relatório apresentado à \imprimirinstituicao, submetido à avaliação da banca examinadora.}%
+	}{%
+		\PackageWarning{embrapatex}{Nivel '#1' desconhecido; use tcc, monografia, dissertacao, tese ou relatorio. Assumindo 'relatorio'}%
+		\naturezadapublicacao{Relatório apresentado à \imprimirinstituicao, submetido à avaliação da banca examinadora.}%
+	}}}}}%
+}
+
+% \serie{...} — subtipo do tipo PUBLICACAO (série de publicação da Embrapa).
+\newcommand{\serie}[1]{%
+	\ifpublicacao\else\embrapatex@avisotipo{\serie}{publicacao}\fi
 	\ifthenelse{\equal{#1}{relatorio}}{%
 		\subtitulodacapa{}%
 		\naturezadapublicacao{Relatório Técnico apresentado à \imprimirunidade\ (\imprimirunidadesigla).}%
+	}{\ifthenelse{\equal{#1}{boletim}}{%
+		\subtitulodacapa{Boletim de Pesquisa e Desenvolvimento}%
+		\naturezadapublicacao{Boletim de Pesquisa e Desenvolvimento da \imprimirunidade\ (\imprimirunidadesigla).}%
+	}{\ifthenelse{\equal{#1}{comunicado}}{%
+		\subtitulodacapa{Comunicado Técnico}%
+		\naturezadapublicacao{Comunicado Técnico da \imprimirunidade\ (\imprimirunidadesigla).}%
+	}{\ifthenelse{\equal{#1}{documento}}{%
+		\subtitulodacapa{}%
+		\naturezadapublicacao{Documento da \imprimirunidade\ (\imprimirunidadesigla).}%
 	}{%
-		\ifthenelse{\equal{#1}{boletim}}{%
-			\subtitulodacapa{Boletim de Pesquisa e Desenvolvimento}%
-			\naturezadapublicacao{Boletim de Pesquisa e Desenvolvimento da \imprimirunidade\ (\imprimirunidadesigla).}%
-		}{%
-			\ifthenelse{\equal{#1}{comunicado}}{%
-				\subtitulodacapa{Comunicado Técnico}%
-				\naturezadapublicacao{Comunicado Técnico da \imprimirunidade\ (\imprimirunidadesigla).}%
-			}{%
-				\ifthenelse{\equal{#1}{documento}}{%
-					\subtitulodacapa{}%
-					\naturezadapublicacao{Documento da \imprimirunidade\ (\imprimirunidadesigla).}%
-				}{%
-					\PackageWarning{embrapatex}{Subtipo '#1' desconhecido; use
-						relatorio, boletim, comunicado ou documento -- ou defina
-						\string\subtitulodacapa/\string\naturezadapublicacao
-						manualmente. Assumindo 'relatorio'}%
-					\subtitulodacapa{}%
-					\naturezadapublicacao{Relatório Técnico apresentado à \imprimirunidade\ (\imprimirunidadesigla).}%
-				}%
-			}%
-		}%
-	}%
+		\PackageWarning{embrapatex}{Serie '#1' desconhecida; use relatorio, boletim, comunicado ou documento. Assumindo 'relatorio'}%
+		\subtitulodacapa{}%
+		\naturezadapublicacao{Relatório Técnico apresentado à \imprimirunidade\ (\imprimirunidadesigla).}%
+	}}}}%
+}
+
+% \categoria{...} — subtipo do tipo CORPORATIVO.
+\newcommand{\categoria}[1]{%
+	\ifcorporativo\else\embrapatex@avisotipo{\categoria}{corporativo}\fi
+	\ifthenelse{\equal{#1}{relatorio}}{%
+		\subtitulodacapa{Relatório}%
+		\naturezadapublicacao{Relatório elaborado pela \imprimirunidade\ (\imprimirunidadesigla).}%
+	}{\ifthenelse{\equal{#1}{analise}}{%
+		\subtitulodacapa{Análise}%
+		\naturezadapublicacao{Análise elaborada pela \imprimirunidade\ (\imprimirunidadesigla).}%
+	}{%
+		\PackageWarning{embrapatex}{Categoria '#1' desconhecida; use relatorio ou analise. Assumindo 'relatorio'}%
+		\subtitulodacapa{Relatório}%
+		\naturezadapublicacao{Relatório elaborado pela \imprimirunidade\ (\imprimirunidadesigla).}%
+	}}%
 }
 
 \AtBeginDocument{ %
@@ -489,15 +525,18 @@
 \providecommand{\unidade}{} \renewcommand{\unidade}{\def \@unidade}
 \providecommand{\unidadesigla}{} \renewcommand{\unidadesigla}{\def \@unidadesigla}
 \providecommand{\centro}{} \renewcommand{\centro}{\def \@centro}
+% Instituição de ensino (universidade/IES) — usada no modo academico
+\providecommand{\instituicao}{} \renewcommand{\instituicao}{\def \@instituicao}
+% Campos de pesquisa — no modo academico: área de concentração, programa/curso
+% e linha de pesquisa
 \providecommand{\areadepesquisa}{} \renewcommand{\areadepesquisa}{\def \@areadepesquisa}
 \providecommand{\programapesquisa}{} \renewcommand{\programapesquisa}{\def \@programapesquisa}
 \providecommand{\linhapesquisa}{} \renewcommand{\linhapesquisa}{\def \@linhapesquisa}
 \providecommand{\dataaprovacao}{} \renewcommand{\dataaprovacao}{\def \@dataaprovacao}
-% Subtítulo da capa e natureza da publicação (preenchidos por \subtipo ou
-% sobrescritos manualmente para uma série não prevista)
+% Subtítulo da capa e natureza do trabalho (preenchidos por \nivel/\serie/
+% \categoria, ou sobrescritos manualmente para um caso não previsto)
 \providecommand{\subtitulodacapa}{} \renewcommand{\subtitulodacapa}{\def \@subtitulodacapa}
 \providecommand{\naturezadapublicacao}{} \renewcommand{\naturezadapublicacao}{\def \@naturezadapublicacao}
-\providecommand{\epigrafee}{} \renewcommand{\epigrafee}{\def \@epigrafee}
 \providecommand{\autordaepigrafe}{} \renewcommand{\autordaepigrafe}{\def \@autordaepigrafe}
 \providecommand{\numerodocumento}{} \renewcommand{\numerodocumento}{\def \@numerodocumento}
 \providecommand{\membrodabancadois}{} \renewcommand{\membrodabancadois}{\def \@membrodabancadois}
@@ -542,13 +581,13 @@
 \providecommand{\imprimirunidade}{} \renewcommand{\imprimirunidade}{\@unidade}
 \providecommand{\imprimirunidadesigla}{} \renewcommand{\imprimirunidadesigla}{\@unidadesigla}
 \providecommand{\imprimircentro}{} \renewcommand{\imprimircentro}{\@centro}
+\providecommand{\imprimirinstituicao}{} \renewcommand{\imprimirinstituicao}{\@instituicao}
 \providecommand{\imprimirareadepesquisa}{} \renewcommand{\imprimirareadepesquisa}{\@areadepesquisa}
 \providecommand{\imprimirprogramapesquisa}{} \renewcommand{\imprimirprogramapesquisa}{\@programapesquisa}
 \providecommand{\imprimirlinhapesquisa}{} \renewcommand{\imprimirlinhapesquisa}{\@linhapesquisa}
 \providecommand{\imprimirdataaprovacao}{} \renewcommand{\imprimirdataaprovacao}{\@dataaprovacao}
 \providecommand{\imprimirsubtitulodacapa}{} \renewcommand{\imprimirsubtitulodacapa}{\@subtitulodacapa}
 \providecommand{\imprimirnaturezadapublicacao}{} \renewcommand{\imprimirnaturezadapublicacao}{\@naturezadapublicacao}
-\providecommand{\imprimirepigrafee}{} \renewcommand{\imprimirepigrafee}{\@epigrafee}
 \providecommand{\imprimirautordaepigrafe}{} \renewcommand{\imprimirautordaepigrafe}{\@autordaepigrafe}
 \providecommand{\imprimirnumerodocumento}{} \renewcommand{\imprimirnumerodocumento}{\@numerodocumento}
 \providecommand{\imprimirmembrodabancadois}{} \renewcommand{\imprimirmembrodabancadois}{\@membrodabancadois}
@@ -587,10 +626,6 @@
 \providecommand{\imprimirbibliotecario}{} \renewcommand{\imprimirbibliotecario}{\@bibliotecario}
 \providecommand{\imprimircrb}{} \renewcommand{\imprimircrb}{\@crb}
 
-% Compatibilidade
-\providecommand{\imprimiries}{} \renewcommand{\imprimiries}{\@unidade}
-\providecommand{\imprimiriessigla}{} \renewcommand{\imprimiriessigla}{\@unidadesigla}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%           Valor de Padrão           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -598,11 +633,11 @@
 \unidade{Embrapa}
 \unidadesigla{EMBRAPA}
 \centro{}
+\instituicao{}
 \areadepesquisa{}
 \programapesquisa{}
 \linhapesquisa{}
 \numerodocumento{}
-\epigrafee{}
 \autordaepigrafe{}
 \autor{}
 \titulo{}
@@ -633,8 +668,8 @@
 \membrodabancaseiscentro{}
 \membrodabancaseisies{}
 
-% Subtipo padrão: relatório (preenche \subtitulodacapa e \naturezadapublicacao)
-\subtipo{relatorio}
+% Subtipo padrão (tipo padrão é academico): nível relatório
+\nivel{relatorio}
 
 % Ficha catalográfica
 \autorinvertido{}
@@ -656,22 +691,15 @@
 %%       Definições de Variáveis       %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Preâmbulo (natureza do trabalho na folha de rosto). No modo publicacao, o
-% texto vem da variável \naturezadapublicacao (definida por \subtipo ou
-% sobrescrita manualmente); qualificação e corporativo têm frases próprias.
-\newcommand{\preambulocorporativo}{
-	Relatório elaborado pela \imprimirunidade\ (\imprimirunidadesigla).
-}
-
+% Preâmbulo (natureza do trabalho na folha de rosto). A natureza vem da variável
+% \naturezadapublicacao, preenchida pelo seletor de subtipo do tipo escolhido
+% (\nivel/\serie/\categoria) ou sobrescrita manualmente. A qualificação
+% (acadêmica) tem frase própria.
 \preambulo{
 	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{ %
-		Proposta de qualificação apresentada à \imprimirunidade\ (\imprimirunidadesigla).
+		Proposta de qualificação apresentada à \imprimirinstituicao. %
 	}{ %
-		\ifthenelse{\boolean{embrapatex@ehcorporativo}}{ %
-			\preambulocorporativo %
-		}{ %
-			\imprimirnaturezadapublicacao %
-		}
+		\imprimirnaturezadapublicacao %
 	} %
 }
 
@@ -679,9 +707,10 @@
 %%                Capa                 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Capa ÚNICA para todas as séries e para o modo corporativo. A única coisa que
-% muda entre elas é o subtítulo — que é DADO (\subtitulodacapa), impresso só
-% quando não vazio (relatório/documento ficam sem subtítulo).
+% Capa ÚNICA para os três tipos, sensível por dados:
+%  - topo: instituição de ensino (academico) ou unidade Embrapa (publicacao/corporativo);
+%  - subtítulo: \subtitulodacapa (vazio = sem subtítulo), definido pelo seletor;
+%  - número do documento: só em publicacao, se preenchido.
 \newcommand{\imprimircapapublicacao}{%
 	\begin{capa}%
 		% Todos os elementos da capa centralizados (\center) e em negrito
@@ -690,13 +719,26 @@
 
         \includegraphics[scale=0.15]{lib/logo-embrapa-color-cropped.png} \\
         \vspace{0.3cm}
-		\MakeUppercase{\imprimirunidade} \\
+		% Topo: instituição de ensino (academico) ou unidade Embrapa (demais)
+		\ifacademico
+			\ifnotempty{\imprimirinstituicao}%
+				{\MakeUppercase{\imprimirinstituicao}}%
+				{\MakeUppercase{\imprimirunidade}} \\
+		\else
+			\MakeUppercase{\imprimirunidade} \\
+		\fi
 		\abntex@ifnotempty{\imprimircentro}{
 			\MakeUppercase{\imprimircentro} \\
 		}
 		\abntex@ifnotempty{\imprimirsubtitulodacapa}{
 			\MakeUppercase{\imprimirsubtitulodacapa} \\
 		}
+		% Número do documento — séries Embrapa (publicacao)
+		\ifpublicacao
+			\abntex@ifnotempty{\imprimirnumerodocumento}{
+				\MakeUppercase{\imprimirnumerodocumento} \\
+			}
+		\fi
 
 		\vspace{2cm}
 
@@ -713,11 +755,9 @@
 }
 
 \renewcommand{\imprimircapa}{%
-	% Toda capa deve ter pagina 0
+	% Toda capa deve ter pagina 0. O subtítulo já foi definido pelo seletor de
+	% subtipo (\nivel/\serie/\categoria); a capa abaixo o imprime se não vazio.
 	\setcounter{page}{0}%
-	% No modo corporativo, o subtítulo da capa é fixo ("Relatório"); nas demais
-	% séries, vale o \subtitulodacapa definido por \subtipo.
-	\ifthenelse{\boolean{embrapatex@ehcorporativo}}{\subtitulodacapa{Relatório}}{}%
 	\imprimircapapublicacao
 }
 
@@ -744,8 +784,20 @@
 		\begin{SingleSpace}
 			\sloppy
 			\imprimirpreambulo\par
-			\vspace{\onelineskip}
-			\artigoorientador: \ignorespaces\imprimirorientador\par
+			% Campos de pesquisa (academico): área de concentração e linha de
+			% pesquisa, impressos só quando preenchidos.
+			\ifacademico
+				\abntex@ifnotempty{\imprimirareadepesquisa}{%
+					\vspace{\onelineskip}%
+					Área de concentração: \ignorespaces\imprimirareadepesquisa\par}%
+				\abntex@ifnotempty{\imprimirlinhapesquisa}{%
+					\vspace{\onelineskip}%
+					Linha de pesquisa: \ignorespaces\imprimirlinhapesquisa\par}%
+			\fi
+			% Orientador — só se preenchido (limpa a folha de publicacao/corporativo)
+			\abntex@ifnotempty{\imprimirorientador}{%
+				\vspace{\onelineskip}%
+				\artigoorientador: \ignorespaces\imprimirorientador\par}%
 			\abntex@ifnotempty{\imprimircoorientador}{
 				\vspace{\onelineskip}
 				\artigocoorientador: \ignorespaces\imprimircoorientador\par
@@ -867,10 +919,14 @@
 	\pagebreak
 }
 
+% A folha de aprovação (banca examinadora) só existe no tipo academico, e é
+% suprimida em proposta de qualificação.
 \newcommand{\imprimirfolhadeaprovacao}{
-	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{
-		\imprimirfolhadeaprovacaopadrao
-	}
+	\ifacademico
+		\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{
+			\imprimirfolhadeaprovacaopadrao
+		}
+	\fi
 }
 
 

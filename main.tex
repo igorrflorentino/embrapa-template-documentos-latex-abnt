@@ -26,35 +26,35 @@
 %%          Configurações do EmbrapaTex            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Tipo de documento — a escolha estrutural fundamental:
-%   publicacao  - Publicação técnico-científica em formato ABNT completo
-%                 (com banca, ficha catalográfica, resumo/abstract etc.).
-%   corporativo - Relatório corporativo/empresarial (modo não acadêmico:
-%                 usa "Sumário executivo" no lugar de resumo/abstract e
-%                 dispensa banca, folha de aprovação e ficha catalográfica).
+% Tipo de documento — a escolha estrutural fundamental (três tipos):
+%   academico   - Trabalhos de graduação/pós (TCC, monografia, dissertação,
+%                 tese, relatório acadêmico). Banca, orientador, campos de
+%                 pesquisa e instituição de ensino. Subtipo via \nivel.
+%   publicacao  - Publicações técnico-científicas da Embrapa (séries). Subtipo
+%                 via \serie; número do documento na capa.
+%   corporativo - Relatórios e análises empresariais (sumário executivo, sem
+%                 banca/ficha). Subtipo via \categoria.
 %
-% O tipo e o subtipo abaixo usam \providecommand para que os arquivos de
-% demonstração (exemplo-*.tex) possam sobrescrevê-los via \def antes do
-% \input{main.tex} — veja ./gerar-exemplos.sh. Na compilação normal, valem
-% os padrões definidos aqui.
+% O tipo e o subtipo usam \providecommand para que os arquivos de demonstração
+% (exemplo-*.tex) possam sobrescrevê-los via \def antes do \input{main.tex} —
+% veja ./gerar-exemplos.sh. Na compilação normal, valem os padrões abaixo.
 
-\providecommand{\TipoDoc}{publicacao}
+\providecommand{\TipoDoc}{academico}
 \tipodocumento{\TipoDoc}
 
-% Subtipo (relevante no modo 'publicacao') — define o rótulo da capa e a
-% frase do preâmbulo, conforme a série de publicação da Embrapa:
-%   relatorio   - Relatório Técnico / Relatório Final
-%   boletim     - Boletim de Pesquisa e Desenvolvimento
-%   comunicado  - Comunicado Técnico
-%   documento   - Documento genérico
+% Subtipo: cada tipo tem seu próprio seletor. Edite o valor do SEU tipo abaixo
+% (só o seletor correspondente ao \TipoDoc escolhido é aplicado):
+\providecommand{\Nivel}{relatorio}      % academico:   tcc | monografia | dissertacao | tese | relatorio
+\providecommand{\Serie}{relatorio}      % publicacao:  relatorio | boletim | comunicado | documento
+\providecommand{\Categoria}{relatorio}  % corporativo: relatorio | analise
+\ifacademico   \nivel{\Nivel}        \fi
+\ifpublicacao  \serie{\Serie}        \fi
+\ifcorporativo \categoria{\Categoria}\fi
 
-\providecommand{\SubTipo}{relatorio}
-\subtipo{\SubTipo}
-
-% Série não prevista? Em vez de \subtipo, defina os dois campos diretamente
-% (eles são o que o \subtipo preenche por baixo). Ex.: Circular Técnica:
-%   \subtitulodacapa{Circular Técnica}
-%   \naturezadapublicacao{Circular Técnica da \imprimirunidade\ (\imprimirunidadesigla).}
+% Caso não previsto? Defina os dois campos diretamente (é o que os seletores
+% preenchem por baixo):
+%   \subtitulodacapa{...}
+%   \naturezadapublicacao{...}
 
 % Remove as bordas vermelhas e verdes do PDF gerado
 % Coloque 'sim' para remover
@@ -75,6 +75,37 @@
 
 % Área ou centro de pesquisa (opcional)
 \centro{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Informação acadêmica (tipo 'academico')       %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Campos usados no modo academico. Os \providecommand permitem que os exemplos
+% (exemplo-*.tex) os sobrescrevam via \def; na compilação normal, edite os
+% valores aqui.
+
+% Instituição de ensino (universidade/IES). Usada na capa e no preâmbulo.
+\providecommand{\Instituicao}{Embrapa Agricultura Digital}
+\instituicao{\Instituicao}
+
+% Programa de pós-graduação ou curso (compõe o preâmbulo em tcc/monografia/
+% dissertacao/tese; não usado no nível 'relatorio').
+\providecommand{\ProgramaPesquisa}{}
+\programapesquisa{\ProgramaPesquisa}
+
+% Aparecem na folha de rosto apenas se preenchidas (qualquer nível academico):
+\providecommand{\AreaPesquisa}{}   % Área de concentração
+\areadepesquisa{\AreaPesquisa}
+\providecommand{\LinhaPesquisa}{}  % Linha de pesquisa
+\linhapesquisa{\LinhaPesquisa}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Informação da série (tipo 'publicacao')       %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Número do documento na série (ex.: 123). Impresso na capa se preenchido.
+\providecommand{\NumeroDocumento}{}
+\numerodocumento{\NumeroDocumento}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%     Informação relacionada ao documento         %%
