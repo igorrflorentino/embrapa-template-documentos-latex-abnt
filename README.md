@@ -46,6 +46,8 @@ Há **dois tipos fundamentais**, escolhidos por `\tipodocumento{...}`:
 3. Adicione suas figuras ao diretório `figuras/`
 4. Compile o projeto. O modo recomendado é `latexmk -pdf main.tex` (executa todas as passadas e o `makeglossaries` automaticamente). Alternativamente, rode manualmente: `pdflatex` → `bibtex` → `makeglossaries` → `makeindex` → `pdflatex` (2×)
 
+> **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-publicacao.pdf` e `exemplo-corporativo.pdf` — uma amostra de cada modo, com o mesmo conteúdo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
+
 # Dicas de Formatação
 
 Veja a seguir como inserir alguns elementos no seu texto.

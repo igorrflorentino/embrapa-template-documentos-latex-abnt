@@ -7,6 +7,10 @@
 # Documento compilado (saída)
 /main.pdf
 
+# PDFs de demonstração gerados por ./gerar-exemplos.sh (os drivers
+# exemplo-*.tex são versionados; apenas os PDFs gerados são ignorados)
+/exemplo-*.pdf
+
 # Auxiliares gerais do LaTeX
 *.aux
 *.log

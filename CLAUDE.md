@@ -39,7 +39,9 @@ O `.latexmkrc` registra as dependências personalizadas `.glo → .gls` e `.acn 
 
 As três receitas (recipes) correspondentes do LaTeX Workshop (`latexmk 🔃`, `pdflatex ➞ bibtex ➞ makeglossaries ➞ pdflatex × 2`, `pdflatex (rápido)`) já estão predefinidas no `.vscode/settings.json`.
 
-Há **CI** (GitHub Actions): o workflow `.github/workflows/compilar-latex.yml` compila `main.tex` a cada Pull Request e push na `main`, usando `latexmk` numa imagem TeX Live completa, e publica o PDF como artefato. Não há **conjunto de testes**. O **`.gitignore`** cobre os artefatos gerados pela compilação (`.aux`, `.log`, `.bbl`, `.toc`, `/main.pdf`, glossário/índice etc.), que **não** são versionados — apenas os arquivos-fonte entram no git. PDFs de fonte (ex.: `elementos-pre-textuais/folha-aprovacao.pdf` e eventuais figuras em PDF) continuam versionados, pois só `/main.pdf` é ignorado (nunca `*.pdf`).
+**Showcase de tipos** — `./gerar-exemplos.sh` gera um PDF de demonstração por tipo de documento estruturalmente distinto: `exemplo-publicacao.pdf` e `exemplo-corporativo.pdf`. Os drivers `exemplo-publicacao.tex`/`exemplo-corporativo.tex` (na raiz) apenas injetam `\def\TipoDoc{...}\def\SubTipo{...}` e dão `\input{main.tex}` — **sem duplicar conteúdo** (o `main.tex` usa `\providecommand` para esses dois). Compile-os a partir da raiz do repositório. Os PDFs gerados são ignorados pelo git (`/exemplo-*.pdf`); os drivers `.tex` são versionados.
+
+Há **CI** (GitHub Actions): o workflow `.github/workflows/compilar-latex.yml` compila `main.tex` a cada Pull Request e push na `main`, usando `latexmk` numa imagem TeX Live completa, e publica o PDF como artefato (`main-pdf`). Também compila os dois exemplos e os publica como artefato `exemplos-pdf`. Não há **conjunto de testes**. O **`.gitignore`** cobre os artefatos gerados pela compilação (`.aux`, `.log`, `.bbl`, `.toc`, `/main.pdf`, glossário/índice etc.), que **não** são versionados — apenas os arquivos-fonte entram no git. PDFs de fonte (ex.: `elementos-pre-textuais/folha-aprovacao.pdf` e eventuais figuras em PDF) continuam versionados, pois só `/main.pdf` é ignorado (nunca `*.pdf`).
 
 ## Arquitetura
 
