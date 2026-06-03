@@ -6,9 +6,9 @@ name: Compilar LaTeX
 # artefato do build.
 #
 # Além do main.tex, compila os exemplos de demonstração (exemplo-academico,
-# exemplo-publicacao e exemplo-corporativo) e os publica como artefato
-# "exemplos-pdf" — assim é possível ver cada tipo de documento sem compilar nada
-# localmente.
+# exemplo-publicacao, exemplo-corporativo e exemplo-probatorio) e os publica como
+# artefato "exemplos-pdf" — assim é possível ver cada tipo de documento sem
+# compilar nada localmente.
 #
 # O workflow também: (a) roda o chktex como lint advisory dos arquivos de prosa
 # (não bloqueia o build) e (b) executa verificar-ocultamento.sh como rede de
@@ -73,13 +73,14 @@ jobs:
       # Showcase: gera uma amostra de cada tipo de documento estruturalmente
       # distinto, reaproveitando o conteúdo do main.tex (os drivers exemplo-*.tex
       # apenas injetam o tipo). Veja gerar-exemplos.sh para o equivalente local.
-      - name: Compilar exemplos (academico, publicacao e corporativo)
+      - name: Compilar exemplos (academico, publicacao, corporativo e probatorio)
         uses: xu-cheng/latex-action@v3
         with:
           root_file: |
             exemplo-academico.tex
             exemplo-publicacao.tex
             exemplo-corporativo.tex
+            exemplo-probatorio.tex
 
       - name: Publicar exemplos como artefato
         uses: actions/upload-artifact@v7
@@ -89,4 +90,5 @@ jobs:
             exemplo-academico.pdf
             exemplo-publicacao.pdf
             exemplo-corporativo.pdf
+            exemplo-probatorio.pdf
           if-no-files-found: error

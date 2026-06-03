@@ -17,7 +17,7 @@ Há **três tipos fundamentais**, escolhidos por `\tipodocumento{...}`. Cada tip
   - `boletim` — Boletim de Pesquisa e Desenvolvimento
   - `comunicado` — Comunicado Técnico
   - `documento` — Documento genérico
-- **`corporativo`** — relatórios e análises empresariais (ex.: análise exploratória de dados de uma commodity). Subtipo via `\categoria{relatorio|analise}`. Usa um **Sumário executivo** no lugar de resumo/abstract e dispensa banca/ficha — veja [Modo corporativo](#modo-corporativo).
+- **`corporativo`** — relatórios e análises empresariais (ex.: análise exploratória de dados de uma commodity). Subtipo via `\categoria{relatorio|analise|probatorio}`. Usa um **Sumário executivo** no lugar de resumo/abstract e dispensa banca/ficha. O subtipo `probatorio` é um **Relatório de Comprovação de Período Probatório** (identificação do servidor + assinaturas) — veja [Modo corporativo](#modo-corporativo).
 
 > Cada seletor afeta apenas o rótulo da capa e a frase do preâmbulo; por baixo, só preenche dois campos. Para um caso não previsto, defina-os direto no `main.tex`:
 >
@@ -57,7 +57,9 @@ Há **três tipos fundamentais**, escolhidos por `\tipodocumento{...}`. Cada tip
 3. Adicione suas figuras ao diretório `figuras/`
 4. Compile o projeto. O modo recomendado é `latexmk -pdf main.tex` (executa todas as passadas e o `makeglossaries` automaticamente). Alternativamente, rode manualmente: `pdflatex` → `bibtex` → `makeglossaries` → `makeindex` → `pdflatex` (2×)
 
-> **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-academico.pdf` (tese), `exemplo-publicacao.pdf` (boletim) e `exemplo-corporativo.pdf` (análise) — uma amostra de cada tipo, com o mesmo conteúdo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
+> **Começar do zero?** O `main.tex` já vem preenchido com um **exemplo fictício** (acadêmico), de propósito: assim ele compila e mostra uma amostra logo de cara. Para o seu documento, **substitua os valores pelos seus** e **esvazie (`{}`) os campos que não usar** — campos vazios somem do PDF automaticamente (exibição automática de elementos). Para se localizar, tudo que você edita no `main.tex` fica entre os marcadores **`SEUS DADOS (início)`** e **`SEUS DADOS (fim)`**, e a lista de capítulos está sob **`SEUS CAPÍTULOS`**. Os `exemplo-*.tex` ficam como referência de "como fica preenchido" em cada modo.
+
+> **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-academico.pdf` (tese), `exemplo-publicacao.pdf` (boletim), `exemplo-corporativo.pdf` (análise) e `exemplo-probatorio.pdf` (comprovação de período probatório) — uma amostra de cada modo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
 
 > **Atalhos:** há um `Makefile` com `make` (compila), `make exemplos`, `make lint` (chktex), `make verificar` (rede de regressão) e `make limpar`. Rode `make ajuda` para a lista.
 
@@ -189,11 +191,38 @@ Para relatórios empresariais/não acadêmicos (por exemplo, uma análise explor
 
 Nesse modo, o template:
 
-- coloca na capa um subtítulo conforme `\categoria{relatorio|analise}` (**RELATÓRIO** ou **ANÁLISE**) e usa uma folha de rosto com texto próprio;
+- coloca na capa um subtítulo conforme `\categoria{relatorio|analise|probatorio}` (**RELATÓRIO**, **ANÁLISE** ou **RELATÓRIO DE COMPROVAÇÃO DE PERÍODO PROBATÓRIO**) e usa uma folha de rosto com texto próprio;
 - substitui o par **Resumo/Abstract** (acadêmico) por um **Sumário executivo**, escrito em `elementos-pre-textuais/sumario-executivo.tex`;
 - **omite** os elementos de trabalho acadêmico: banca, folha de aprovação e ficha catalográfica.
 
 Os metadados acadêmicos (orientador, banca, campos da ficha) podem continuar preenchidos no `main.tex` — eles são simplesmente ignorados enquanto o tipo for `corporativo`. Para voltar ao formato ABNT, troque o tipo para `\tipodocumento{academico}` ou `\tipodocumento{publicacao}` (e escolha o subtipo com `\nivel{...}` ou `\serie{...}`).
+
+## Subtipo `probatorio` — Relatório de Comprovação de Período Probatório
+
+O subtipo `probatorio` adapta o modo corporativo para o **relatório final de período probatório** de um(a) analista. Além do sumário executivo, ele gera automaticamente a **identificação do servidor** (Seção 1) e um **bloco de assinatura** ("De acordo" da chefia) ao final, tudo a partir de campos de metadados:
+
+```tex
+\tipodocumento{corporativo}
+\categoria{probatorio}
+```
+
+Preencha no `main.tex` os dados do servidor (o **nome** é o próprio `\autor`):
+
+```tex
+\autor{Seu Nome Completo}            % nome do servidor
+\matriculasiape{0000000}
+\cargo{Analista A --- Prospecção de Negócios}
+\lotacao{Núcleo de Inovação e Negócios (NIN) --- Embrapa Acre}
+\periodoprobatorio{01/06/2023 a 31/05/2026}
+\chefia{Nome da Chefia Imediata}     % assina o "De acordo"
+\chefiacargo{Supervisor do NIN --- Embrapa Acre}
+\local{Rio Branco --- AC}            % local da assinatura
+\dataaprovacao{26 de maio de 2026}   % data de fechamento (no bloco de assinatura)
+```
+
+Qualquer campo deixado em branco (`{}`) é omitido da identificação. Com `corporativo` + `probatorio`, o `main.tex` chama `\imprimiridentificacao` (abre o capítulo "Identificação" com a subseção "Servidor") e, ao final do corpo, `\imprimirassinaturas`. **O conteúdo das demais seções é seu**: escreva-o em arquivos de `elementos-textuais/` e inclua-os com `\input` no ramo `\ifprobatorio` do `main.tex` (há um esqueleto comentado lá indicando exatamente onde).
+
+> Veja o resultado renderizado em `exemplo-probatorio.pdf` (gere com `./gerar-exemplos.sh`).
 
 # Elementos que aparecem só quando preenchidos
 

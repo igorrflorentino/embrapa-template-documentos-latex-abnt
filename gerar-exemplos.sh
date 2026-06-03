@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# Gera um PDF de DEMONSTRAÇÃO para cada tipo de documento estruturalmente
-# distinto do template (academico, publicacao e corporativo), reaproveitando todo o
-# conteúdo de main.tex. Útil para ter uma visão completa de como o template
-# se comporta em cada modo, sem afetar a compilação normal do main.tex.
+# Gera um PDF de DEMONSTRAÇÃO para cada tipo de documento do template (e o
+# subtipo corporativo 'probatorio'), reaproveitando todo o conteúdo de main.tex.
+# Útil para ter uma visão completa de como o template se comporta em cada modo,
+# sem afetar a compilação normal do main.tex.
 #
 # Uso:
 #     ./gerar-exemplos.sh
@@ -12,6 +12,7 @@
 #     exemplo-academico.pdf    — modo academico (tese, ABNT completo)
 #     exemplo-publicacao.pdf   — modo publicacao (série Embrapa: boletim)
 #     exemplo-corporativo.pdf  — modo corporativo (análise empresarial)
+#     exemplo-probatorio.pdf   — corporativo/probatorio (comprovação de período probatório)
 #
 # Requer: latexmk (mesma cadeia usada para compilar o main.tex).
 set -euo pipefail
@@ -20,7 +21,7 @@ set -euo pipefail
 # caminhos relativos do main.tex (lib/, elementos-*/, figuras/) resolvam.
 cd "$(dirname "$0")"
 
-exemplos=(exemplo-academico exemplo-publicacao exemplo-corporativo)
+exemplos=(exemplo-academico exemplo-publicacao exemplo-corporativo exemplo-probatorio)
 
 for exemplo in "${exemplos[@]}"; do
     echo ">>> Gerando ${exemplo}.pdf"
