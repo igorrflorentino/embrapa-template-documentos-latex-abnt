@@ -268,10 +268,10 @@
 % Tipo de documento — a escolha estrutural fundamental (três tipos):
 %   academico    - Trabalhos de graduação/pós (TCC, monografia, dissertação,
 %                  tese, relatório acadêmico/probatório). Banca, orientador,
-%                  campos de pesquisa e instituição de ensino. É o PADRÃO.
+%                  campos de pesquisa e instituição de ensino.
 %                  Subtipo via \nivel. Ativa \ifacademico.
-%   publicacao   - Publicações técnico-científicas da Embrapa (séries).
-%                  Subtipo via \serie; número do documento na capa.
+%   publicacao   - Publicações técnico-científicas da Embrapa (séries). É o
+%                  PADRÃO do main.tex. Subtipo via \serie; número na capa.
 %                  Ativa \ifpublicacao.
 %   corporativo  - Relatórios e análises empresariais (modo NÃO acadêmico:
 %                  sumário executivo; sem banca/ficha). Subtipo via \categoria.
@@ -293,8 +293,8 @@
 % O booleano embrapatex@ehcorporativo é consumido por \preambulo e \imprimircapa.
 \provideboolean{embrapatex@ehcorporativo}
 \setboolean{embrapatex@ehcorporativo}{false}
-\newif\ifacademico  \academicotrue   % academico é o PADRÃO
-\newif\ifpublicacao \publicacaofalse
+\newif\ifacademico  \academicofalse
+\newif\ifpublicacao \publicacaotrue  % publicacao é o PADRÃO (igual ao main.tex)
 \newif\ifcorporativo \corporativofalse
 % Sub-flag do tipo corporativo: \categoria{probatorio} liga \ifprobatorio, usado
 % pelo main.tex para renderizar a identificação do servidor (\imprimiridentificacao)
