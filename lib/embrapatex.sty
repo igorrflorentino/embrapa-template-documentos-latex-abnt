@@ -271,24 +271,40 @@
 %   boletim      - Boletim de Pesquisa e Desenvolvimento
 %   comunicado   - Comunicado Técnico
 %   documento    - Documento (genérico)
+%   corporativo  - Relatório corporativo/empresarial (modo não acadêmico:
+%                  dispensa banca, ficha catalográfica, resumo/abstract ABNT
+%                  e demais elementos de trabalho acadêmico)
+%
+% Os quatro primeiros tipos compartilham a estrutura acadêmica/ABNT completa.
+% O tipo 'corporativo' ativa, além do booleano específico, o condicional
+% \ifcorporativo — usado no main.tex para trocar o conjunto de elementos
+% pré-textuais (sumário executivo no lugar de resumo/abstract, sem banca etc.).
 
 % Definicao das variaveis
 \provideboolean{embrapatex@ehrelatorio}
 \provideboolean{embrapatex@ehboletim}
 \provideboolean{embrapatex@ehcomunicado}
 \provideboolean{embrapatex@ehdocumento}
+\provideboolean{embrapatex@ehcorporativo}
 
 % Valores Iniciais
 \setboolean{embrapatex@ehrelatorio}{true}
 \setboolean{embrapatex@ehboletim}{false}
 \setboolean{embrapatex@ehcomunicado}{false}
 \setboolean{embrapatex@ehdocumento}{false}
+\setboolean{embrapatex@ehcorporativo}{false}
+
+% Condicional TeX exposto para uso no main.tex (\ifcorporativo ... \else ... \fi)
+\newif\ifcorporativo
+\corporativofalse
 
 \newcommand{\tipodocumento}[1]{
 	\setboolean{embrapatex@ehrelatorio}{false}
 	\setboolean{embrapatex@ehboletim}{false}
 	\setboolean{embrapatex@ehcomunicado}{false}
 	\setboolean{embrapatex@ehdocumento}{false}
+	\setboolean{embrapatex@ehcorporativo}{false}
+	\corporativofalse
 
 	\ifthenelse{\equal{#1}{relatorio}}{%
 		\setboolean{embrapatex@ehrelatorio}{true}
@@ -302,7 +318,12 @@
 				\ifthenelse{\equal{#1}{documento}}{%
 					\setboolean{embrapatex@ehdocumento}{true}
 				}{
-					\setboolean{embrapatex@ehrelatorio}{true}
+					\ifthenelse{\equal{#1}{corporativo}}{%
+						\setboolean{embrapatex@ehcorporativo}{true}
+						\corporativotrue
+					}{
+						\setboolean{embrapatex@ehrelatorio}{true}
+					}
 				}
 			}
 		}
@@ -348,6 +369,104 @@
 
 % Verifica se uma determinada macro está vazia
 \newcommand{\ifempty}[3]{\ifthenelse{\equal{#1}{}}{#2}{#3}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Exibição automática de elementos  %%
+%%   opcionais (somente se preenchidos) %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Alguns elementos pós-textuais devem ficar SEMPRE disponíveis no main.tex,
+% porém só aparecer no PDF quando de fato houver conteúdo — evitando títulos
+% órfãos ("REFERÊNCIAS"/"GLOSSÁRIO"/"APÊNDICES" em página vazia).
+%
+% A detecção é automática e feita em uma única passada, pois estes elementos
+% são impressos DEPOIS do corpo do texto:
+%   - Referências: aparece se houver \cite/\citeonline/\nocite no documento.
+%   - Glossário:   aparece se algum termo do glossário principal for usado
+%                  com \gls/\Gls (siglas/acrônimos não contam — vão para a
+%                  Lista de Abreviaturas e Siglas).
+%   - Apêndices/Anexos: ver \imprimirapendices/\imprimiranexos (controle por
+%                  conteúdo vazio, mais abaixo).
+
+% --- Referências: marca se houve qualquer citação ---
+\newif\ifembrapatextemcitacao
+\AtBeginDocument{%
+	\pretocmd{\cite}{\global\embrapatextemcitacaotrue}{}{}%
+	\pretocmd{\citeonline}{\global\embrapatextemcitacaotrue}{}{}%
+	\pretocmd{\nocite}{\global\embrapatextemcitacaotrue}{}{}%
+}
+
+% Imprime as referências apenas quando há citações no documento.
+% Uso no main.tex: \imprimirreferencias{elementos-pos-textuais/referencias}
+\newcommand{\imprimirreferencias}[1]{%
+	\ifembrapatextemcitacao
+		\bibliography{#1}%
+	\fi
+}
+
+% --- Elementos carregados de arquivo (errata, dedicatória, agradecimentos,
+%     epígrafe, lista de símbolos): só aparecem se o arquivo tiver conteúdo
+%     real, isto é, alguma linha não-vazia depois de removidos os comentários.
+% O arquivo é lido com \read (que descarta comentários e equilibra chaves) e
+% \endlinechar=-1 (para que linhas em branco/comentadas não virem \par/espaço).
+% Definido aqui (onde '@' é letra); o nome público \seArquivoComConteudo não usa
+% '@', podendo ser chamado das macros mais abaixo (onde '@' não é letra).
+\newread\embrapatex@filecheck
+\newif\ifembrapatex@filecontent
+\newcommand{\embrapatex@filecheckloop}{%
+	\ifeof\embrapatex@filecheck\else
+		\read\embrapatex@filecheck to \embrapatex@fileline
+		\expandafter\ifblank\expandafter{\embrapatex@fileline}{}{%
+			\global\embrapatex@filecontenttrue}%
+		\expandafter\embrapatex@filecheckloop
+	\fi
+}
+% \seArquivoComConteudo{<caminho sem .tex>}{<código se houver conteúdo>}
+\newcommand{\seArquivoComConteudo}[2]{%
+	\global\embrapatex@filecontentfalse
+	\IfFileExists{#1.tex}{%
+		\begingroup
+			\endlinechar=-1\relax
+			\openin\embrapatex@filecheck=#1.tex\relax
+			\embrapatex@filecheckloop
+			\closein\embrapatex@filecheck
+		\endgroup
+	}{}%
+	\ifembrapatex@filecontent #2\fi
+}
+
+% --- Glossário e Lista de Siglas: detecta uso por tipo de glossário ---
+% O \glspostlinkhook é executado após cada \gls/\Gls/\acrshort etc. Dentro
+% dele, \glslabel é o rótulo da entrada atual e \glsentrytype dá o tipo do
+% glossário a que ela pertence:
+%   - tipo "main"    -> Glossário (pós-textual)
+%   - tipo "acronym" -> Lista de Abreviaturas e Siglas (pré-textual)
+\newif\ifembrapatexglossarioutil   % glossário usado (passada atual)
+\newif\ifembrapatexsiglasutil      % siglas usadas  (passada atual)
+\newif\ifembrapatexsiglasutilprev  % siglas usadas na passada ANTERIOR (lido do .aux)
+\appto\glspostlinkhook{%
+	\edef\embrapatex@curglstype{\glsentrytype{\glslabel}}%
+	\ifdefstring{\embrapatex@curglstype}{main}{\global\embrapatexglossarioutiltrue}{}%
+	\ifdefstring{\embrapatex@curglstype}{acronym}{\global\embrapatexsiglasutiltrue}{}%
+}
+
+% A Lista de Abreviaturas e Siglas é PRÉ-textual (impressa antes do corpo),
+% logo o uso das siglas só é conhecido ao FIM da passada. Persistimos o estado
+% no .aux: na passada seguinte, \ifembrapatexsiglasutilprev já estará correto
+% quando a lista for impressa. O aviso "Rerun to get" faz o latexmk recompilar
+% automaticamente até estabilizar (mesma técnica do pacote lastpage).
+\AtEndDocument{%
+	\if@filesw
+		\ifembrapatexsiglasutil
+			\immediate\write\@auxout{%
+				\string\global\string\embrapatexsiglasutilprevtrue}%
+			\ifembrapatexsiglasutilprev\else
+				\@latex@warning@no@line{Rerun to get the Lista de
+					Abreviaturas e Siglas right}%
+			\fi
+		\fi
+	\fi
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%             Variáveis               %%
@@ -529,20 +648,28 @@
 	Comunicado Técnico da \imprimirunidade\ (\imprimirunidadesigla).
 }
 
+\newcommand{\preambulocorporativo}{
+	Relatório elaborado pela \imprimirunidade\ (\imprimirunidadesigla).
+}
+
 \preambulo{
 	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{ %
 		Proposta de qualificação apresentada à \imprimirunidade\ (\imprimirunidadesigla).
 	}{ %
-		\ifthenelse{\boolean{embrapatex@ehrelatorio}}{ %
-			\preambulorelatorio %
+		\ifthenelse{\boolean{embrapatex@ehcorporativo}}{ %
+			\preambulocorporativo %
 		}{
-			\ifthenelse{\boolean{embrapatex@ehboletim}}{ %
-				\preambuloboletim %
+			\ifthenelse{\boolean{embrapatex@ehrelatorio}}{ %
+				\preambulorelatorio %
 			}{
-				\ifthenelse{\boolean{embrapatex@ehcomunicado}}{ %
-					\preambulocomunicado %
+				\ifthenelse{\boolean{embrapatex@ehboletim}}{ %
+					\preambuloboletim %
 				}{
-					\preambulodocumento %
+					\ifthenelse{\boolean{embrapatex@ehcomunicado}}{ %
+						\preambulocomunicado %
+					}{
+						\preambulodocumento %
+					}
 				}
 			}
 		}
@@ -661,19 +788,50 @@
 	\end{capa}
 }
 
+\newcommand{\imprimircapacorporativo}{%
+	\begin{capa}%
+		\center
+		\bfseries
+
+        \includegraphics[scale=0.15]{lib/logo-embrapa-color-cropped.png} \\
+        \vspace{0.3cm}
+		\MakeUppercase{\imprimirunidade} \\
+		\abntex@ifnotempty{\imprimircentro}{
+			\MakeUppercase{\imprimircentro} \\
+		}
+		\MakeUppercase{Relatório} \\
+
+		\vspace{2cm}
+
+		\MakeUppercase{\imprimirautor}
+
+		\vspace{5cm}
+
+		\MakeUppercase{\imprimirtitulo}
+
+		\vfill
+		\normalsize\MakeUppercase\imprimirlocal\par
+		\normalsize\imprimirdata
+	\end{capa}
+}
+
 \renewcommand{\imprimircapa}{%
 	% Toda capa deve ter pagina 0
 	\setcounter{page}{0}
-	\ifthenelse{\boolean{embrapatex@ehrelatorio}}{ %
-			\imprimircaparelatorio %
+	\ifthenelse{\boolean{embrapatex@ehcorporativo}}{ %
+		\imprimircapacorporativo %
 	}{
-		\ifthenelse{\boolean{embrapatex@ehboletim}}{ %
-			\imprimircapaboletim %
+		\ifthenelse{\boolean{embrapatex@ehrelatorio}}{ %
+				\imprimircaparelatorio %
 		}{
-			\ifthenelse{\boolean{embrapatex@ehcomunicado}}{ %
-				\imprimircapacomunicado %
+			\ifthenelse{\boolean{embrapatex@ehboletim}}{ %
+				\imprimircapaboletim %
 			}{
-				\imprimircapadocumento %
+				\ifthenelse{\boolean{embrapatex@ehcomunicado}}{ %
+					\imprimircapacomunicado %
+				}{
+					\imprimircapadocumento %
+				}
 			}
 		}
 	}
@@ -888,16 +1046,18 @@
 
 \newcommand{\imprimirdedicatoria}[1]{
 	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{
-		\vspace*{20cm}
-		\vfill
-		%Retira o espaço do parágrafo
-		\noindent\hspace*{-2cm}
-		%Adiciona o espaço da margem
-		\hspace*{8cm}
-		\begin{minipage}{8cm}
-			\input{#1}
-		\end{minipage}\hfill
-		\pagebreak
+		\seArquivoComConteudo{#1}{%
+			\vspace*{20cm}
+			\vfill
+			%Retira o espaço do parágrafo
+			\noindent\hspace*{-2cm}
+			%Adiciona o espaço da margem
+			\hspace*{8cm}
+			\begin{minipage}{8cm}
+				\input{#1}
+			\end{minipage}\hfill
+			\pagebreak
+		}%
 	}
 }
 
@@ -907,9 +1067,12 @@
 
 \newcommand{\imprimirerrata}[1]{%
 	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{%
-		\begin{errata} %
-		\input{#1}%
-		\end{errata}%
+		\seArquivoComConteudo{#1}{%
+			\begin{errata} %
+			\vspace{\onelineskip}%
+			\input{#1}%
+			\end{errata}%
+		}%
 	}%
 }
 
@@ -919,12 +1082,14 @@
 
 \newcommand{\imprimiragradecimentos}[1]{
 	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{
-		\begin{agradecimentos}
-			\begin{paracol}{1}
-				\setlength{\parindent}{0pt}%
-				\input{#1}
-			\end{paracol}
-		\end{agradecimentos}
+		\seArquivoComConteudo{#1}{%
+			\begin{agradecimentos}
+				\begin{paracol}{1}
+					\setlength{\parindent}{0pt}%
+					\input{#1}
+				\end{paracol}
+			\end{agradecimentos}
+		}%
 	}
 }
 
@@ -934,17 +1099,19 @@
 
 \newcommand{\imprimirepigrafe}[1]{
 	\ifthenelse{\boolean{embrapatex@ehqualificacao}}{}{
-		\vspace*{\fill}
-		\vfill
-		%Retira o espaço do parágrafo
-		\noindent\hspace*{-2cm}
-		%Adiciona o espaço da margem
-		\hspace*{8cm}
-		\begin{minipage}{8cm}
-			\input{#1}
-			\raggedleft{(\imprimirautordaepigrafe) \par}
-		\end{minipage}\hfill
-		\pagebreak
+		\seArquivoComConteudo{#1}{%
+			\vspace*{\fill}
+			\vfill
+			%Retira o espaço do parágrafo
+			\noindent\hspace*{-2cm}
+			%Adiciona o espaço da margem
+			\hspace*{8cm}
+			\begin{minipage}{8cm}
+				\input{#1}
+				\raggedleft{(\imprimirautordaepigrafe) \par}
+			\end{minipage}\hfill
+			\pagebreak
+		}%
 	}
 }
 
@@ -1041,6 +1208,19 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%         Sumário Executivo           %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Elemento pré-textual do modo corporativo, em substituição ao par
+% resumo/abstract acadêmico. Reaproveita o ambiente \resumo (espaçamento
+% simples, sem recuo de parágrafo) com o título "Sumário executivo".
+\newcommand{\imprimirsumarioexecutivo}[1]{ %
+	\begin{resumo}[Sumário executivo] %
+		\input{#1} %
+	\end{resumo} %
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%         Lista de Quadro             %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1060,10 +1240,75 @@
 % agora a lista de quadro eh negrito
 \renewcommand{\cftquadrofont}{\bfseries}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Listas geradas: exibir só se houver %%
+%%  conteúdo (figuras, tabelas, etc.)   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% As listas pré-textuais geradas automaticamente (ilustrações, tabelas, quadros,
+% algoritmos, códigos-fonte) leem, na passada anterior, o respectivo arquivo
+% auxiliar: .lof / .lot / .loq / .loa / .lol. Em vez de imprimir um título
+% órfão ("Lista de ..." em página vazia) quando não há o elemento, verificamos
+% se esse arquivo tem conteúdo e só então imprimimos a lista.
+%
+% A checagem é feita diretamente sobre o arquivo que a própria lista consome,
+% portanto independe de detalhes internos de cada pacote (memoir, algorithm2e,
+% listings). Como usa o arquivo da passada anterior, o latexmk converge sozinho
+% (a lista some/aparece e a recompilação por mudança de arquivo estabiliza).
+% Detecção por \addcontentsline (o ponto único por onde TODA legenda registra
+% sua entrada na lista correspondente — .lof/.lot/.loq/.loa/.lol). Não podemos
+% checar a existência do arquivo .lof/.lot porque é o próprio \listoffigures/
+% \listoftables que os cria: escondê-los impediria a criação do arquivo e a
+% lista nunca voltaria. Por isso marcamos o uso via hook e, como as listas são
+% pré-textuais (impressas antes do corpo), persistimos o estado no .aux para a
+% passada seguinte — igual à Lista de Abreviaturas e Siglas.
+%
+% Flags SEM '@' no nome (catcode-seguro ao gravar/ler no .aux):
+%   \ifembhas<ext> = usada na passada atual ; \ifembhad<ext> = na anterior.
+% Obs.: '@' não é letra nesta região do arquivo (há um \makeatother antes),
+% então protegemos com \makeatletter os trechos que usam \@... internos.
+\newif\ifembhaslof \newif\ifembhadlof  % ilustrações (figuras)
+\newif\ifembhaslot \newif\ifembhadlot  % tabelas
+\newif\ifembhasloq \newif\ifembhadloq  % quadros
+\newif\ifembhasloa \newif\ifembhadloa  % algoritmos
+\newif\ifembhaslol \newif\ifembhadlol  % códigos-fonte
+\newif\ifembneedrerun
+
+\makeatletter
+% Envolve \addcontentsline para marcar a lista usada. Para #1 (tipo do arquivo:
+% lof/lot/...), se existir a flag \ifembhas#1, liga-a globalmente. Usamos um
+% wrap manual (\let + \renewcommand) por ser robusto independentemente de como
+% \addcontentsline foi definido (o \apptocmd do etoolbox falha aqui).
+\AtBeginDocument{%
+	\let\embrapatex@orig@addcontentsline\addcontentsline
+	\renewcommand\addcontentsline[3]{%
+		\embrapatex@orig@addcontentsline{#1}{#2}{#3}%
+		\@ifundefined{ifembhas#1}{}{\global\csname embhas#1true\endcsname}%
+	}%
+}
+
+% Ao fim da passada, persiste no .aux quais listas têm conteúdo e pede um rerun
+% ao latexmk quando alguma passou de ausente -> presente.
+\AtEndDocument{%
+	\if@filesw
+		\ifembhaslof \immediate\write\@auxout{\string\global\string\embhadloftrue}\ifembhadlof\else\embneedreruntrue\fi\fi
+		\ifembhaslot \immediate\write\@auxout{\string\global\string\embhadlottrue}\ifembhadlot\else\embneedreruntrue\fi\fi
+		\ifembhasloq \immediate\write\@auxout{\string\global\string\embhadloqtrue}\ifembhadloq\else\embneedreruntrue\fi\fi
+		\ifembhasloa \immediate\write\@auxout{\string\global\string\embhadloatrue}\ifembhadloa\else\embneedreruntrue\fi\fi
+		\ifembhaslol \immediate\write\@auxout{\string\global\string\embhadloltrue}\ifembhadlol\else\embneedreruntrue\fi\fi
+		\ifembneedrerun
+			\@latex@warning@no@line{Rerun to get the lists of floats right}%
+		\fi
+	\fi
+}
+\makeatother
+
 \newcommand{\imprimirlistadequadros}{ %
-	%\pdfbookmark[0]{\listofquadrosname}{loq} %
-	\listofquadros* %
-	\pagebreak %
+	\ifembhadloq
+		%\pdfbookmark[0]{\listofquadrosname}{loq} %
+		\listofquadros* %
+		\pagebreak %
+	\fi
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1122,11 +1367,12 @@
 
 
 \newcommand{\imprimirlistadecodigosfonte}{ %
-	%\pdfbookmark[0]{\listofquadrosname}{loq} %
-	\begin{KeepFromToc} %
-		\lstlistoflistings %
-	\end{KeepFromToc} %
-	\pagebreak %
+	\ifembhadlol
+		\begin{KeepFromToc} %
+			\lstlistoflistings %
+		\end{KeepFromToc} %
+		\pagebreak %
+	\fi
 }
 % agora a lista de códigos-fonte eh negrito
 \renewcommand{\cftlstlistingfont}{\bfseries}
@@ -1138,9 +1384,11 @@
 % A lista de Ilustrações não deve aparecer no sumário
 
 \newcommand{\imprimirlistadeilustracoes}{
-	\begin{KeepFromToc} %
-		\listoffigures\pagebreak %
-	\end{KeepFromToc} %
+	\ifembhadlof
+		\begin{KeepFromToc} %
+			\listoffigures\pagebreak %
+		\end{KeepFromToc} %
+	\fi
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1167,8 +1415,10 @@
 % A lista de Algoritmos não deve aparecer no sumário
 
 \newcommand{\imprimirlistadealgoritmos}{
-	\listofalgorithms
-	\pagebreak %
+	\ifembhadloa
+		\listofalgorithms
+		\pagebreak %
+	\fi
 }
 
 % agora a lista de algoritmos eh negrito
@@ -1180,9 +1430,11 @@
 
 % A lista de tabela não deve aparecer no sumário
 \newcommand{\imprimirlistadetabelas}{ %
-	\begin{KeepFromToc} %
-		\listoftables \pagebreak%
-	\end{KeepFromToc} %
+	\ifembhadlot
+		\begin{KeepFromToc} %
+			\listoftables \pagebreak%
+		\end{KeepFromToc} %
+	\fi
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1192,17 +1444,30 @@
 % Largura da lista de abreviaturas (desconta a coluna da sigla e padding da tabela)
 \setlength{\glsdescwidth}{\dimexpr\linewidth-3cm\relax}
 
+% Só imprime a lista quando alguma sigla/abreviatura foi usada no texto com
+% \gls/\acrshort etc. A detecção é da passada anterior (\...prev), pois esta
+% lista é pré-textual — ver a nota em \AtEndDocument acima.
 \newcommand{\imprimirlistadeabreviaturasesiglas}{ %
-	\printglossary[type=\acronymtype,style=long,nonumberlist,title={Lista de Abreviaturas e Siglas\vspace{-0.3cm}}] %
-	\pagebreak %
+	\ifembrapatexsiglasutilprev
+		\printglossary[type=\acronymtype,style=long,nonumberlist,title={Lista de Abreviaturas e Siglas\vspace{-0.3cm}}] %
+		\pagebreak %
+	\fi
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%         Lista de Simbolos           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% A lista de símbolos só aparece se o arquivo contiver ao menos um \item.
+% O ambiente "simbolos" (que imprime o título) fica AQUI, no wrapper, e não no
+% arquivo de conteúdo — assim, um arquivo só com comentários é detectado como
+% vazio e a lista (com seu título) é omitida.
 \newcommand{\imprimirlistadesimbolos}[1]{
-	\input{#1}
+	\seArquivoComConteudo{#1}{%
+		\begin{simbolos}\itemsep -1pt %
+			\input{#1}%
+		\end{simbolos}%
+	}%
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1231,10 +1496,14 @@
 	}%
 }
 
+% Só imprime o glossário (e seu título/entrada no sumário) quando há ao menos
+% um termo do glossário principal efetivamente usado no texto.
 \newcommand{\imprimirglossario}{ %
-	\setglossarystyle{glossario-embrapa} %
-	\printglossary[title=GLOSSÁRIO,toctitle=GLOSSÁRIO] %
-	\addcontentsline{toc}{chapter}{GLOSSÁRIO}
+	\ifembrapatexglossarioutil
+		\setglossarystyle{glossario-embrapa} %
+		\printglossary[title=GLOSSÁRIO,toctitle=GLOSSÁRIO] %
+		\addcontentsline{toc}{chapter}{GLOSSÁRIO}
+	\fi
 }
 
 
@@ -1280,12 +1549,22 @@
 	}
 }
 
-\newcommand{\imprimirapendices}{ %
-	\imprimirpaginaapendices
-	\apendices %
-	% Retira o negrito da palavra "Apendice"
-	\PRIVATEapendiceconfig{\normalfont\apendicename}{\normalfont\apendicesname} %
-
+% Imprime a seção de apêndices apenas quando há conteúdo. O conteúdo (as
+% linhas \input de cada apêndice) é passado como argumento; se vier vazio
+% (ou só com espaços/comentários), a página-divisória "APÊNDICES" e a entrada
+% no sumário são omitidas.
+% Uso no main.tex:
+%   \imprimirapendices{%
+%       \input{elementos-pos-textuais/apendices/exemplo-de-apendice}%
+%   }
+\newcommand{\imprimirapendices}[1]{ %
+	\ifblank{#1}{}{%
+		\imprimirpaginaapendices
+		\apendices %
+		% Retira o negrito da palavra "Apendice"
+		\PRIVATEapendiceconfig{\normalfont\apendicename}{\normalfont\apendicesname} %
+		#1%
+	}%
 }
 
 % Correcao do problema de espacamento entre as palavras
@@ -1355,12 +1634,19 @@
 	\clearpage
 }
 
-\newcommand{\imprimiranexos}{ %
-	\imprimirpaginaanexo
-	\anexos %
-	% Retira o negrito da palavra "Anexo"
-	\PRIVATEapendiceconfig{\normalfont\anexoname}{\normalfont\anexosname} %
-
+% Imprime a seção de anexos apenas quando há conteúdo (mesma lógica de
+% \imprimirapendices). Uso no main.tex:
+%   \imprimiranexos{%
+%       \input{elementos-pos-textuais/anexos/exemplo-de-anexo}%
+%   }
+\newcommand{\imprimiranexos}[1]{ %
+	\ifblank{#1}{}{%
+		\imprimirpaginaanexo
+		\anexos %
+		% Retira o negrito da palavra "Anexo"
+		\PRIVATEapendiceconfig{\normalfont\anexoname}{\normalfont\anexosname} %
+		#1%
+	}%
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
