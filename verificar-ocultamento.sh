@@ -24,6 +24,12 @@
 #   ./verificar-ocultamento.sh              # compila do zero e verifica
 #   ./verificar-ocultamento.sh --check-only # só verifica os artefatos atuais
 #                                           # (para a CI, após compilar)
+#
+# ATENÇÃO: o --check-only NÃO recompila nem limpa os arquivos de lista — ele
+# pressupõe artefatos de uma compilação LIMPA do main.tex imediatamente
+# anterior. Rodá-lo sobre um build sujo (ex.: após compilar um exemplo, ou
+# remover uma figura e compilar só uma vez) pode dar falso positivo por causa
+# de um .loq/.loa/.lol stale. Em dúvida, rode sem --check-only.
 set -uo pipefail
 cd "$(dirname "$0")"
 
@@ -36,8 +42,9 @@ falha() { echo "  FALHA  $1"; falhas=$((falhas + 1)); }
 
 if [ "$CHECK_ONLY" -eq 0 ]; then
 	echo ">> Compilando main.tex do zero..."
-	# O 'latexmk -C' não limpa .lof/.lot/.loq/.loa/.lol (extensões custom), e
-	# arquivos antigos falseariam a verificação — removemos à mão.
+	# O 'latexmk -C' limpa .lof/.lot, mas não .loq/.loa/.lol (floats custom:
+	# quadros, algoritmos, listings) — arquivos antigos falseariam a
+	# verificação, então removemos os cinco à mão por garantia.
 	latexmk -C >/dev/null 2>&1 || true
 	rm -f main.lof main.lot main.loq main.loa main.lol
 	if ! latexmk -pdf -interaction=nonstopmode -file-line-error main.tex >/tmp/verif-build.log 2>&1; then

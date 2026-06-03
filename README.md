@@ -203,7 +203,7 @@ Os elementos abaixo ficam sempre disponíveis no `main.tex`, mas só aparecem no
 |---|---|
 | **Referências** | há `\cite`/`\citeonline` (ou `\nocite`) no texto |
 | **Glossário** | algum termo do glossário principal é usado com `\gls`/`\Gls` |
-| **Lista de Abreviaturas e Siglas** | alguma sigla é usada com `\gls`/`\acrshort` |
+| **Lista de Abreviaturas e Siglas** | alguma sigla do tipo `acronym` é referenciada no texto |
 | **Lista de Ilustrações** | há ao menos uma figura com legenda |
 | **Lista de Tabelas** | há ao menos uma tabela com legenda |
 | **Lista de Quadros** | há ao menos um quadro com legenda |

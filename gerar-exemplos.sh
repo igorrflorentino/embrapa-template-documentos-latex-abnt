@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Gera um PDF de DEMONSTRAÇÃO para cada tipo de documento estruturalmente
-# distinto do template (academico e corporativo), reaproveitando todo o
+# distinto do template (academico, publicacao e corporativo), reaproveitando todo o
 # conteúdo de main.tex. Útil para ter uma visão completa de como o template
 # se comporta em cada modo, sem afetar a compilação normal do main.tex.
 #
