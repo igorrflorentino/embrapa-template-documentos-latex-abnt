@@ -280,7 +280,9 @@
 % Cada tipo tem seu PRÓPRIO seletor de subtipo (separação de responsabilidades):
 %   \nivel{tcc|monografia|dissertacao|tese|relatorio}        (academico)
 %   \serie{relatorio|boletim|comunicado|documento}           (publicacao)
-%   \categoria{relatorio|analise}                            (corporativo)
+%   \categoria{relatorio|analise|probatorio}                 (corporativo)
+% O subtipo 'probatorio' (Relatório de Comprovação de Período Probatório) liga
+% \ifprobatorio e habilita \imprimiridentificacao + \imprimirassinaturas.
 % Os três só preenchem as variáveis de DADOS \subtitulodacapa (subtítulo da
 % capa; vazio = sem subtítulo) e \naturezadapublicacao (frase do preâmbulo da
 % folha de rosto). Para um caso não previsto, defina essas duas variáveis
@@ -294,6 +296,11 @@
 \newif\ifacademico  \academicotrue   % academico é o PADRÃO
 \newif\ifpublicacao \publicacaofalse
 \newif\ifcorporativo \corporativofalse
+% Sub-flag do tipo corporativo: \categoria{probatorio} liga \ifprobatorio, usado
+% pelo main.tex para renderizar a identificação do servidor (\imprimiridentificacao)
+% e o bloco de assinatura (\imprimirassinaturas) do Relatório de Comprovação de
+% Período Probatório. Falso em qualquer outro tipo/subtipo.
+\newif\ifprobatorio \probatoriofalse
 
 % \tipodocumento{academico|publicacao|corporativo} — só estes 3 valores valem.
 % Qualquer outro é REJEITADO com erro.
@@ -368,17 +375,22 @@
 % \categoria{...} — subtipo do tipo CORPORATIVO.
 \newcommand{\categoria}[1]{%
 	\ifcorporativo\else\embrapatex@avisotipo{\categoria}{corporativo}\fi
+	\probatoriofalse
 	\ifthenelse{\equal{#1}{relatorio}}{%
 		\subtitulodacapa{Relatório}%
 		\naturezadapublicacao{Relatório elaborado pela \imprimirunidade\ (\imprimirunidadesigla).}%
 	}{\ifthenelse{\equal{#1}{analise}}{%
 		\subtitulodacapa{Análise}%
 		\naturezadapublicacao{Análise elaborada pela \imprimirunidade\ (\imprimirunidadesigla).}%
+	}{\ifthenelse{\equal{#1}{probatorio}}{%
+		\probatoriotrue
+		\subtitulodacapa{Relatório de Comprovação de Período Probatório}%
+		\naturezadapublicacao{Relatório de comprovação de período probatório apresentado à \imprimirunidade\ (\imprimirunidadesigla).}%
 	}{%
-		\PackageWarning{embrapatex}{Categoria '#1' desconhecida; use relatorio ou analise. Assumindo 'relatorio'}%
+		\PackageWarning{embrapatex}{Categoria '#1' desconhecida; use relatorio, analise ou probatorio. Assumindo 'relatorio'}%
 		\subtitulodacapa{Relatório}%
 		\naturezadapublicacao{Relatório elaborado pela \imprimirunidade\ (\imprimirunidadesigla).}%
-	}}%
+	}}}%
 }
 
 \AtBeginDocument{ %
@@ -559,6 +571,16 @@
 \providecommand{\coorientadories}{} \renewcommand{\coorientadories}{\def \@coorientadories}
 \providecommand{\coorientadorcentro}{} \renewcommand{\coorientadorcentro}{\def \@coorientadorcentro}
 
+% Campos do Relatório de Comprovação de Período Probatório (categoria
+% 'probatorio'). O NOME do servidor é o \autor; estes complementam a
+% identificação (Seção 1.1) e o bloco de assinatura.
+\providecommand{\matriculasiape}{} \renewcommand{\matriculasiape}{\def \@matriculasiape}
+\providecommand{\cargo}{} \renewcommand{\cargo}{\def \@cargo}
+\providecommand{\lotacao}{} \renewcommand{\lotacao}{\def \@lotacao}
+\providecommand{\periodoprobatorio}{} \renewcommand{\periodoprobatorio}{\def \@periodoprobatorio}
+\providecommand{\chefia}{} \renewcommand{\chefia}{\def \@chefia}
+\providecommand{\chefiacargo}{} \renewcommand{\chefiacargo}{\def \@chefiacargo}
+
 % Campos da ficha catalográfica
 \providecommand{\autorinvertido}{} \renewcommand{\autorinvertido}{\def \@autorinvertido}
 \providecommand{\edicao}{} \renewcommand{\edicao}{\def \@edicao}
@@ -609,6 +631,14 @@
 \providecommand{\imprimirorientadorcentro}{} \renewcommand{\imprimirorientadorcentro}{\@orientadorcentro}
 \providecommand{\imprimircoorientadories}{} \renewcommand{\imprimircoorientadories}{\@coorientadories}
 \providecommand{\imprimircoorientadorcentro}{} \renewcommand{\imprimircoorientadorcentro}{\@coorientadorcentro}
+
+% Getters dos campos de período probatório
+\providecommand{\imprimirmatriculasiape}{} \renewcommand{\imprimirmatriculasiape}{\@matriculasiape}
+\providecommand{\imprimircargo}{} \renewcommand{\imprimircargo}{\@cargo}
+\providecommand{\imprimirlotacao}{} \renewcommand{\imprimirlotacao}{\@lotacao}
+\providecommand{\imprimirperiodoprobatorio}{} \renewcommand{\imprimirperiodoprobatorio}{\@periodoprobatorio}
+\providecommand{\imprimirchefia}{} \renewcommand{\imprimirchefia}{\@chefia}
+\providecommand{\imprimirchefiacargo}{} \renewcommand{\imprimirchefiacargo}{\@chefiacargo}
 
 % Campos da ficha catalográfica
 \providecommand{\imprimirautorinvertido}{} \renewcommand{\imprimirautorinvertido}{\@autorinvertido}
@@ -686,6 +716,14 @@
 \cdu{}
 \bibliotecario{}
 \crb{}
+
+% Campos de período probatório (vazios por padrão; preenchidos no main.tex)
+\matriculasiape{}
+\cargo{}
+\lotacao{}
+\periodoprobatorio{}
+\chefia{}
+\chefiacargo{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%       Definições de Variáveis       %%
@@ -1159,6 +1197,63 @@
 		\input{#1} %
 	\end{resumo} %
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   Identificação e assinaturas       %%
+%%   (categoria 'probatorio')          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Elementos exclusivos do Relatório de Comprovação de Período Probatório
+% (\tipodocumento{corporativo} + \categoria{probatorio}, que liga \ifprobatorio).
+% O NOME do servidor é o \autor; os demais dados vêm dos metadados
+% \matriculasiape, \cargo, \lotacao, \periodoprobatorio e \chefia/\chefiacargo.
+
+% Imprime uma linha "Rótulo: valor" apenas se o valor não estiver vazio.
+% Bloco em \makeatletter porque vem DEPOIS de um \makeatother do arquivo (acima):
+% sem isso o '@' de \embrapatex@campoident não seria letra e o nome quebraria.
+\makeatletter
+\newcommand{\embrapatex@campoident}[2]{%
+	\ifnotempty{#2}{\noindent\textbf{#1:}~\ignorespaces #2\par}{}%
+}
+
+% Seção 1.1 — dados do servidor, gerada a partir dos metadados. Abre o capítulo
+% "Identificação" (Seção 1) e a seção "Servidor"; a Seção 1.2 (entregas do plano
+% de trabalho) é escrita pelo usuário logo após a chamada desta macro.
+\newcommand{\imprimiridentificacao}{%
+	\chapter{Identificação}%
+	\section{Servidor}%
+	\begingroup
+	\setlength{\parindent}{0pt}%
+	\embrapatex@campoident{Nome}{\imprimirautor}%
+	\embrapatex@campoident{Matrícula SIAPE}{\imprimirmatriculasiape}%
+	\embrapatex@campoident{Cargo}{\imprimircargo}%
+	\embrapatex@campoident{Lotação}{\imprimirlotacao}%
+	\embrapatex@campoident{Período probatório}{\imprimirperiodoprobatorio}%
+	\embrapatex@campoident{Chefia imediata}{\imprimirchefia}%
+	\endgroup
+}
+
+% Bloco de assinaturas de fechamento (local/data + servidor + "De acordo" da
+% chefia). Reaproveita o \assinatura do abntex2 (mesmo estilo da folha de
+% aprovação) e o \ifnotempty (omite \\ de campos vazios, como \assinaturabanca).
+% A data é a \dataaprovacao (data de fechamento); se vazia, cai para \data.
+\newcommand{\imprimirassinaturas}{%
+	\par\vspace{2\onelineskip}
+	\begin{center}
+		\imprimirlocal, \ifnotempty{\imprimirdataaprovacao}{\imprimirdataaprovacao}{\imprimirdata}.
+	\end{center}
+	\vspace{\onelineskip}
+	\assinatura{\imprimirautor
+		\ifnotempty{\imprimircargo}{\\ \imprimircargo}{}%
+		\ifnotempty{\imprimirmatriculasiape}{\\ SIAPE \imprimirmatriculasiape}{}}
+	\ifnotempty{\imprimirchefia}{%
+		\vspace{\onelineskip}
+		\begin{center}De acordo:\end{center}
+		\assinatura{\imprimirchefia
+			\ifnotempty{\imprimirchefiacargo}{\\ \imprimirchefiacargo}{}}%
+	}{}%
+}
+\makeatother
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%         Lista de Quadro             %%

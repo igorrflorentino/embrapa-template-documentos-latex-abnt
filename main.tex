@@ -42,6 +42,14 @@
 %%          Configurações do EmbrapaTex            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% >>> SEUS DADOS (início) <<<
+%% Tudo daqui até \begin{document} é VOCÊ quem edita. Os valores são um
+%% EXEMPLO fictício: troque pelos seus e esvazie ({}) o que não usar
+%% (campos vazios somem do PDF, pela exibição automática de elementos).
+%% Quer partir de um arquivo já em branco? Veja "Começar do zero" no README.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % Tipo de documento — a escolha estrutural fundamental (três tipos):
 %   academico   - Trabalhos de graduação/pós (TCC, monografia, dissertação,
 %                 tese, relatório acadêmico). Banca, orientador, campos de
@@ -49,7 +57,9 @@
 %   publicacao  - Publicações técnico-científicas da Embrapa (séries). Subtipo
 %                 via \serie; número do documento na capa.
 %   corporativo - Relatórios e análises empresariais (sumário executivo, sem
-%                 banca/ficha). Subtipo via \categoria.
+%                 banca/ficha). Subtipo via \categoria. O subtipo 'probatorio'
+%                 gera um Relatório de Comprovação de Período Probatório
+%                 (identificação do servidor + assinaturas).
 %
 % O tipo e o subtipo usam \providecommand para que os arquivos de demonstração
 % (exemplo-*.tex) possam sobrescrevê-los via \def antes do \input{main.tex} —
@@ -62,7 +72,7 @@
 % (só o seletor correspondente ao \TipoDoc escolhido é aplicado):
 \providecommand{\Nivel}{relatorio}      % academico:   tcc | monografia | dissertacao | tese | relatorio
 \providecommand{\Serie}{relatorio}      % publicacao:  relatorio | boletim | comunicado | documento
-\providecommand{\Categoria}{relatorio}  % corporativo: relatorio | analise
+\providecommand{\Categoria}{relatorio}  % corporativo: relatorio | analise | probatorio
 \ifacademico   \nivel{\Nivel}        \fi
 \ifpublicacao  \serie{\Serie}        \fi
 \ifcorporativo \categoria{\Categoria}\fi
@@ -86,8 +96,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Nome da unidade da Embrapa (ex.: Embrapa Agricultura Digital, Embrapa Cerrados, etc.)
-\unidade{Embrapa Agricultura Digital}
-\unidadesigla{CNPTIA}
+% Em \providecommand para que os exemplos (exemplo-*.tex) o sobrescrevam via \def.
+\providecommand{\Unidade}{Embrapa Agricultura Digital}
+\unidade{\Unidade}
+\providecommand{\UnidadeSigla}{CNPTIA}
+\unidadesigla{\UnidadeSigla}
 
 % Área ou centro de pesquisa (opcional)
 \centro{}
@@ -124,18 +137,46 @@
 \numerodocumento{\NumeroDocumento}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  Identificação do servidor (subtipo 'probatorio') %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Usados quando \TipoDoc{corporativo} + \Categoria{probatorio}. O NOME do
+% servidor é o \autor (definido abaixo). Estes campos alimentam a Seção 1.1
+% (\imprimiridentificacao) e o bloco de assinatura (\imprimirassinaturas).
+% Deixe em branco ({}) os que não usar — somem da identificação automaticamente.
+\providecommand{\MatriculaSiape}{}
+\matriculasiape{\MatriculaSiape}
+\providecommand{\Cargo}{}
+\cargo{\Cargo}
+\providecommand{\Lotacao}{}
+\lotacao{\Lotacao}
+\providecommand{\PeriodoProbatorio}{}
+\periodoprobatorio{\PeriodoProbatorio}
+\providecommand{\Chefia}{}            % Nome da chefia imediata (linha "De acordo")
+\chefia{\Chefia}
+\providecommand{\ChefiaCargo}{}       % Cargo/função da chefia imediata
+\chefiacargo{\ChefiaCargo}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%     Informação relacionada ao documento         %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Preencha com os dados do seu trabalho
-\autor{Maria Exemplo da Silva}
-\titulo{Análise de um Problema de Pesquisa: Um Estudo de Caso Ilustrativo}
-\data{2026}
-\local{Campinas -- SP}
+% Preencha com os dados do seu trabalho.
+% Em \providecommand para que os exemplos (exemplo-*.tex) os sobrescrevam via \def.
+\providecommand{\Autor}{Maria Exemplo da Silva}
+\autor{\Autor}
+\providecommand{\Titulo}{Análise de um Problema de Pesquisa: Um Estudo de Caso Ilustrativo}
+\titulo{\Titulo}
+\providecommand{\Data}{2026}
+\data{\Data}
+\providecommand{\Local}{Campinas -- SP}
+\local{\Local}
 
-% Data de aprovação (se aplicável)
+% Data de aprovação (se aplicável). No subtipo 'probatorio' é a data de
+% fechamento usada no bloco de assinatura.
 % Exemplo: \dataaprovacao{01 de janeiro de 2026}
-\dataaprovacao{15 de junho de 2026}
+\providecommand{\DataAprovacao}{15 de junho de 2026}
+\dataaprovacao{\DataAprovacao}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%     Informação sobre o Orientador/Supervisor    %%
@@ -219,6 +260,13 @@
 \bibliotecario{Bibliotecário(a) Exemplo} % Nome do(a) bibliotecário(a)
 \crb{CRB-8/0000}          % Registro profissional (ex.: CRB-1/1234)
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% >>> SEUS DADOS (fim) <<<
+%% Daqui para baixo é a ESTRUTURA do documento (montagem automática:
+%% capa, folha de rosto, listas, sumário, referências, apêndices...).
+%% Normalmente você só precisa editar a LISTA DE CAPÍTULOS — procure
+%% por "SEUS CAPÍTULOS" mais abaixo.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
 	% Elementos pré-textuais
@@ -269,12 +317,35 @@
 
 	% Elementos textuais
 	\textual
-	\input{elementos-textuais/introducao}
-	\input{elementos-textuais/revisao-de-literatura}
-	\input{elementos-textuais/estado-da-arte}
-	\input{elementos-textuais/material-e-metodos}
-	\input{elementos-textuais/resultados-e-discussao}
-	\input{elementos-textuais/consideracoes-finais}
+	\ifprobatorio
+		%% --- Corpo do Relatório de Comprovação de Período Probatório ---
+		%% A Seção 1 (Identificação) é gerada a partir dos metadados do servidor
+		%% (\autor, \matriculasiape, \cargo, \lotacao, \periodoprobatorio, \chefia).
+		\imprimiridentificacao
+		%% >>> A PARTIR DAQUI, adicione os capítulos do SEU relatório. <<<
+		%% A Seção 1.2 (entregas do plano de trabalho) e as Seções 2 a 8 são
+		%% conteúdo seu: crie os arquivos em elementos-textuais/ e inclua-os com
+		%% \input. Esqueleto sugerido (descomente e crie cada arquivo):
+		%	\input{elementos-textuais/probatorio/entregas}            % 1.2
+		%	\input{elementos-textuais/probatorio/contexto-objetivo}   % 2
+		%	\input{elementos-textuais/probatorio/metodologia}         % 3
+		%	\input{elementos-textuais/probatorio/comentarios-madeira} % 4
+		%	\input{elementos-textuais/probatorio/comentarios-castanha}% 5
+		%	\input{elementos-textuais/probatorio/analise-comparativa} % 6
+		%	\input{elementos-textuais/probatorio/produtos-entregues}  % 7
+		%	\input{elementos-textuais/probatorio/conclusao}           % 8
+		%% Bloco de assinatura final (servidor + "De acordo" da chefia):
+		\imprimirassinaturas
+	\else
+		%% >>> SEUS CAPÍTULOS — adicione/remova linhas \input conforme o seu
+		%% documento (cada arquivo em elementos-textuais/ começa com \chapter). <<<
+		\input{elementos-textuais/introducao}
+		\input{elementos-textuais/revisao-de-literatura}
+		\input{elementos-textuais/estado-da-arte}
+		\input{elementos-textuais/material-e-metodos}
+		\input{elementos-textuais/resultados-e-discussao}
+		\input{elementos-textuais/consideracoes-finais}
+	\fi
 
 	% Elementos pós-textuais
 	% Todos abaixo aparecem no PDF SOMENTE quando há conteúdo correspondente;
