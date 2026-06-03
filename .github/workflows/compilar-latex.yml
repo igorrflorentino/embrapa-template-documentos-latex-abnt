@@ -68,7 +68,7 @@ jobs:
       # Rede de REGRESSÃO (bloqueante): confere, sobre os artefatos recém
       # compilados, que cada elemento opcional apareceu/sumiu como esperado.
       - name: Verificar ocultamento de elementos (regressão)
-        run: ./verificar-ocultamento.sh --check-only
+        run: bash verificar-ocultamento.sh --check-only
 
       # Showcase: gera uma amostra de cada tipo de documento estruturalmente
       # distinto, reaproveitando o conteúdo do main.tex (os drivers exemplo-*.tex
