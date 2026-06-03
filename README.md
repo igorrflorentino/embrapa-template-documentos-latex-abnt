@@ -6,13 +6,13 @@ O **EmbrapaTex** é um template LaTeX baseado no [abnTeX2](http://www.abntex2.ne
 
 Há **três tipos fundamentais**, escolhidos por `\tipodocumento{...}`. Cada tipo tem seu **próprio seletor de subtipo**:
 
-- **`academico`** (padrão) — trabalhos de graduação/pós (TCC, dissertação, tese…), em formato ABNT completo, com orientador, **banca**, campos de pesquisa e **instituição de ensino**. Subtipo via `\nivel{...}`:
+- **`academico`** — trabalhos de graduação/pós (TCC, dissertação, tese…), em formato ABNT completo, com orientador, **banca**, campos de pesquisa e **instituição de ensino**. Subtipo via `\nivel{...}`:
   - `tcc` — Trabalho de Conclusão de Curso
   - `monografia` — Monografia (especialização)
   - `dissertacao` — Dissertação (mestrado)
   - `tese` — Tese (doutorado)
   - `relatorio` — Relatório acadêmico avaliado (ex.: probatório)
-- **`publicacao`** — publicações técnico-científicas da Embrapa (séries). Subtipo via `\serie{...}`; o `\numerodocumento` é impresso na capa:
+- **`publicacao`** (padrão) — publicações técnico-científicas da Embrapa (séries). Subtipo via `\serie{...}`; o `\numerodocumento` é impresso na capa:
   - `relatorio` — Relatório Técnico
   - `boletim` — Boletim de Pesquisa e Desenvolvimento
   - `comunicado` — Comunicado Técnico
@@ -49,7 +49,7 @@ Há **três tipos fundamentais**, escolhidos por `\tipodocumento{...}`. Cada tip
 # Por onde começo?
 
 1. Abra o arquivo `main.tex` e configure os dados do seu documento:
-   - Tipo de documento (`\tipodocumento{academico}`) e o subtipo do seu tipo: `\nivel{...}` (academico), `\serie{...}` (publicacao) ou `\categoria{...}` (corporativo)
+   - Tipo de documento (`\tipodocumento{publicacao}` é o padrão) e o subtipo do seu tipo: `\nivel{...}` (academico), `\serie{...}` (publicacao) ou `\categoria{...}` (corporativo)
    - Unidade Embrapa (`\unidade{...}`)
    - Autor, título, data e local
    - Orientador/supervisor (se aplicável)
