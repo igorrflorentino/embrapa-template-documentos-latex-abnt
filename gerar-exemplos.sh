@@ -25,7 +25,9 @@ exemplos=(exemplo-academico exemplo-publicacao exemplo-corporativo exemplo-proba
 
 for exemplo in "${exemplos[@]}"; do
     echo ">>> Gerando ${exemplo}.pdf"
-    latexmk -pdf -interaction=nonstopmode -file-line-error "${exemplo}.tex"
+    # -halt-on-error (paridade com a CI): faz erros graves derrubarem o build em
+    # vez de o nonstopmode "se recuperar" e gerar um PDF com erro silencioso.
+    latexmk -pdf -halt-on-error -interaction=nonstopmode -file-line-error "${exemplo}.tex"
 done
 
 echo

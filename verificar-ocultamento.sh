@@ -9,8 +9,9 @@
 # lib/embrapatex.sty) que, de outro modo, só seriam notadas olhando o PDF.
 #
 # As expectativas refletem o CONTEÚDO PADRÃO do template (uma figura, uma
-# tabela, um quadro, um algoritmo, NENHUMA listagem lstlisting, citações,
-# termos de glossário, siglas, errata preenchida, etc.). Se você alterar muito
+# tabela curta, uma tabela longa de apêndice (\EMBRAPAtablonga), um quadro, um
+# algoritmo, NENHUMA listagem lstlisting, citações, termos de glossário, siglas,
+# errata preenchida, etc.). Se você alterar muito
 # o conteúdo (parar de citar, remover todas as figuras, adicionar lstlisting…),
 # ajuste as expectativas abaixo de acordo.
 #
@@ -47,7 +48,11 @@ if [ "$CHECK_ONLY" -eq 0 ]; then
 	# verificação, então removemos os cinco à mão por garantia.
 	latexmk -C >/dev/null 2>&1 || true
 	rm -f main.lof main.lot main.loq main.loa main.lol
-	if ! latexmk -pdf -interaction=nonstopmode -file-line-error main.tex >/tmp/verif-build.log 2>&1; then
+	# -halt-on-error (paridade com a CI): sem ele, o nonstopmode "se recupera" de
+	# erros graves e ainda gera o PDF — mascarando, p.ex., o uso de ambiente de
+	# espaçamento dentro de \EMBRAPAtab/qua/fig (erro "Missing \endgroup"). Com a
+	# flag, esse erro derruba o build aqui, como já acontece na CI.
+	if ! latexmk -pdf -halt-on-error -interaction=nonstopmode -file-line-error main.tex >/tmp/verif-build.log 2>&1; then
 		echo "ERRO: a compilação do main.tex falhou (veja /tmp/verif-build.log)."
 		exit 2
 	fi
@@ -98,6 +103,7 @@ else
 	tem  "Epígrafe"               "caminho do êxito"
 	tem  "Lista de Símbolos"      "Tamanho da amostra"
 	tem  "Glossário (entrada)"    "atividade econômica que engloba"
+	tem  "Tabela longa do apêndice (\\EMBRAPAtablonga)" "amostras de solo coletadas"
 	some "Lista de Códigos-Fonte (título)" "Lista de Códigos-Fonte"
 fi
 

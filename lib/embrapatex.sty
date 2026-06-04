@@ -423,6 +423,48 @@
 \let\EMBRAPAtab\EMBRAPA@float
 \let\EMBRAPAqua\EMBRAPA@float
 
+% --- Tabela longa (multipágina) --------------------------------------------
+% \EMBRAPAtab é um float e delega ao \IBGEtab, que tipografa o conteúdo num
+% \savebox (modo LR / \hbox). Por isso ele NÃO quebra entre páginas e NÃO
+% tolera ambientes de espaçamento/parágrafo no conteúdo (SingleSpace, spacing,
+% Spacing…), que emitem comandos verticais (\vskip) ilegais nesse modo — o uso
+% indevido falha com "Missing \endgroup" (fatal sob -halt-on-error; ver
+% verificar-ocultamento.sh e a CI).
+%
+% Para tabelas que ultrapassam uma página, use o ambiente EMBRAPAtablonga,
+% baseado em 'longtable': quebra entre páginas e repete o cabeçalho no topo de
+% cada uma. NÃO vai dentro de um ambiente 'table' — é colocado direto no texto.
+%
+%   \begin{EMBRAPAtablonga}{<colunas>}{<legenda c/ \label>}{<cabeçalho>}{<fonte>}
+%       linha & linha \\
+%       ...
+%   \end{EMBRAPAtablonga}
+%
+%   #1 = especificação de colunas do tabular (ex.: ll, p{6cm}r, lcr…)
+%   #2 = legenda (inclua o \label) — sai "Tabela N — Título" acima, na 1ª
+%        página, e entra na Lista de Tabelas (usa o contador 'table', seguindo
+%        a numeração de \EMBRAPAtab)
+%   #3 = linha(s) de cabeçalho, com '&' entre colunas; repetida(s) a cada página
+%   #4 = texto da fonte — sai "Fonte: …" abaixo da tabela, na última página
+%
+% Para ajustar o espaçamento entre linhas use COMANDOS, nunca ambientes:
+% \renewcommand{\arraystretch}{0.9} (antes do \begin) ou \linespread{1}.
+\newenvironment{EMBRAPAtablonga}[4]{%
+	\def\EMBRAPA@ltfonte{#4}%             % guarda a fonte p/ imprimir no fim
+	\begingroup
+	\setlength{\LTcapwidth}{\textwidth}%  % legenda usa a largura do texto
+	\ABNTEXfontereduzida                  % fonte reduzida, como o \IBGEtab
+	\begin{longtable}{#1}%
+		\caption{#2}\\%                   % legenda (1ª página) + Lista de Tabelas
+		\toprule #3 \\ \midrule \endfirsthead   % cabeçalho na 1ª página
+		\toprule #3 \\ \midrule \endhead        % cabeçalho repetido nas demais
+		\bottomrule \endlastfoot                % fecho na última página
+}{%
+	\end{longtable}%
+	\Fonte{\EMBRAPA@ltfonte}%             % "Fonte: …" abaixo, na última página
+	\endgroup
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%              Funções                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
