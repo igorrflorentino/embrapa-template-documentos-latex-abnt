@@ -88,6 +88,8 @@ Veja a seguir como inserir alguns elementos no seu texto.
 \end{table}
 ```
 
+> **Espaçamento das linhas — use comandos, não ambientes.** Dentro de `\EMBRAPAtab`/`\EMBRAPAqua`/`\EMBRAPAfig`, ajuste o espaçamento com **comandos** — `\renewcommand{\arraystretch}{0.9}` (antes do `tabular`) ou `\linespread{1}\selectfont` — e **nunca** com ambientes de espaçamento (`SingleSpace`, `spacing`, `Spacing`…). Esses encapsuladores medem o conteúdo num `\hbox` (modo restrito), onde os comandos verticais desses ambientes causam **erro fatal** (`Missing \endgroup`). Para tabelas que passam de uma página, use a **Tabela longa** abaixo (e não um ambiente de espaçamento para "encolher" a tabela).
+
 ### Como inserir um Quadro
 ```tex
 \begin{quadro}[h!]	
@@ -120,6 +122,20 @@ Veja a seguir como inserir alguns elementos no seu texto.
 	}	
 \end{figure}
 ```
+
+### Como inserir uma Tabela longa (multipágina)
+
+`\EMBRAPAtab` é um *float* e **não quebra entre páginas**. Para tabelas mais longas que uma página, use o ambiente `EMBRAPAtablonga` (baseado em `longtable`): ele quebra entre páginas e **repete o cabeçalho** automaticamente. Diferente de `\EMBRAPAtab`, ele **não** vai dentro de um `table`:
+
+```tex
+\begin{EMBRAPAtablonga}{lrr}{\label{tab:longa} Legenda da Tabela longa}{Coluna 1 & Coluna 2 & Coluna 3}{Elaborado pelo autor}
+	Dado 1 & Dado 2 & Dado 3 \\
+	Dado 4 & Dado 5 & Dado 6 \\
+	% ... demais linhas ...
+\end{EMBRAPAtablonga}
+```
+
+Os quatro argumentos do `\begin`, na ordem, são: **(1)** as colunas do `tabular` (ex.: `lrr`, `p{6cm}r`); **(2)** a legenda, **com o `\label`** — sai como "Tabela N — …" acima, na 1ª página, e entra na Lista de Tabelas; **(3)** a linha de cabeçalho (com `&` entre as colunas), repetida no topo de cada página; **(4)** o texto da fonte — sai como "Fonte: …" abaixo, na última página. A numeração segue o mesmo contador de `\EMBRAPAtab`. Há um exemplo real em `elementos-pos-textuais/apendices/exemplo-de-apendice.tex`.
 
 ### Como inserir uma Alínea
 ```tex
