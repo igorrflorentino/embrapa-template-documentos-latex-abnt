@@ -1484,12 +1484,24 @@
 % Só imprime a lista quando alguma sigla/abreviatura foi usada no texto com
 % \gls/\acrshort etc. A detecção é da passada anterior (\...prev), pois esta
 % lista é pré-textual — ver a nota em \AtEndDocument acima.
+% Bloco em \makeatletter porque, neste ponto do .sty, vem DEPOIS de um
+% \makeatother do arquivo (acima) — sem o wrapper, '@' não é letra e o nome
+% \embrapatex@savedtable abaixo não formaria um único \controlsequence.
+\makeatletter
 \newcommand{\imprimirlistadeabreviaturasesiglas}{ %
 	\ifembrapatexsiglasutilprev
+		% O estilo 'long' do glossaries é baseado em 'longtable', que consome
+		% um número do contador 'table'. Como esta é uma lista PRÉ-TEXTUAL,
+		% ela não deve gastar numeração de tabela: sem isto, a primeira tabela
+		% do texto (e da Lista de Tabelas) começaria em "2". Salvamos e
+		% restauramos o contador ao redor da impressão.
+		\edef\embrapatex@savedtable{\the\value{table}}%
 		\printglossary[type=\acronymtype,style=long,nonumberlist,title={Lista de Abreviaturas e Siglas\vspace{-0.3cm}}] %
+		\setcounter{table}{\embrapatex@savedtable}%
 		\pagebreak %
 	\fi
 }
+\makeatother
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%         Lista de Simbolos           %%
