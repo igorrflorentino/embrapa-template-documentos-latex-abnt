@@ -509,6 +509,11 @@
 % capturar a versão final de \textcite (após o hyperref).
 \AtBeginDocument{\let\citeonline\textcite}
 
+% (O "et al." já sai em itálico por padrão no biblatex-abnt — o estilo abnt.bbx
+% envolve a string "andothers" em \mkbibemph —, equivalente ao antigo
+% abnt-etal-text=it do abntex2cite. Não é preciso redefinir nada; redefinir a
+% própria string com \mkbibemph causaria itálico-dentro-de-itálico = texto reto.)
+
 % Imprime as referências apenas quando há citações no documento. A base BibTeX é
 % declarada por \addbibresource no preâmbulo (lib/preambulo.tex); o argumento #1 é
 % mantido por compatibilidade com chamadas antigas \imprimirreferencias{...}, mas é
