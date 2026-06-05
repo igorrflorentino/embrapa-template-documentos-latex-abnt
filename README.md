@@ -55,7 +55,7 @@ Há **três tipos fundamentais**, escolhidos por `\tipodocumento{...}`. Cada tip
    - Orientador/supervisor (se aplicável)
 2. Edite os arquivos nos diretórios `elementos-pre-textuais/`, `elementos-textuais/` e `elementos-pos-textuais/`
 3. Adicione suas figuras ao diretório `figuras/`
-4. Compile o projeto. O modo recomendado é `latexmk -pdf main.tex` (executa todas as passadas e o `makeglossaries` automaticamente). Alternativamente, rode manualmente: `pdflatex` → `bibtex` → `makeglossaries` → `makeindex` → `pdflatex` (2×)
+4. Compile o projeto. O modo recomendado é `latexmk -pdf main.tex` (executa todas as passadas e o `makeglossaries` automaticamente). Alternativamente, rode manualmente: `pdflatex` → `biber` → `makeglossaries` → `makeindex` → `pdflatex` (2×)
 
 > **Começar do zero?** O `main.tex` já vem preenchido com um **exemplo fictício** (publicação — Relatório Técnico), de propósito: assim ele compila e mostra uma amostra logo de cara. Para o seu documento, **substitua os valores pelos seus** e **esvazie (`{}`) os campos que não usar** — campos vazios somem do PDF automaticamente (exibição automática de elementos). Para se localizar, tudo que você edita no `main.tex` fica entre os marcadores **`SEUS DADOS (início)`** e **`SEUS DADOS (fim)`**, e a lista de capítulos está sob **`SEUS CAPÍTULOS`**. Os `exemplo-*.tex` ficam como referência de "como fica preenchido" em cada modo.
 
