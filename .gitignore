@@ -29,7 +29,7 @@
 *.lol
 *.loq
 
-# Bibliografia (bibtex)
+# Bibliografia (biblatex/biber)
 *.bbl
 *.blg
 *.bcf

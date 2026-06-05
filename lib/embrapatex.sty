@@ -494,18 +494,31 @@
 %                  conteúdo vazio, mais abaixo).
 
 % --- Referências: marca se houve qualquer citação ---
+% Compatibilidade com o antigo abntex2cite: \citeonline (citação textual, com o
+% autor fora dos parênteses) vira um apelido de \textcite do biblatex.
+% A detecção de "houve citação" (para a exibição automática das Referências) usa o
+% hook oficial \AtEveryCite — que dispara em \cite/\parencite/\textcite/\citeonline/
+% \citeauthor/... — e um embrulho em \nocite (que não passa por esse hook).
 \newif\ifembrapatextemcitacao
-\AtBeginDocument{%
-	\pretocmd{\cite}{\global\embrapatextemcitacaotrue}{}{}%
-	\pretocmd{\citeonline}{\global\embrapatextemcitacaotrue}{}{}%
-	\pretocmd{\nocite}{\global\embrapatextemcitacaotrue}{}{}%
-}
+\AtEveryCite{\global\embrapatextemcitacaotrue}
+% O \nocite do biblatex é \protected e não aceita \pretocmd; por isso o embrulhamos
+% à mão, no carregamento (onde o #1 é literal). \embrapatexorignocite guarda o original.
+\let\embrapatexorignocite\nocite
+\protected\def\nocite#1{\global\embrapatextemcitacaotrue\embrapatexorignocite{#1}}
+% \citeonline = \textcite (compat. abntex2cite), fixado em \AtBeginDocument para
+% capturar a versão final de \textcite (após o hyperref).
+\AtBeginDocument{\let\citeonline\textcite}
 
-% Imprime as referências apenas quando há citações no documento.
-% Uso no main.tex: \imprimirreferencias{elementos-pos-textuais/referencias}
+% Imprime as referências apenas quando há citações no documento. A base BibTeX é
+% declarada por \addbibresource no preâmbulo (lib/preambulo.tex); o argumento #1 é
+% mantido por compatibilidade com chamadas antigas \imprimirreferencias{...}, mas é
+% ignorado (o caminho não é repassado ao biblatex aqui).
 \newcommand{\imprimirreferencias}[1]{%
 	\ifembrapatextemcitacao
-		\bibliography{#1}%
+		% O biblatex usa a string própria "Bibliografia" no título do capítulo; a
+		% ABNT exige "Referências", então forçamos via title=. heading=bibintoc gera
+		% o capítulo não numerado (estilo abntex2) e o registra no Sumário.
+		\printbibliography[title={Refer\^encias},heading=bibintoc]%
 	\fi
 }
 

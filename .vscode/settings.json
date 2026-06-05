@@ -24,8 +24,8 @@
       ]
     },
     {
-      "name": "bibtex",
-      "command": "bibtex",
+      "name": "biber",
+      "command": "biber",
       "args": [
         "%DOCFILE%"
       ]
@@ -53,10 +53,10 @@
       ]
     },
     {
-      "name": "pdflatex ➞ bibtex ➞ makeglossaries ➞ pdflatex × 2",
+      "name": "pdflatex ➞ biber ➞ makeglossaries ➞ pdflatex × 2",
       "tools": [
         "pdflatex",
-        "bibtex",
+        "biber",
         "makeglossaries",
         "pdflatex",
         "pdflatex"

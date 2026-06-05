@@ -50,7 +50,17 @@
 \usepackage{etoolbox}                               % Usado para alterar a fonte da Section no Sumário
 \usepackage[nogroupskip,nonumberlist,acronym]{glossaries}                % Permite fazer o glossario
 \usepackage{caption}                                % Altera o comportamento da tag caption
-\usepackage[alf, abnt-emphasize=bf, bibjustif, recuo=0cm, abnt-etal-cite=3, abnt-etal-list=0,abnt-etal-text=it]{abntex2cite}  % Citações padrão ABNT
+% Citações e referências ABNT (NBR 10520 / NBR 6023) via biblatex-abnt + biber.
+% Substitui o antigo abntex2cite (BibTeX). Mapeamento das opções de estilo:
+%   style=abnt        sistema alfabético (autor-data); destaque do título em negrito (padrão)
+%   giveninits=true   prenomes abreviados — ex.: OLIVEIRA, C. A. (como no abntex2cite)
+%   justify           lista de referências justificada (antigo bibjustif)
+%   maxcitenames=3 / mincitenames=1   "et al." nas citações com 4+ autores (antigo abnt-etal-cite=3)
+%   maxbibnames=99    lista TODOS os autores em cada referência (antigo abnt-etal-list=0)
+% (recuo=0cm e o destaque em negrito já são o padrão do biblatex-abnt; "et al." em
+%  itálico, se desejado, é um \DefineBibliographyStrings — ver README.)
+\usepackage[style=abnt,backend=biber,giveninits=true,justify,maxcitenames=3,mincitenames=1,maxbibnames=99]{biblatex}
+\addbibresource{elementos-pos-textuais/referencias.bib}   % base BibTeX das referências
 \usepackage{mathptmx}                               % Usa a fonte Times New Roman
 \usepackage{microtype}                              % Melhorias de justificação (após a seleção da fonte)
 \usepackage{appendix}                               % Gerar o apendice no final do documento
