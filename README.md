@@ -256,7 +256,7 @@ Os elementos abaixo ficam sempre disponíveis no `main.tex`, mas só aparecem no
 | **Lista de Quadros** | há ao menos um quadro com legenda |
 | **Lista de Algoritmos** | há ao menos um algoritmo com legenda |
 | **Lista de Códigos-Fonte** | há ao menos uma listagem `lstlisting` com legenda |
-| **Lista de Símbolos** | o arquivo `lista-de-simbolos.tex` tem ao menos um `\item` |
+| **Lista de Símbolos** | o arquivo `lista-de-simbolos.tex` tem ao menos um `\item` (lista **manual** — ver nota abaixo) |
 | **Errata** | o arquivo `errata.tex` tem conteúdo (fora comentários) |
 | **Dedicatória** / **Agradecimentos** / **Epígrafe** | o respectivo arquivo tem conteúdo (fora comentários) |
 | **Apêndices** / **Anexos** | o argumento de `\imprimirapendices{...}` / `\imprimiranexos{...}` não está vazio |
@@ -275,6 +275,8 @@ Apêndices e anexos recebem o conteúdo **entre chaves** no `main.tex`; deixe as
 ```
 
 > As listas pré-textuais (abreviaturas/siglas, ilustrações, tabelas, quadros, algoritmos, códigos-fonte) têm sua exibição decidida com base na compilação anterior. Ao usar o `latexmk` (recomendado), a recompilação acontece automaticamente até estabilizar — não é preciso rodar à mão.
+
+> **Lista de Símbolos é manual.** Diferente do glossário e da lista de siglas — em que o pacote `glossaries` só imprime as entradas efetivamente citadas com `\gls` —, a Lista de Símbolos vem de um arquivo digitado à mão (`lista-de-simbolos.tex`) e é exibida por inteiro sempre que tiver ao menos um `\item`. O template **não** confere, ao compilar, se cada símbolo é de fato usado no texto, então mantenha a lista em dia: inclua apenas símbolos que realmente aparecem no documento. A rede de regressão `verificar-ocultamento.sh` ajuda nesse controle emitindo um **aviso não-bloqueante** quando um símbolo listado não é encontrado no corpo.
 
 # Mantenedor
 
