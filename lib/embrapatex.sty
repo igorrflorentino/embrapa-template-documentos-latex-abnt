@@ -187,7 +187,7 @@
   		\hypersetup{%
   		    pdfborder = {0 0 0}
   		}
-    }
+    }{}%
 }
 
 % Altera a cor dos hyperlinks do documento
@@ -197,7 +197,7 @@
 			colorlinks = true,
 			linkcolor = blue
 		}
-	}
+	}{}%
 }
 
 % Adiciona o sexo do orientador e do co-orientador no documento atraves
@@ -213,14 +213,14 @@
 \renewcommand{\orientadorfeminino}[1]{
 	 \ifthenelse{\equal{#1}{sim}}{%
 	 	\setboolean{embrapatex@orientadorfeminino}{true}
-	 }
+	 }{}
 }
 
 \providecommand{\coorientadorfeminino}[1]{}
 \renewcommand{\coorientadorfeminino}[1]{
 	\ifthenelse{\equal{#1}{sim}}{%
 		\setboolean{embrapatex@coorientadorfeminino}{true}
-	}
+	}{}
 }
 
 \newcommand{\artigoorientador}{ %
@@ -262,7 +262,7 @@
 \newcommand{\ehqualificacao}[1]{
 	\ifthenelse{\equal{#1}{sim}}{%
 		\setboolean{embrapatex@ehqualificacao}{true}
-	}
+	}{}
 }
 
 % Tipo de documento — a escolha estrutural fundamental (três tipos):
