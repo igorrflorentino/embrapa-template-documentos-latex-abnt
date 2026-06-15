@@ -7,6 +7,13 @@
 % O ambiente "simbolos" e o título são adicionados automaticamente pelo
 % template; aqui basta listar os \item. Deixe o arquivo sem nenhum \item
 % (apenas comentários) para omitir a Lista de Símbolos.
+%
+% IMPORTANTE: esta lista é MANUAL — o template não verifica, ao compilar, se
+% cada símbolo é realmente usado no texto (diferente do glossário/siglas, em
+% que só aparece o que foi citado com \gls). Liste APENAS símbolos que de fato
+% ocorrem no corpo do documento. A rede de regressão verificar-ocultamento.sh
+% emite um AVISO (não-bloqueante) para símbolos listados que não aparecem no
+% texto — útil para flagrar incongruências.
 
 % Exemplo:
 % \item[$ T $] Temperatura

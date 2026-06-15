@@ -38,8 +38,13 @@ CHECK_ONLY=0
 [ "${1:-}" = "--check-only" ] && CHECK_ONLY=1
 
 falhas=0
-ok()    { echo "  OK   $1"; }
-falha() { echo "  FALHA  $1"; falhas=$((falhas + 1)); }
+# printf '%s' (e não echo) para não interpretar barras invertidas no conteúdo —
+# os tokens de símbolo (ex.: \alpha) seriam mutilados por um echo que expande \a.
+ok()    { printf '  OK   %s\n' "$1"; }
+falha() { printf '  FALHA  %s\n' "$1"; falhas=$((falhas + 1)); }
+# Advertência NÃO-bloqueante (não conta como falha nem altera o código de saída):
+# usada por checagens heurísticas, como a congruência da Lista de Símbolos.
+aviso() { printf '  AVISO  %s\n' "$1"; }
 
 if [ "$CHECK_ONLY" -eq 0 ]; then
 	echo ">> Compilando main.tex do zero..."
@@ -105,6 +110,54 @@ else
 	tem  "Glossário (entrada)"    "atividade econômica que engloba"
 	tem  "Tabela longa do apêndice (\\EMBRAPAtablonga)" "amostras de solo coletadas"
 	some "Lista de Códigos-Fonte (título)" "Lista de Códigos-Fonte"
+fi
+
+echo
+echo "== Congruência da Lista de Símbolos (advisory, não-bloqueante) =="
+# A Lista de Símbolos é MANUAL: o template apenas a exibe/oculta conforme o
+# arquivo tenha ou não \item (ver lib/embrapatex.sty), mas NÃO verifica se cada
+# símbolo listado é de fato usado no texto — ao contrário do glossário e da
+# lista de siglas, em que o motor (glossaries) só lista o que foi referenciado
+# com \gls. Este check ADVERTE (sem reprovar) quando um símbolo declarado em
+# lista-de-simbolos.tex não aparece no corpo do documento.
+#
+# É uma HEURÍSTICA de fonte, propositalmente conservadora:
+#  - tokens de comando (\alpha, \sigma, \lambda…) são checados de forma confiável;
+#  - símbolos de uma só letra (n, T…) casam de modo leniente — a letra também
+#    ocorre em palavras da prosa, então quase nunca geram aviso (evita falso
+#    positivo, ao custo de não pegar uma letra solta listada e nunca usada);
+#  - o sentido inverso (símbolo USADO no texto mas não listado) não é coberto.
+# Por isso é advisory: sinaliza o caso comum de regressão (símbolo nomeado
+# listado e nunca citado) sem bloquear o build.
+SIMB_FILE="elementos-pre-textuais/lista-de-simbolos.tex"
+if [ ! -f "$SIMB_FILE" ]; then
+	echo "  (arquivo de símbolos não encontrado — check pulado)"
+else
+	# Corpo onde os símbolos podem ser usados (elementos textuais + apêndices +
+	# anexos), com comentários LaTeX removidos para não casar dentro de comentário.
+	CORPO="$(cat elementos-textuais/*.tex \
+	             elementos-pos-textuais/apendices/*.tex \
+	             elementos-pos-textuais/anexos/*.tex 2>/dev/null \
+	         | sed -E 's/([^\\])%.*/\1/; s/^[[:space:]]*%.*//')"
+	# Extrai o conteúdo matemático de cada \item[$ … $] NÃO-comentado
+	# (linhas começadas por % são naturalmente ignoradas pelo grep). O sed
+	# captura o argumento opcional, remove os '$' e os espaços de CADA linha
+	# (mantendo um token por linha — não usar 'tr -d' com classe de espaço,
+	# que apagaria as quebras de linha e juntaria os símbolos).
+	simbolos="$(grep -E '^[[:space:]]*\\item\[' "$SIMB_FILE" \
+	            | sed -E 's/^[[:space:]]*\\item\[([^]]*)\].*/\1/; s/\$//g; s/[[:space:]]//g')"
+	if [ -z "$simbolos" ]; then
+		echo "  (nenhum \\item — Lista de Símbolos corretamente omitida)"
+	else
+		printf '%s\n' "$simbolos" | while IFS= read -r sym; do
+			[ -z "$sym" ] && continue
+			if printf '%s' "$CORPO" | grep -qF -- "$sym"; then
+				ok "símbolo usado no texto: $sym"
+			else
+				aviso "símbolo listado mas não encontrado no corpo: $sym"
+			fi
+		done
+	fi
 fi
 
 echo
