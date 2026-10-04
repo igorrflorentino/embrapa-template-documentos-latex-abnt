@@ -61,6 +61,8 @@ Há **três tipos fundamentais**, escolhidos por `\tipodocumento{...}`. Cada tip
 
 > **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-academico.pdf` (tese), `exemplo-publicacao.pdf` (boletim), `exemplo-corporativo.pdf` (análise) e `exemplo-probatorio.pdf` (comprovação de período probatório) — uma amostra de cada modo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
 
+> **Onde fica o PDF?** Ao compilar, o PDF mais recente fica sempre em `main.pdf`, na raiz do projeto (o arquivo é ignorado pelo git). Depois que as mudanças entram na branch `main` (merge), a CI recompila e publica a última versão no GitHub, na release `pdf-latest` (aba *Releases*), com link estável de download: `https://github.com/<dono>/<repositório>/releases/download/pdf-latest/main.pdf`.
+
 > **Atalhos:** há um `Makefile` com `make` (compila), `make exemplos`, `make lint` (chktex), `make verificar` (rede de regressão) e `make limpar`. Rode `make ajuda` para a lista.
 
 > **Usando o template num documento real (CI sem atrito):** `make verificar` (rede de regressão) e `make exemplos` (showcase) — e os passos correspondentes da CI — são **testes do próprio template**, calibrados para o conteúdo-exemplo padrão. Num repositório **derivado** do template (o seu documento), a CI **pula esses passos automaticamente**: você só vê o lint + a compilação do seu `main.tex` + o PDF publicado, sem falsos vermelhos. Não precisa rodar `make verificar` para o seu documento. (Criou o seu repositório a partir de uma cópia **antiga** do template? Basta copiar o `.github/workflows/compilar-latex.yml` atualizado — a guarda `if:` já pula os passos só-do-template no seu repo.)
@@ -182,6 +184,24 @@ Os quatro argumentos do `\begin`, na ordem, são: **(1)** as colunas do `tabular
 	}
 \end{algorithm}
 ```
+
+### Como cadastrar e citar Referências
+
+Cadastre as obras em `elementos-pos-textuais/referencias.bib` e cite no texto com `\cite{chave}` (citação entre parênteses) ou `\citeonline{chave}` (citação no corpo da frase). A lista "Referências" é gerada pelo `biblatex` com o estilo ABNT `biblatex-abnt` (backend `biber`) e só aparece quando há ao menos uma citação.
+
+**Atenção: o estilo não imprime todos os campos do `.bib`.** Em entradas `@techreport`, os campos `institution`, `type`, `number` (e também `publisher`) **não saem** na lista de referências; em `@misc`, não sai o `institution` (já `publisher` e `howpublished` saem). Aparecem apenas autor, título, local, ano e o campo `note`. Por isso, para relatórios técnicos (por exemplo, "Embrapa Acre, Comunicado Técnico 213"), coloque a instituição, a série e o número **no início do campo `note`**:
+
+```bibtex
+@techreport{silva2024,
+	author  = {Silva, João},
+	title   = {Efeito da adubação em pastagens},
+	address = {Rio Branco},
+	year    = {2024},
+	note    = {Embrapa Acre, Comunicado Técnico 213},
+}
+```
+
+A entrada acima sai na lista como: `AUTOR. Título. Rio Branco, 2024. Embrapa Acre, Comunicado Técnico 213.` (com o título em negrito, conforme o estilo). Sem `institution`/`publisher`, o `note` é o único lugar por onde a instituição e a série chegam ao PDF.
 
 ### Como preencher a Ficha Catalográfica
 
