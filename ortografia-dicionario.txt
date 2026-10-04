@@ -1,0 +1,43 @@
+# Dicionário do projeto para o verificar-ortografia.sh (make ortografia).
+#
+# Uma palavra por linha; "#" comenta. Palavras listadas aqui NUNCA geram aviso.
+# A comparação é EXATA, com maiúsculas e minúsculas: liste cada forma que aparece
+# no texto (ex.: Embrapa e EMBRAPA).
+#
+# Acrescente só palavras LEGÍTIMAS que o corretor desconhece (nomes próprios,
+# siglas, termos técnicos do seu documento). Nunca acrescente um erro para calar
+# o aviso: corrija o texto.
+
+# Nomes próprios
+Embrapa
+EMBRAPA
+LaTeX
+
+# Termo do próprio projeto (o template LaTeX); o CLAUDE.md pede para evitar
+# estrangeirismos quando há termo em português, mas "template" é o nome usado na
+# documentação, nas palavras-chave e no texto de exemplo
+template
+Template
+
+# Marcadores de enumeração em algarismos romanos, ex.: "(i) ...; (ii) ...; (iii) ..."
+ii
+iii
+
+# Compostos com hífen que o aspell não traz (o corretor do macOS aceita)
+desvio-padrão
+Desvio-padrão
+
+# Termos técnicos legítimos que faltam nos dicionários
+inferenciais
+
+# Expansão em inglês de sigla (a lista de siglas traz "Portable Document Format")
+Portable
+Document
+Format
+
+# Estrangeirismo consagrado no mercado de produtos agrícolas, usado como exemplo no
+# sumário executivo do modo corporativo (o CLAUDE.md pede para evitar estrangeirismos
+# quando há termo em português; troque se o seu documento puder dizer "produto
+# agrícola" ou "mercadoria")
+commodity
+Commodity

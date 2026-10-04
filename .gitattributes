@@ -1,0 +1,7 @@
+# Fins de linha: scripts de shell e o Makefile PRECISAM de LF.
+# Sem isto, o Git for Windows (core.autocrlf=true, o padrão) os extrai com CRLF e o
+# bash falha já na primeira linha útil ("set: pipefail\r: invalid option name"). Os
+# demais arquivos de texto (.tex, .bib, .md...) toleram CRLF e seguem o padrão de
+# cada máquina.
+*.sh      text eol=lf
+Makefile  text eol=lf

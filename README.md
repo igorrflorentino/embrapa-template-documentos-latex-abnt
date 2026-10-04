@@ -52,7 +52,8 @@ Além dos diretórios acima, a raiz do repositório traz arquivos que automatiza
 
 | Arquivo | Para que serve |
 |---|---|
-| `Makefile` | Atalhos de comando: `make` (compila), `make lint`, `make limpar` e `make ajuda`; para quem mantém o template, também `make exemplos` e `make verificar` |
+| `Makefile` | Atalhos de comando: `make` (compila), `make lint`, `make ortografia`, `make limpar` e `make ajuda`; para quem mantém o template, também `make exemplos` e `make verificar` |
+| `verificar-ortografia.sh` e `ortografia-dicionario.txt` | Checagem ortográfica de apoio (`make ortografia`); o dicionário lista as palavras legítimas que o corretor desconhece (veja "Como verificar a ortografia") |
 | `.latexmkrc` | Configura o `latexmk` para gerar o glossário e a lista de siglas automaticamente (`makeglossaries`) |
 | `.vscode/settings.json` | Receitas de compilação do LaTeX Workshop (VS Code), com o `main.tex` como arquivo raiz |
 | `.github/workflows/compilar-latex.yml` | CI do GitHub Actions: lint, compilação do `main.tex` e, depois do merge na `main`, publicação do PDF na release `pdf-latest` |
@@ -62,6 +63,16 @@ Além dos diretórios acima, a raiz do repositório traz arquivos que automatiza
 | `CLAUDE.md` | Orientações para agentes de IA (Claude Code) que trabalhem neste repositório |
 
 Os itens marcados *Só do template* testam o próprio modelo; num documento derivado, a CI pula automaticamente os passos correspondentes (veja o aviso "CI sem atrito" em "Por onde começo?").
+
+### Compatibilidade de sistemas operacionais
+
+| Sistema | Situação |
+|---|---|
+| **Linux** (Ubuntu) | **Testado automaticamente** a cada Pull Request pela CI: compilação do `main.tex`, exemplos, rede de regressão, lint e ortografia (com `aspell`). |
+| **macOS** | **Testado à mão** durante o desenvolvimento (TeX Live 2026): compilação, exemplos, regressão, lint e ortografia; os scripts rodam também com o bash 3.2 que vem no sistema. Não há teste automático. |
+| **Windows** | **Não testado.** Os scripts `.sh` e o `Makefile` precisam de um shell tipo Unix com GNU make: use o WSL ou o Git Bash (no PowerShell/cmd puros o `make lint` não funciona, pois o `find` e o `sort` do Windows são outros programas). O `.gitattributes` mantém os `.sh` e o `Makefile` com fim de linha LF; sem ele, o Git for Windows os converte para CRLF e o bash falha (reproduzido). A compilação em si (`latexmk`, `makeglossaries`) depende de TeX Live ou MiKTeX com Perl. |
+
+A checagem de ortografia precisa de `aspell` ou `hunspell` com o dicionário pt_BR (no macOS basta o verificador do sistema); sem eles, ela é pulada e avisa. Se você usa Windows e encontrar um problema, abra uma issue.
 
 # Por onde começo?
 
@@ -244,6 +255,15 @@ author = {family=Bastos, given=Luiz da Rocha, given-i={L.~da~R.}},   % BASTOS, L
 ```
 
 Escrita antes do sobrenome, a partícula não aparece na citação no texto (sai "Silva (2024)") e não altera a ordem alfabética, que segue o sobrenome. Se `da Silva` for de fato um sobrenome composto, escreva `{da Silva}, João` (sai "DA SILVA, J."). O erro é silencioso (o PDF compila normalmente), por isso o `./verificar-ocultamento.sh` emite um **aviso** (não bloqueante) quando encontra, no `referencias.bib`, um autor ou editor com partícula depois da vírgula. Se você vem de um documento que usava BibTeX, note que o truque `{\relax de}` (grupo com `\relax` em volta da partícula) **não funciona com o biber**: em teste, `Lopes, José Roberto {\relax de}` continuou saindo "LOPES, J. R. d.". Use as formas acima.
+
+### Como verificar a ortografia
+
+O template traz uma checagem ortográfica **de apoio**, que avisa mas não bloqueia: `make ortografia` (ou `./verificar-ortografia.sh`). Ela lê a prosa dos `.tex` de conteúdo, descarta comentários, matemática, chaves de `\label`/`\cite`/`\gls` e comandos, e usa o primeiro corretor que encontrar: `aspell` ou `hunspell` (ambos com o dicionário pt_BR instalado) ou, no macOS, o verificador do próprio sistema (bastam as Xcode Command Line Tools). A CI roda o mesmo script com o `aspell`, também sem bloquear.
+
+- **Idioma:** pt_BR por padrão. Um arquivo em outro idioma declara isso numa das 10 primeiras linhas, com um comentário mágico (o `abstract.tex`, que é em inglês, já traz): `% LTeX: language=en-US` (extensão LTeX do VS Code) e `% !TeX spellcheck = en_US` (TeXstudio e TeXworks).
+- **Palavras legítimas** (nomes próprios, siglas, termos técnicos do seu documento): acrescente-as ao `ortografia-dicionario.txt`, uma por linha; a comparação é exata, com maiúsculas e minúsculas. Nunca acrescente um erro para calar o aviso: corrija o texto.
+- **No editor:** a extensão LTeX do VS Code verifica ortografia e gramática enquanto você digita; o `.vscode/settings.json` já define `ltex.language` como `pt-BR`, e o comentário `% LTeX:` do `abstract.tex` troca para inglês naquele arquivo.
+- **Limites:** verifica só ortografia, não gramática nem as regras de estilo do CLAUDE.md (estrangeirismos, negrito etc.). No macOS, palavras que você já "aprendeu" no sistema também são aceitas.
 
 ### Como preencher a Ficha Catalográfica
 
