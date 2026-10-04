@@ -10,6 +10,11 @@ name: Compilar LaTeX
 # artefato "exemplos-pdf" — assim é possível ver cada tipo de documento sem
 # compilar nada localmente.
 #
+# Depois do merge (push na main), o job "publicar-pdf" deixa a ÚLTIMA versão do
+# PDF publicada no GitHub, numa release rolante de tag fixa "pdf-latest", com link
+# estável de download (…/releases/download/pdf-latest/main.pdf). O PDF continua
+# fora do git (/main.pdf no .gitignore): ele é publicado, não versionado.
+#
 # O workflow também: (a) roda o chktex como lint advisory dos arquivos de prosa
 # (não bloqueia o build) e (b) executa verificar-ocultamento.sh como rede de
 # REGRESSÃO da exibição automática de elementos opcionais (este BLOQUEIA o build
@@ -103,3 +108,42 @@ jobs:
             exemplo-corporativo.pdf
             exemplo-probatorio.pdf
           if-no-files-found: error
+
+  # Publica a ÚLTIMA versão do PDF no GitHub depois do merge: a cada push na main
+  # (ou execução manual na main), recria a release rolante "pdf-latest" com o
+  # main.pdf recém-compilado, mantendo um link estável de download:
+  #   https://github.com/<dono>/<repositório>/releases/download/pdf-latest/main.pdf
+  # Roda em job separado para que só ele tenha permissão de escrita (contents:
+  # write); o job "compilar" continua somente-leitura, inclusive nos Pull Requests.
+  # Se a compilação falhar, este job é pulado e a release anterior é preservada.
+  # Vale também para documentos derivados do template: cada repositório publica o
+  # seu próprio PDF.
+  publicar-pdf:
+    name: Publicar PDF (release pdf-latest)
+    needs: compilar
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Baixar o PDF compilado
+        uses: actions/download-artifact@v8
+        with:
+          name: main-pdf
+
+      - name: Atualizar a release "pdf-latest"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          # Recria a release (e a tag) para que apontem sempre para o commit
+          # recém-mergeado e carreguem somente a última versão do PDF. Fica fora
+          # de "Latest" para não competir com eventuais releases versionadas.
+          if gh release view pdf-latest >/dev/null 2>&1; then
+            gh release delete pdf-latest --cleanup-tag --yes
+          fi
+          gh release create pdf-latest main.pdf \
+            --target "$GITHUB_SHA" \
+            --title "PDF mais recente (main)" \
+            --notes "PDF compilado automaticamente a partir do commit ${GITHUB_SHA} da branch main." \
+            --latest=false
