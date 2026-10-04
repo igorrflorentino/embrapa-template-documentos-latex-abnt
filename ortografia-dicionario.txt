@@ -11,6 +11,21 @@
 # Nomes próprios
 Embrapa
 EMBRAPA
+LaTeX
+
+# Termo do próprio projeto (o template LaTeX); o CLAUDE.md pede para evitar
+# estrangeirismos quando há termo em português, mas "template" é o nome usado na
+# documentação, nas palavras-chave e no texto de exemplo
+template
+Template
+
+# Marcadores de enumeração em algarismos romanos, ex.: "(i) ...; (ii) ...; (iii) ..."
+ii
+iii
+
+# Compostos com hífen que o aspell não traz (o corretor do macOS aceita)
+desvio-padrão
+Desvio-padrão
 
 # Termos técnicos legítimos que faltam nos dicionários
 inferenciais
@@ -18,6 +33,7 @@ inferenciais
 # Expansão em inglês de sigla (a lista de siglas traz "Portable Document Format")
 Portable
 Document
+Format
 
 # Estrangeirismo consagrado no mercado de produtos agrícolas, usado como exemplo no
 # sumário executivo do modo corporativo (o CLAUDE.md pede para evitar estrangeirismos
