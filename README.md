@@ -46,6 +46,23 @@ Há **três tipos fundamentais**, escolhidos por `\tipodocumento{...}`. Cada tip
 └── figuras/                          # Diretório para figuras
 ```
 
+### Arquivos de apoio
+
+Além dos diretórios acima, a raiz do repositório traz arquivos que automatizam a compilação e a verificação. Você não precisa editá-los para escrever o seu documento:
+
+| Arquivo | Para que serve |
+|---|---|
+| `Makefile` | Atalhos de comando: `make` (compila), `make lint`, `make limpar` e `make ajuda`; para quem mantém o template, também `make exemplos` e `make verificar` |
+| `.latexmkrc` | Configura o `latexmk` para gerar o glossário e a lista de siglas automaticamente (`makeglossaries`) |
+| `.vscode/settings.json` | Receitas de compilação do LaTeX Workshop (VS Code), com o `main.tex` como arquivo raiz |
+| `.github/workflows/compilar-latex.yml` | CI do GitHub Actions: lint, compilação do `main.tex` e, depois do merge na `main`, publicação do PDF na release `pdf-latest` |
+| `.gitignore` | Mantém fora do git os arquivos gerados pela compilação (incluindo o `/main.pdf`) |
+| `gerar-exemplos.sh` e `exemplo-*.tex` | Showcase: um PDF de demonstração para cada tipo de documento (academico, publicacao, corporativo e probatorio). *Só do template* |
+| `verificar-ocultamento.sh` | Rede de regressão da exibição automática de elementos opcionais, mais duas checagens de aviso (Lista de Símbolos e partículas em nomes do `.bib`). *Só do template* |
+| `CLAUDE.md` | Orientações para agentes de IA (Claude Code) que trabalhem neste repositório |
+
+Os itens marcados *Só do template* testam o próprio modelo; num documento derivado, a CI pula automaticamente os passos correspondentes (veja o aviso "CI sem atrito" em "Por onde começo?").
+
 # Por onde começo?
 
 1. Abra o arquivo `main.tex` e configure os dados do seu documento:
