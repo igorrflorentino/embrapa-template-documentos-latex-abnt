@@ -137,8 +137,12 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           # Recria a release (e a tag) para que apontem sempre para o commit
-          # recém-mergeado e carreguem somente a última versão do PDF. Fica fora
-          # de "Latest" para não competir com eventuais releases versionadas.
+          # recém-mergeado e carreguem somente a última versão do PDF. É criada como
+          # pré-lançamento (--prerelease) porque o GitHub nunca marca um
+          # pré-lançamento como "Latest", o que evita competir com eventuais
+          # releases versionadas. (O --latest=false sozinho NÃO bastou: a API
+          # /releases/latest continuou devolvendo esta release.) O link de download
+          # direto funciona normalmente para pré-lançamentos.
           if gh release view pdf-latest >/dev/null 2>&1; then
             gh release delete pdf-latest --cleanup-tag --yes
           fi
@@ -146,4 +150,4 @@ jobs:
             --target "$GITHUB_SHA" \
             --title "PDF mais recente (main)" \
             --notes "PDF compilado automaticamente a partir do commit ${GITHUB_SHA} da branch main." \
-            --latest=false
+            --prerelease
