@@ -243,7 +243,7 @@ author = {da Silva, João and de Lopes, José Roberto},   % SILVA, J. da; LOPES,
 author = {family=Bastos, given=Luiz da Rocha, given-i={L.~da~R.}},   % BASTOS, L. da R.
 ```
 
-Escrita antes do sobrenome, a partícula não aparece na citação no texto (sai "Silva (2024)") e não altera a ordem alfabética, que segue o sobrenome. Se `da Silva` for de fato um sobrenome composto, escreva `{da Silva}, João` (sai "DA SILVA, J."). O erro é silencioso (o PDF compila normalmente), por isso o `./verificar-ocultamento.sh` emite um **aviso** (não bloqueante) quando encontra, no `referencias.bib`, um autor ou editor com partícula depois da vírgula.
+Escrita antes do sobrenome, a partícula não aparece na citação no texto (sai "Silva (2024)") e não altera a ordem alfabética, que segue o sobrenome. Se `da Silva` for de fato um sobrenome composto, escreva `{da Silva}, João` (sai "DA SILVA, J."). O erro é silencioso (o PDF compila normalmente), por isso o `./verificar-ocultamento.sh` emite um **aviso** (não bloqueante) quando encontra, no `referencias.bib`, um autor ou editor com partícula depois da vírgula. Se você vem de um documento que usava BibTeX, note que o truque `{\relax de}` (grupo com `\relax` em volta da partícula) **não funciona com o biber**: em teste, `Lopes, José Roberto {\relax de}` continuou saindo "LOPES, J. R. d.". Use as formas acima.
 
 ### Como preencher a Ficha Catalográfica
 
