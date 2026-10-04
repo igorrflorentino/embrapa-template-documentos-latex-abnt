@@ -65,6 +65,18 @@ jobs:
         continue-on-error: true
         run: find elementos-textuais elementos-pre-textuais elementos-pos-textuais -name '*.tex' -print0 | sort -z | xargs -0 chktex -q -n1 -n8 -n12 -n24 -n36 -n38 -n44
 
+      # Ortografia ADVISORY: um aviso por palavra suspeita na prosa dos .tex (pt_BR; o
+      # abstract.tex declara en_US por comentário mágico), sem bloquear o build. Usa o
+      # dicionário do projeto (ortografia-dicionario.txt). Instala o aspell aqui mesmo:
+      # como o passo inteiro é advisory, uma falha de instalação não derruba o build.
+      # Pulado em repositórios que não têm o verificar-ortografia.sh.
+      - name: Ortografia (aspell, advisory)
+        if: hashFiles('verificar-ortografia.sh') != ''
+        continue-on-error: true
+        run: |
+          sudo apt-get install -y -qq aspell aspell-pt-br aspell-en
+          bash verificar-ortografia.sh
+
       # Roda latexmk dentro de uma imagem TeX Live completa (inclui abntex2,
       # glossaries, makeglossaries, makeindex etc.). O .latexmkrc do repositório
       # é respeitado, então o glossário e a lista de siglas são gerados.
