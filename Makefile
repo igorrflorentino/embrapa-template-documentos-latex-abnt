@@ -2,7 +2,7 @@
 # Requer latexmk (compilação) e, para `make lint`, chktex — ambos vêm no
 # TeX Live. Rode `make` (ou `make ajuda`) para ver os alvos.
 
-.PHONY: all pdf exemplos verificar lint limpar ajuda
+.PHONY: all pdf exemplos verificar lint ortografia limpar ajuda
 
 # Arquivos de prosa para o lint: capítulos, pré-textuais e pós-textuais (apêndices
 # e anexos), em QUALQUER profundidade de subpasta (ex.: elementos-textuais/probatorio/).
@@ -38,6 +38,10 @@ verificar:
 ## lint     Análise estática (chktex) dos arquivos de prosa
 lint:
 	chktex -q $(CHKTEX_SILENCIA) $(FONTES_PROSA)
+
+## ortografia Checagem ortográfica (advisory) da prosa: aspell, hunspell ou corretor do macOS
+ortografia:
+	bash verificar-ortografia.sh
 
 ## limpar   Remove artefatos de compilação (inclui exemplos e listas geradas)
 limpar:
