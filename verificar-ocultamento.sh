@@ -20,6 +20,10 @@
 # existem quando a lista correspondente é de fato impressa.
 # Extras (errata, símbolos, dedicatória…): usam o texto do PDF, via pdftotext
 # (preferido) ou ghostscript (fallback); são pulados se nenhum estiver presente.
+# Advisory (só emitem AVISO; não reprovam nem alteram o código de saída):
+#  - congruência da Lista de Símbolos (símbolo listado e ausente do corpo);
+#  - partículas (da/das/de/do/dos) nos nomes de author/editor do referencias.bib,
+#    que o giveninits=true abreviaria (ex.: "SILVA, J. d.").
 #
 # Uso:
 #   ./verificar-ocultamento.sh              # compila do zero e verifica
