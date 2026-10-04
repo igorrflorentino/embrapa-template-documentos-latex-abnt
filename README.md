@@ -203,6 +203,18 @@ Cadastre as obras em `elementos-pos-textuais/referencias.bib` e cite no texto co
 
 A entrada acima sai na lista como: `AUTOR. Título. Rio Branco, 2024. Embrapa Acre, Comunicado Técnico 213.` (com o título em negrito, conforme o estilo). Sem `institution`/`publisher`, o `note` é o único lugar por onde a instituição e a série chegam ao PDF.
 
+**Atenção: nomes com partícula (`da`, `de`, `do`, `das`, `dos`).** Como o template abrevia os prenomes (`giveninits=true`), uma partícula escrita depois do prenome é abreviada junto: `Silva, João da` sai "SILVA, J. d." e `Souza, Maria de Fátima` sai "SOUZA, M. d. F.". A prática da Embrapa (veja a [Circular Técnica 27](https://www.infoteca.cnptia.embrapa.br/infoteca/bitstream/doc/984719/1/CT27.pdf)) mantém a partícula por extenso e em minúscula, como em "LOPES, J. R. de". Para obter isso:
+
+```bibtex
+% Partícula depois do prenome: escreva-a ANTES do sobrenome
+author = {da Silva, João and de Lopes, José Roberto},   % SILVA, J. da; LOPES, J. R. de
+
+% Partícula no meio dos prenomes: informe as iniciais à mão (formato estendido)
+author = {family=Bastos, given=Luiz da Rocha, given-i={L.~da~R.}},   % BASTOS, L. da R.
+```
+
+Escrita antes do sobrenome, a partícula não aparece na citação no texto (sai "Silva (2024)") e não altera a ordem alfabética, que segue o sobrenome. Se `da Silva` for de fato um sobrenome composto, escreva `{da Silva}, João` (sai "DA SILVA, J."). O erro é silencioso (o PDF compila normalmente), por isso o `./verificar-ocultamento.sh` emite um **aviso** (não bloqueante) quando encontra, no `referencias.bib`, um autor ou editor com partícula depois da vírgula.
+
 ### Como preencher a Ficha Catalográfica
 
 A ficha catalográfica é gerada automaticamente em LaTeX a partir dos campos definidos no `main.tex` — **não é mais necessário anexar um PDF externo**. Preencha os campos no bloco *Informação da Ficha Catalográfica*:
