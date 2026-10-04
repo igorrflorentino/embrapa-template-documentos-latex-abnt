@@ -183,6 +183,24 @@ Os quatro argumentos do `\begin`, na ordem, são: **(1)** as colunas do `tabular
 \end{algorithm}
 ```
 
+### Como cadastrar e citar Referências
+
+Cadastre as obras em `elementos-pos-textuais/referencias.bib` e cite no texto com `\cite{chave}` (citação entre parênteses) ou `\citeonline{chave}` (citação no corpo da frase). A lista "Referências" é gerada pelo `biblatex` com o estilo ABNT `biblatex-abnt` (backend `biber`) e só aparece quando há ao menos uma citação.
+
+**Atenção: o estilo não imprime todos os campos do `.bib`.** Em entradas `@techreport`, os campos `institution`, `type`, `number` (e também `publisher`) **não saem** na lista de referências; em `@misc`, não sai o `institution` (já `publisher` e `howpublished` saem). Aparecem apenas autor, título, local, ano e o campo `note`. Por isso, para relatórios técnicos (por exemplo, "Embrapa Acre, Comunicado Técnico 213"), coloque a instituição, a série e o número **no início do campo `note`**:
+
+```bibtex
+@techreport{silva2024,
+	author  = {Silva, João},
+	title   = {Efeito da adubação em pastagens},
+	address = {Rio Branco},
+	year    = {2024},
+	note    = {Embrapa Acre, Comunicado Técnico 213},
+}
+```
+
+A entrada acima sai na lista como: `AUTOR. Título. Rio Branco, 2024. Embrapa Acre, Comunicado Técnico 213.` (com o título em negrito, conforme o estilo). Sem `institution`/`publisher`, o `note` é o único lugar por onde a instituição e a série chegam ao PDF.
+
 ### Como preencher a Ficha Catalográfica
 
 A ficha catalográfica é gerada automaticamente em LaTeX a partir dos campos definidos no `main.tex` — **não é mais necessário anexar um PDF externo**. Preencha os campos no bloco *Informação da Ficha Catalográfica*:
