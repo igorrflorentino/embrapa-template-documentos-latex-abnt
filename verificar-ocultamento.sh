@@ -23,7 +23,9 @@
 # Advisory (só emitem AVISO; não reprovam nem alteram o código de saída):
 #  - congruência da Lista de Símbolos (símbolo listado e ausente do corpo);
 #  - partículas (da/das/de/do/dos) nos nomes de author/editor do referencias.bib,
-#    que o giveninits=true abreviaria (ex.: "SILVA, J. d.").
+#    que o giveninits=true abreviaria (ex.: "SILVA, J. d.");
+#  - elementos sem referência no texto (\label de fig/tab/qua/alg/eq/ap/an que
+#    nenhum \ref/\autoref cita).
 #
 # Uso:
 #   ./verificar-ocultamento.sh              # compila do zero e verifica
@@ -237,6 +239,51 @@ else
 		}
 	' "$BIB_FILE")
 	[ "$n_part" -eq 0 ] && ok "nenhum autor/editor com partícula nos prenomes em $BIB_FILE"
+fi
+
+echo
+echo "== Elementos sem referência no texto (advisory, não-bloqueante) =="
+# Regra do projeto (CLAUDE.md, "Revisão Final"): nenhum elemento gráfico (figura,
+# tabela, quadro, algoritmo…) deve ficar sem um comentário no texto que o
+# contextualize. Este check ADVERTE (sem reprovar) quando um \label de elemento
+# nunca é citado por um \ref no corpo do documento.
+#
+# É uma HEURÍSTICA de fonte, propositalmente simples:
+#  - rótulos checados: os de prefixos fig:, tab:, qua:, alg:, eq:, ap: e an: (veja
+#    PREFIXOS_REF; cap: e sec: ficam de fora, pois se navega por eles no sumário);
+#  - conta como referência qualquer \ref, \pageref, \autoref, \eqref, \vref, \cref,
+#    \Cref, \nameref ou \hyperref[…] — o template usa \autoref, então procurar só
+#    \ref/\pageref marcaria TODOS os rótulos como órfãos;
+#  - lê main.tex e todos os .tex de elementos-textuais, elementos-pre-textuais e
+#    elementos-pos-textuais (qualquer subpasta), sem os comentários (%…);
+#  - referências feitas fora desses arquivos (ex.: dentro de um .sty) não contam.
+PREFIXOS_REF='fig|tab|qua|alg|eq|ap|an'
+fontes_ref="$(find main.tex elementos-textuais elementos-pre-textuais elementos-pos-textuais -name '*.tex' 2>/dev/null | sort)"
+if [ -z "$fontes_ref" ]; then
+	echo "  (nenhum .tex encontrado — check pulado)"
+else
+	sem_comentarios() { sed -E 's/(^|[^\\])%.*/\1/; s/^[[:space:]]*%.*//' "$@"; }
+	# Chaves citadas por algum comando de referência cruzada (uma por linha).
+	# shellcheck disable=SC2086  # $fontes_ref é uma lista de caminhos sem espaços
+	usados_ref="$(sem_comentarios $fontes_ref \
+	             | { grep -oE '\\(page|auto|eq|v|c|C|name)?ref\{[^}]+\}|\\hyperref\[[^]]+\]' || true; } \
+	             | sed -E 's/^\\hyperref\[//; s/\]$//; s/^\\[A-Za-z]*ref\{//; s/\}$//' | sort -u)"
+	n_orf=0
+	n_rot=0
+	# Substituição de processo (e não pipe) para o contador sobreviver ao subshell.
+	while IFS='|' read -r arq rotulo; do
+		[ -z "$rotulo" ] && continue
+		n_rot=$((n_rot + 1))
+		if ! printf '%s\n' "$usados_ref" | grep -qxF -- "$rotulo"; then
+			n_orf=$((n_orf + 1))
+			aviso "rótulo '$rotulo' ($arq) não é citado por nenhum \\ref/\\autoref no texto — comente o elemento no corpo ou remova-o (CLAUDE.md, \"Revisão Final\")"
+		fi
+	done < <(for f in $fontes_ref; do
+	             sem_comentarios "$f" \
+	             | { grep -oE '\\label\{('"$PREFIXOS_REF"'):[^}]+\}' || true; } \
+	             | sed -E 's#^\\label\{#'"$f"'|#; s#\}$##'
+	         done)
+	[ "$n_orf" -eq 0 ] && ok "todos os $n_rot rótulos de elementos ($PREFIXOS_REF) são citados no texto"
 fi
 
 echo

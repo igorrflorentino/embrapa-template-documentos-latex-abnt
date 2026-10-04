@@ -78,7 +78,7 @@ Os itens marcados *Só do template* testam o próprio modelo; num documento deri
 
 > **Quer ver todos os tipos de uma vez?** Rode `./gerar-exemplos.sh` para gerar `exemplo-academico.pdf` (tese), `exemplo-publicacao.pdf` (boletim), `exemplo-corporativo.pdf` (análise) e `exemplo-probatorio.pdf` (comprovação de período probatório) — uma amostra de cada modo. (A CI também publica esses PDFs como artefato `exemplos-pdf` em cada Pull Request.)
 
-> **Onde fica o PDF?** Ao compilar, o PDF mais recente fica sempre em `main.pdf`, na raiz do projeto (o arquivo é ignorado pelo git). Depois que as mudanças entram na branch `main` (merge), a CI recompila e publica a última versão no GitHub, na release `pdf-latest` (aba *Releases*), com link estável de download: `https://github.com/<dono>/<repositório>/releases/download/pdf-latest/main.pdf`. No GitHub, essa release aparece marcada como *Pre-release*, de propósito (assim ela nunca disputa o selo "Latest" com releases versionadas); o link de download funciona normalmente.
+> **Onde fica o PDF?** Ao compilar, o PDF mais recente fica sempre em `main.pdf`, na raiz do projeto (o arquivo é ignorado pelo git). Depois que as mudanças entram na branch `main` (merge), a CI recompila e publica a última versão no GitHub, na release `pdf-latest` (aba *Releases*), com link estável de download: `https://github.com/<dono>/<repositório>/releases/download/pdf-latest/main.pdf`. No GitHub, essa release aparece marcada como *Pre-release*, de propósito (assim ela nunca disputa o selo "Latest" com releases versionadas); o link de download funciona normalmente. **Em repositório privado**, porém, esse link só funciona para quem está logado no GitHub com acesso ao repositório: sem autenticação ele devolve 404 (comportamento verificado em um documento derivado privado, com o asset presente e publicado). Nesse caso, baixe pela aba *Releases* já logado ou, pelo terminal autenticado, com `gh release download pdf-latest --pattern main.pdf`.
 
 > **Atalhos:** há um `Makefile` com `make` (compila), `make exemplos`, `make lint` (chktex), `make verificar` (rede de regressão) e `make limpar`. Rode `make ajuda` para a lista.
 
@@ -108,6 +108,19 @@ Veja a seguir como inserir alguns elementos no seu texto.
 ```
 
 > **Espaçamento das linhas — use comandos, não ambientes.** Dentro de `\EMBRAPAtab`/`\EMBRAPAqua`/`\EMBRAPAfig`, ajuste o espaçamento com **comandos** — `\renewcommand{\arraystretch}{0.9}` (antes do `tabular`) ou `\linespread{1}\selectfont` — e **nunca** com ambientes de espaçamento (`SingleSpace`, `spacing`, `Spacing`…). Esses encapsuladores medem o conteúdo num `\hbox` (modo restrito), onde os comandos verticais desses ambientes causam **erro fatal** (`Missing \endgroup`). Para tabelas que passam de uma página, use a **Tabela longa** abaixo (e não um ambiente de espaçamento para "encolher" a tabela).
+
+> **Tabela larga (muitas colunas) passando da margem?** Se o LaTeX avisar `Overfull \hbox` numa tabela de 6 ou 7 colunas, reduza o espaço lateral das células com **um comando** dentro do `\EMBRAPAtab`, antes do `\begin{tabular}`:
+>
+> ```tex
+> \EMBRAPAtab{}{
+> 	\setlength{\tabcolsep}{4pt}   % espaço lateral das células (o padrão é 6pt)
+> 	\begin{tabular}{lcccccc}
+> 		...
+> 	\end{tabular}
+> }{ \Fonte{Elaborado pelo autor} }
+> ```
+>
+> O ajuste vale só para aquela tabela (não "vaza" para as seguintes). Em testes com 7 colunas, ele eliminou um estouro de 6,9pt e recupera cerca de 25pt no máximo; se ainda não couber, encurte os cabeçalhos, reduza a fonte da tabela (`\small` ou `\footnotesize`, também como **comando**) ou use colunas de largura fixa (`p{3cm}`).
 
 ### Como inserir um Quadro
 ```tex
@@ -230,7 +243,7 @@ author = {da Silva, João and de Lopes, José Roberto},   % SILVA, J. da; LOPES,
 author = {family=Bastos, given=Luiz da Rocha, given-i={L.~da~R.}},   % BASTOS, L. da R.
 ```
 
-Escrita antes do sobrenome, a partícula não aparece na citação no texto (sai "Silva (2024)") e não altera a ordem alfabética, que segue o sobrenome. Se `da Silva` for de fato um sobrenome composto, escreva `{da Silva}, João` (sai "DA SILVA, J."). O erro é silencioso (o PDF compila normalmente), por isso o `./verificar-ocultamento.sh` emite um **aviso** (não bloqueante) quando encontra, no `referencias.bib`, um autor ou editor com partícula depois da vírgula.
+Escrita antes do sobrenome, a partícula não aparece na citação no texto (sai "Silva (2024)") e não altera a ordem alfabética, que segue o sobrenome. Se `da Silva` for de fato um sobrenome composto, escreva `{da Silva}, João` (sai "DA SILVA, J."). O erro é silencioso (o PDF compila normalmente), por isso o `./verificar-ocultamento.sh` emite um **aviso** (não bloqueante) quando encontra, no `referencias.bib`, um autor ou editor com partícula depois da vírgula. Se você vem de um documento que usava BibTeX, note que o truque `{\relax de}` (grupo com `\relax` em volta da partícula) **não funciona com o biber**: em teste, `Lopes, José Roberto {\relax de}` continuou saindo "LOPES, J. R. d.". Use as formas acima.
 
 ### Como preencher a Ficha Catalográfica
 

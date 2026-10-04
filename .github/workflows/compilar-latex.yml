@@ -56,10 +56,14 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq chktex poppler-utils
 
       # Lint ADVISORY: aponta problemas de prosa (ex.: falta de ~ antes de
-      # citação) sem bloquear o build. As mesmas supressões do `make lint`.
+      # citação) sem bloquear o build. As mesmas supressões e os mesmos arquivos do
+      # `make lint`: todos os .tex de elementos-textuais, elementos-pre-textuais e
+      # elementos-pos-textuais, em qualquer profundidade de subpasta (um glob fixo
+      # deixaria de fora capítulos em subpastas). Se o seu documento usar outras
+      # pastas, ajuste o `find` aqui e no Makefile.
       - name: Lint (chktex, advisory)
         continue-on-error: true
-        run: chktex -q -n1 -n8 -n12 -n24 -n36 -n38 -n44 elementos-textuais/*.tex elementos-pre-textuais/*.tex
+        run: find elementos-textuais elementos-pre-textuais elementos-pos-textuais -name '*.tex' -print0 | sort -z | xargs -0 chktex -q -n1 -n8 -n12 -n24 -n36 -n38 -n44
 
       # Roda latexmk dentro de uma imagem TeX Live completa (inclui abntex2,
       # glossaries, makeglossaries, makeindex etc.). O .latexmkrc do repositório
