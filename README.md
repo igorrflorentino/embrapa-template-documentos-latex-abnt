@@ -109,6 +109,19 @@ Veja a seguir como inserir alguns elementos no seu texto.
 
 > **Espaçamento das linhas — use comandos, não ambientes.** Dentro de `\EMBRAPAtab`/`\EMBRAPAqua`/`\EMBRAPAfig`, ajuste o espaçamento com **comandos** — `\renewcommand{\arraystretch}{0.9}` (antes do `tabular`) ou `\linespread{1}\selectfont` — e **nunca** com ambientes de espaçamento (`SingleSpace`, `spacing`, `Spacing`…). Esses encapsuladores medem o conteúdo num `\hbox` (modo restrito), onde os comandos verticais desses ambientes causam **erro fatal** (`Missing \endgroup`). Para tabelas que passam de uma página, use a **Tabela longa** abaixo (e não um ambiente de espaçamento para "encolher" a tabela).
 
+> **Tabela larga (muitas colunas) passando da margem?** Se o LaTeX avisar `Overfull \hbox` numa tabela de 6 ou 7 colunas, reduza o espaço lateral das células com **um comando** dentro do `\EMBRAPAtab`, antes do `\begin{tabular}`:
+>
+> ```tex
+> \EMBRAPAtab{}{
+> 	\setlength{\tabcolsep}{4pt}   % espaço lateral das células (o padrão é 6pt)
+> 	\begin{tabular}{lcccccc}
+> 		...
+> 	\end{tabular}
+> }{ \Fonte{Elaborado pelo autor} }
+> ```
+>
+> O ajuste vale só para aquela tabela (não "vaza" para as seguintes). Em testes com 7 colunas, ele eliminou um estouro de 6,9pt e recupera cerca de 25pt no máximo; se ainda não couber, encurte os cabeçalhos, reduza a fonte da tabela (`\small` ou `\footnotesize`, também como **comando**) ou use colunas de largura fixa (`p{3cm}`).
+
 ### Como inserir um Quadro
 ```tex
 \begin{quadro}[h!]	
