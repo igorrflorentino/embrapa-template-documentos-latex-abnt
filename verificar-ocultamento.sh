@@ -161,6 +161,81 @@ else
 fi
 
 echo
+echo "== Partículas nos nomes de autores do .bib (advisory, não-bloqueante) =="
+# Com giveninits=true (lib/preambulo.tex) o biblatex abrevia TODAS as palavras do
+# prenome, inclusive partículas minúsculas: "Silva, João da" sai "SILVA, J. d." e
+# "Souza, Maria de Fátima" sai "SOUZA, M. d. F.". A prática da Embrapa mantém a
+# partícula por extenso ("SILVA, J. da"), o que se obtém escrevendo-a ANTES do
+# sobrenome ("da Silva, João") ou informando given-i à mão (ver README). O erro é
+# SILENCIOSO (o PDF compila normalmente), então este check ADVERTE (sem reprovar)
+# quando um autor/editor do .bib tem da/das/de/do/dos depois da vírgula.
+#
+# É uma HEURÍSTICA de fonte, propositalmente conservadora:
+#  - olha campos author/editor no formato "Sobrenome, Prenomes", em qualquer
+#    posição da linha (inclusive entrada inteira numa linha só); valores que se
+#    estendem por várias linhas, autor corporativo {{...}} e o formato estendido
+#    family=… são ignorados;
+#  - linhas comentadas com % são ignoradas;
+#  - só roda se o giveninits=true estiver ativo no preâmbulo (sem ele, os nomes
+#    saem como digitados e não há o que avisar).
+BIB_FILE="elementos-pos-textuais/referencias.bib"
+if [ ! -f "$BIB_FILE" ]; then
+	echo "  (arquivo .bib não encontrado — check pulado)"
+elif ! grep -qE '^[^%]*giveninits[[:space:]]*=[[:space:]]*true' lib/preambulo.tex 2>/dev/null; then
+	echo "  (giveninits=true inativo — prenomes não são abreviados; check pulado)"
+else
+	n_part=0
+	# Cada linha de saída do awk é "chave|nome". O laço lê por substituição de
+	# processo (e não por pipe) para que o contador sobreviva ao subshell.
+	while IFS='|' read -r chave nome; do
+		[ -z "$nome" ] && continue
+		n_part=$((n_part + 1))
+		aviso "entrada '$chave': \"$nome\" sairá com a partícula abreviada (ex.: \"J. d.\"); escreva a partícula antes do sobrenome (\"da Silva, João\") ou use given-i (ver README)"
+	done < <(awk '
+		# Analisa um valor de author/editor (sem os delimitadores externos).
+		function analisa(v,    n, nomes, i, nome, given) {
+			n = split(v, nomes, / and /)
+			for (i = 1; i <= n; i++) {
+				nome = nomes[i]
+				gsub(/\t/, " ", nome)
+				sub(/^[[:space:]]+/, "", nome); sub(/[[:space:]]+$/, "", nome)
+				if (nome == "" || nome ~ /=/ || nome ~ /^\{/ || nome !~ /,/) continue
+				given = nome
+				sub(/^[^,]*,[[:space:]]*/, "", given)    # prenomes = depois da 1ª vírgula
+				if ((" " given " ") ~ / (da|das|de|do|dos) /) print chave "|" nome
+			}
+		}
+		/^[[:space:]]*%/ { next }
+		{
+			linha = $0
+			# Chave da entrada (funciona também com a entrada inteira numa linha).
+			if (match(linha, /^[[:space:]]*@[A-Za-z]+[[:space:]]*[{(][[:space:]]*[^,[:space:]]+/)) {
+				chave = substr(linha, RSTART, RLENGTH)
+				sub(/^[[:space:]]*@[A-Za-z]+[[:space:]]*[{(][[:space:]]*/, "", chave)
+			}
+			# Cada author=/editor= da linha; o valor é extraído casando as chaves.
+			while (match(linha, /(^|[^A-Za-z_])(author|editor)[[:space:]]*=[[:space:]]*[{"]/)) {
+				ini = RSTART + RLENGTH - 1               # posição do delimitador de abertura
+				delim = substr(linha, ini, 1)
+				prof = 0; v = ""; fim = 0
+				for (k = ini + 1; k <= length(linha); k++) {
+					c = substr(linha, k, 1)
+					if (delim == "{") {
+						if (c == "{") prof++
+						else if (c == "}") { if (prof == 0) { fim = k; break } prof-- }
+					} else if (c == "\"") { fim = k; break }
+					v = v c
+				}
+				if (!fim) break                          # valor continua em outra linha: ignora
+				analisa(v)
+				linha = substr(linha, fim + 1)
+			}
+		}
+	' "$BIB_FILE")
+	[ "$n_part" -eq 0 ] && ok "nenhum autor/editor com partícula nos prenomes em $BIB_FILE"
+fi
+
+echo
 if [ "$falhas" -eq 0 ]; then
 	echo "RESULTADO: todas as verificações passaram. ✓"
 else
