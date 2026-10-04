@@ -4,11 +4,21 @@
 % Para citar no texto, use: \cite{chave} ou \citeonline{chave}
 %
 % Exemplos de formatos:
+%
+% Nomes com partícula (da, de, do, das, dos): com os prenomes abreviados
+% (giveninits=true no preambulo), "Silva, João da" sai "SILVA, J. d." — a
+% partícula é abreviada junto. Para sair "SILVA, J. da" (como na prática da
+% Embrapa), escreva a partícula ANTES do sobrenome: "da Silva, João". Ela não
+% aparece nas citações nem interfere na ordem alfabética (que segue "Silva").
+% Se a partícula estiver NO MEIO dos prenomes (ex.: "Luiz da Rocha Bastos"),
+% informe as iniciais à mão: author={family=Bastos, given=Luiz da Rocha,
+% given-i={L.~da~R.}} (sai "BASTOS, L. da R."). Ver o README (seção "Como
+% cadastrar e citar Referências").
 
 % Artigo de periódico
 @article{exemplo-artigo,
 	title={Um Estudo Sobre Métodos de Análise de Dados},
-	author={Silva, João da and Souza, Maria de},
+	author={da Silva, João and de Souza, Maria},
 	journal={Revista Brasileira de Pesquisa},
 	volume={10},
 	number={2},
