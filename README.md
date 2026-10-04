@@ -64,6 +64,16 @@ Além dos diretórios acima, a raiz do repositório traz arquivos que automatiza
 
 Os itens marcados *Só do template* testam o próprio modelo; num documento derivado, a CI pula automaticamente os passos correspondentes (veja o aviso "CI sem atrito" em "Por onde começo?").
 
+### Compatibilidade de sistemas operacionais
+
+| Sistema | Situação |
+|---|---|
+| **Linux** (Ubuntu) | **Testado automaticamente** a cada Pull Request pela CI: compilação do `main.tex`, exemplos, rede de regressão, lint e ortografia (com `aspell`). |
+| **macOS** | **Testado à mão** durante o desenvolvimento (TeX Live 2026): compilação, exemplos, regressão, lint e ortografia; os scripts rodam também com o bash 3.2 que vem no sistema. Não há teste automático. |
+| **Windows** | **Não testado.** Os scripts `.sh` e o `Makefile` precisam de um shell tipo Unix com GNU make: use o WSL ou o Git Bash (no PowerShell/cmd puros o `make lint` não funciona, pois o `find` e o `sort` do Windows são outros programas). O `.gitattributes` mantém os `.sh` e o `Makefile` com fim de linha LF; sem ele, o Git for Windows os converte para CRLF e o bash falha (reproduzido). A compilação em si (`latexmk`, `makeglossaries`) depende de TeX Live ou MiKTeX com Perl. |
+
+A checagem de ortografia precisa de `aspell` ou `hunspell` com o dicionário pt_BR (no macOS basta o verificador do sistema); sem eles, ela é pulada e avisa. Se você usa Windows e encontrar um problema, abra uma issue.
+
 # Por onde começo?
 
 1. Abra o arquivo `main.tex` e configure os dados do seu documento:
