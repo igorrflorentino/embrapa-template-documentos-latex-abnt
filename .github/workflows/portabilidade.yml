@@ -22,9 +22,6 @@ name: "Portabilidade (manual: Linux, macOS e Windows)"
 # Vampire/setup-wsl) e instalações do Chocolatey que podem mudar com o tempo. Um
 # documento derivado que não precise disso pode apagar este arquivo.
 on:
-  # TEMPORARIO (validacao antes do merge): sera removido.
-  push:
-    branches: ['claude/workflow-portabilidade-manual']
   workflow_dispatch:
     inputs:
       incluir_wsl:
@@ -228,7 +225,7 @@ jobs:
 
   windows-wsl:
     name: Windows - WSL2 (Ubuntu 24.04)
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.incluir_wsl }}
+    if: ${{ inputs.incluir_wsl }}
     runs-on: windows-latest
     timeout-minutes: 45
     steps:
@@ -284,7 +281,7 @@ jobs:
 
   windows-miktex:
     name: Windows - MiKTeX (compila o template)
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.incluir_miktex }}
+    if: ${{ inputs.incluir_miktex }}
     runs-on: windows-latest
     timeout-minutes: 120
     steps:
