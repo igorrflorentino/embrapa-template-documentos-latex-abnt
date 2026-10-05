@@ -116,6 +116,26 @@ else
 	tem  "Glossário (entrada)"    "atividade econômica que engloba"
 	tem  "Tabela longa do apêndice (\\EMBRAPAtablonga)" "amostras de solo coletadas"
 	some "Lista de Códigos-Fonte (título)" "Lista de Códigos-Fonte"
+
+	# Ficha catalográfica: com \numeropaginas{} vazio o total é automático e
+	# precisa bater com o número real de páginas do PDF, medido por fora (pdfinfo
+	# ou ghostscript), e não pelo mesmo mecanismo do template. O padrão assume o
+	# conteúdo-exemplo do main.tex (il. color., 21 cm); ajuste se mudá-lo.
+	paginas_pdf="$(
+		if command -v pdfinfo >/dev/null 2>&1; then
+			pdfinfo main.pdf 2>/dev/null | awk '/^Pages:/ {print $2}'
+		elif command -v gs >/dev/null 2>&1; then
+			gs -q -dNODISPLAY -dNOSAFER -c "(main.pdf) (r) file runpdfbegin pdfpagecount = quit" 2>/dev/null
+		fi
+	)"
+	paginas_ficha="$(printf '%s' "$TXT" | grep -oE '[0-9]+p\.:il\.color\.;21cm\.' | head -n 1 | sed 's/p\..*//')"
+	if [ -z "$paginas_pdf" ]; then
+		echo "  (pdfinfo/ghostscript indisponíveis — número de páginas da ficha pulado)"
+	elif [ "$paginas_ficha" = "$paginas_pdf" ]; then
+		ok "ficha catalográfica: $paginas_ficha p. = total de páginas do PDF"
+	else
+		falha "ficha catalográfica deveria dizer '$paginas_pdf p.' (total do PDF); encontrado: '${paginas_ficha:-nada}'"
+	fi
 fi
 
 echo
