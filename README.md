@@ -98,7 +98,7 @@ Se o seu documento nasceu como uma **cópia** do template (sem histórico git em
 
 | Copie do template (leia o `diff` antes) | É seu: não sobrescreva |
 |---|---|
-| `lib/embrapatex.sty` e `lib/preambulo.tex` (se você acrescentou pacotes ao preâmbulo, aplique as mudanças à mão) | `main.tex`: os metadados; acrescente à mão só os comandos novos que quiser |
+| `lib/embrapatex.sty` e `lib/preambulo.tex` (se você acrescentou pacotes ao preâmbulo, aplique as mudanças à mão). **Se o seu documento ainda usa `abntex2cite`, não copie esses dois**: no template eles já usam `biblatex-abnt` e o `biber`, e a cópia quebraria o seu documento (veja o aviso abaixo) | `main.tex`: os metadados; acrescente à mão só os comandos novos que quiser |
 | `Makefile`, `.latexmkrc`, `.gitattributes`, `.gitignore` | todo o conteúdo de `elementos-textuais/`, `elementos-pre-textuais/` e `elementos-pos-textuais/`, e `figuras/` |
 | `.github/workflows/compilar-latex.yml` | `elementos-pos-textuais/referencias.bib` |
 | `verificar-ortografia.sh`, `.vscode/extensions.json` e `.vscode/settings.json` | `ortografia-dicionario.txt`: parta do arquivo do template, tire o que não é seu e acrescente as suas palavras |
