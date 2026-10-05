@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do repositório
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Ferramentas usadas pelos passos de lint e de verificação (rodam no host,
       # fora do contêiner TeX Live): chktex (análise estática) e poppler-utils
@@ -81,7 +81,7 @@ jobs:
       # glossaries, makeglossaries, makeindex etc.). O .latexmkrc do repositório
       # é respeitado, então o glossário e a lista de siglas são gerados.
       - name: Compilar com latexmk
-        uses: xu-cheng/latex-action@v3
+        uses: xu-cheng/latex-action@v4
         with:
           root_file: main.tex
 
@@ -105,7 +105,7 @@ jobs:
       # injetam o tipo). Pulado em documentos derivados. Veja gerar-exemplos.sh.
       - name: Compilar exemplos (academico, publicacao, corporativo e probatorio)
         if: github.repository == 'igorrflorentino/embrapa-template-documentos-latex-abnt'
-        uses: xu-cheng/latex-action@v3
+        uses: xu-cheng/latex-action@v4
         with:
           root_file: |
             exemplo-academico.tex
