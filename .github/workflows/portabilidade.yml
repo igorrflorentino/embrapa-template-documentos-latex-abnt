@@ -60,7 +60,7 @@ jobs:
         run: git config --global core.autocrlf "${{ matrix.autocrlf }}"
 
       - name: Checkout do repositório
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Instalar TeX Live completo
         uses: TeX-Live/setup-texlive-action@v4
@@ -167,7 +167,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Instalar hunspell e remover aspell
         run: |
           sudo apt-get update -qq
@@ -195,7 +195,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Instalar hunspell (Chocolatey) e dicionários (LibreOffice)
         shell: pwsh
         run: |
@@ -230,7 +230,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Instalar o MSYS2 com aspell
         uses: msys2/setup-msys2@v2
@@ -319,7 +319,7 @@ jobs:
       - name: core.autocrlf=true
         shell: bash
         run: git config --global core.autocrlf true
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # A/B: um commit ANTERIOR ao .gitattributes (3777a4f), clonado pelo Git do Windows.
       - name: Clone anterior ao .gitattributes
         shell: bash
@@ -372,7 +372,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Instalar MiKTeX
         shell: pwsh
         run: |
@@ -413,7 +413,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       # Sem sh, o find e o sort são os do Windows: o make não funciona. A proteção do
       # alvo lint deve PARAR com uma mensagem clara (em vez de rodar o chktex sem arquivos).
       - name: make lint com PATH reduzido
