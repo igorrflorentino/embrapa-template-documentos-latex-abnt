@@ -37,7 +37,14 @@ verificar:
 
 ## lint     Análise estática (chktex) dos arquivos de prosa
 lint:
+# Sem um shell tipo Unix (sh, find e sort), o $(shell find ...) acima devolve lista vazia
+# e o chktex rodaria sem arquivo nenhum, sem avisar (medido num Windows sem o Git for
+# Windows no PATH). Falha com mensagem clara em vez de passar em silêncio.
+ifeq ($(strip $(FONTES_PROSA)),)
+	$(error make lint não encontrou nenhum .tex: ele precisa de um shell tipo Unix (sh, find e sort), como o Git Bash ou o WSL. Veja o README, "Compatibilidade de sistemas operacionais")
+else
 	chktex -q $(CHKTEX_SILENCIA) $(FONTES_PROSA)
+endif
 
 ## ortografia Checagem ortográfica (advisory) da prosa: aspell, hunspell ou corretor do macOS
 ortografia:
