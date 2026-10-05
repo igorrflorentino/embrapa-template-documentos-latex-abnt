@@ -20,6 +20,9 @@
 #   2. hunspell  (precisa do dicionário: ex. hunspell-pt-br e hunspell-en-us)
 #   3. verificador nativo do macOS, via swiftc (Xcode Command Line Tools); aceita
 #      também as palavras que você já "aprendeu" no sistema.
+# No Windows (Git Bash) use o hunspell: instale o programa e aponte a variável de
+# ambiente DICPATH para a pasta com os dicionários (.aff e .dic) de pt_BR e en_US
+# (testado com o Hunspell 1.7.0 e os dicionários do repositório do LibreOffice).
 # Sem nenhum deles, o check é pulado (também com código 0).
 #
 # Idioma: pt_BR por padrão. Um arquivo em outro idioma declara isso numa das 10

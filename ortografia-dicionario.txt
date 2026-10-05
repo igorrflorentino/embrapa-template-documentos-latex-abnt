@@ -4,6 +4,10 @@
 # A comparação é EXATA, com maiúsculas e minúsculas: liste cada forma que aparece
 # no texto (ex.: Embrapa e EMBRAPA).
 #
+# O LTeX+ do VS Code também lê este arquivo (veja o .vscode/settings.json). Lá toda
+# linha não vazia vira "palavra", inclusive estas de comentário; testado com o CLI do
+# LTeX+ e sem efeito colateral.
+#
 # Acrescente só palavras LEGÍTIMAS que o corretor desconhece (nomes próprios,
 # siglas, termos técnicos do seu documento). Nunca acrescente um erro para calar
 # o aviso: corrija o texto.
