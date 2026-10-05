@@ -24,8 +24,6 @@ name: "Portabilidade (manual: Linux, macOS e Windows)"
 # Vampire/setup-wsl) e instalações do Chocolatey que podem mudar com o tempo. Um
 # documento derivado que não precise disso pode apagar este arquivo.
 on:
-  push:
-    branches: ['claude/aspell-windows']
   workflow_dispatch:
     inputs:
       incluir_wsl:
@@ -42,7 +40,6 @@ permissions:
 
 jobs:
   matriz:
-    if: ${{ false }}
     name: ${{ matrix.rotulo }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
