@@ -1,0 +1,346 @@
+name: "Portabilidade (manual: Linux, macOS e Windows)"
+
+# Teste MANUAL de portabilidade. NÃO roda sozinho (nem em Pull Request, nem em push):
+# abra a aba Actions > "Portabilidade (manual: ...)" > Run workflow. Leva de 25 a 40
+# minutos, porque instala o TeX Live (ou o MiKTeX) em cada sistema e compila o
+# template do zero, SEM contêiner, para exercitar nativamente o que a CI normal
+# (só Linux, com TeX Live num contêiner) não exercita.
+#
+# O que cobre (cada job imprime linhas "RESULTADO | teste | ok/FALHA | detalhe" e
+# FALHA se algum teste falhar; o log não precisa ser lido para saber o resultado):
+#   matriz            Linux 24.04, Linux 26.04, macOS e Windows (core.autocrlf=true):
+#                     make ajuda/lint/verificar/pdf, ./gerar-exemplos.sh,
+#                     ./verificar-ocultamento.sh --check-only, lint e ortografia;
+#   hunspell-linux    o backend hunspell real (com o aspell removido);
+#   windows-hunspell  hunspell no Windows (Chocolatey + dicionários do LibreOffice);
+#   windows-wsl       WSL2 (Ubuntu 24.04), com o clone feito pelo Git do Windows;
+#   windows-miktex    MiKTeX no lugar do TeX Live;
+#   windows-sem-git   make com um PATH SEM o Git for Windows: a proteção do make lint
+#                     deve parar com mensagem clara (e não rodar o chktex sem arquivos).
+#
+# É um teste de MELHOR ESFORÇO: usa ações de terceiros (TeX-Live/setup-texlive-action,
+# Vampire/setup-wsl) e instalações do Chocolatey que podem mudar com o tempo. Um
+# documento derivado que não precise disso pode apagar este arquivo.
+on:
+  workflow_dispatch:
+    inputs:
+      incluir_wsl:
+        description: 'Rodar o job do WSL2'
+        type: boolean
+        default: true
+      incluir_miktex:
+        description: 'Rodar o job do MiKTeX (o mais lento)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  matriz:
+    name: ${{ matrix.rotulo }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { rotulo: 'Linux (ubuntu-24.04) com aspell',                os: ubuntu-24.04,   autocrlf: input }
+          - { rotulo: 'Linux (ubuntu-26.04) com aspell',                os: ubuntu-26.04,   autocrlf: input }
+          - { rotulo: 'macOS (macos-latest) com corretor nativo',       os: macos-latest,    autocrlf: input }
+          - { rotulo: 'Windows (windows-latest), core.autocrlf=true',   os: windows-latest,  autocrlf: 'true' }
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # Antes do checkout: reproduz a configuração padrão do Git for Windows.
+      - name: Configurar core.autocrlf
+        run: git config --global core.autocrlf "${{ matrix.autocrlf }}"
+
+      - name: Checkout do repositório
+        uses: actions/checkout@v6
+
+      - name: Instalar TeX Live completo
+        uses: TeX-Live/setup-texlive-action@v4
+        with:
+          packages: scheme-full
+
+      - name: Ferramentas extras (corretor, pdftotext)
+        run: |
+          case "$RUNNER_OS" in
+            Linux)   sudo apt-get update -qq && sudo apt-get install -y -qq aspell aspell-pt-br aspell-en poppler-utils ;;
+            macOS)   brew install poppler || true ;;
+            Windows) echo "(Windows: nenhum corretor instalado de propósito; o job windows-hunspell cobre o hunspell)" ;;
+          esac
+
+      - name: Testes nativos
+        run: |
+          set +e
+          FALHAS=0
+          resultado() { # $1=teste $2=ok|FALHA|info $3=detalhe
+            printf 'RESULTADO | %-52s | %-5s | %s\n' "$1" "$2" "$3"
+            [ "$2" = "FALHA" ] && FALHAS=$((FALHAS + 1))
+            return 0
+          }
+          rodar() { # roda "$@", guarda a saída, mostra o fim e devolve o código
+            "$@" > "$RUNNER_TEMP/saida.log" 2>&1
+            local rc=$?
+            tail -n 4 "$RUNNER_TEMP/saida.log" | sed 's/^/      | /'
+            return $rc
+          }
+
+          echo "::group::Ambiente"
+          uname -a
+          echo "bash: $(bash --version | head -1)"
+          echo "make: $(command -v make || echo AUSENTE) $(make --version 2>&1 | head -1)"
+          echo "perl: $(perl -v 2>&1 | sed -n 2p)"
+          echo "latexmk: $(latexmk --version 2>&1 | sed -n 2p)"
+          echo "biber: $(biber --version 2>&1 | head -1)"
+          echo "chktex: $(chktex --version 2>&1 | head -1)"
+          echo "pdftotext: $(command -v pdftotext || echo AUSENTE)"
+          echo "aspell: $(command -v aspell || echo AUSENTE) | hunspell: $(command -v hunspell || echo AUSENTE)"
+          echo "core.autocrlf efetivo: $(git config --get core.autocrlf)"
+          echo "::endgroup::"
+
+          # T1 - fins de linha (tr, não grep: o grep do Cygwin/MSYS descarta o \r do padrão)
+          cr=0; for f in *.sh Makefile; do n=$(tr -cd '\r' < "$f" | wc -c | tr -d ' '); cr=$((cr + n)); done
+          if [ "$cr" -eq 0 ]; then resultado "T1 fins de linha LF em *.sh e Makefile" ok "0 CRs"; else resultado "T1 fins de linha LF em *.sh e Makefile" FALHA "$cr CRs"; fi
+          resultado "T1b CRs em um .tex (informativo)" info "$(tr -cd '\r' < elementos-textuais/introducao.tex | wc -c | tr -d ' ') CRs"
+
+          # T2 - sintaxe dos scripts
+          for f in *.sh; do
+            if bash -n "$f" 2>"$RUNNER_TEMP/err.log"; then resultado "T2 bash -n $f" ok ""; else resultado "T2 bash -n $f" FALHA "$(head -1 "$RUNNER_TEMP/err.log")"; fi
+          done
+
+          # T3 - make
+          if command -v make >/dev/null 2>&1; then
+            if rodar make ajuda; then resultado "T3 make ajuda" ok ""; else resultado "T3 make ajuda" FALHA ""; fi
+          else resultado "T3 make disponível" FALHA "make AUSENTE neste runner"; fi
+
+          # T4 - lint (chktex do TeX Live)
+          if command -v make >/dev/null 2>&1; then
+            make lint > "$RUNNER_TEMP/lint.log" 2>&1; rc=$?
+            w=$(grep -c '^Warning' "$RUNNER_TEMP/lint.log")
+            if [ "$w" -eq 0 ] && [ "$rc" -eq 0 ]; then resultado "T4 make lint (0 avisos)" ok "exit=$rc"; else resultado "T4 make lint (0 avisos)" FALHA "$w avisos; exit=$rc"; tail -3 "$RUNNER_TEMP/lint.log" | sed 's/^/      | /'; fi
+          fi
+
+          # T5 - ortografia na árvore real
+          ./verificar-ortografia.sh > "$RUNNER_TEMP/orto.log" 2>&1; rc=$?
+          sed 's/^/      | /' "$RUNNER_TEMP/orto.log" | head -6
+          resultado "T5 verificar-ortografia.sh (exit 0)" "$([ $rc -eq 0 ] && echo ok || echo FALHA)" "exit=$rc | $(grep -E 'corretor:|nenhum corretor|OK  |suspeita' "$RUNNER_TEMP/orto.log" | tr -s ' ' | tr '\n' ';' | cut -c1-150)"
+
+          # T6 - ortografia: erro de teste deve ser pego (quando há corretor)
+          printf 'Este paragrafo tem um erroo de digitacao.\n' > tmp-erro.tex
+          ./verificar-ortografia.sh tmp-erro.tex > "$RUNNER_TEMP/orto2.log" 2>&1
+          if grep -q 'corretor: ' "$RUNNER_TEMP/orto2.log"; then
+            if grep -q 'erroo' "$RUNNER_TEMP/orto2.log"; then resultado "T6 ortografia pega erro de teste" ok "$(grep -c AVISO "$RUNNER_TEMP/orto2.log") aviso(s)"; else resultado "T6 ortografia pega erro de teste" FALHA "erro não detectado"; sed 's/^/      | /' "$RUNNER_TEMP/orto2.log" | head -5; fi
+          else resultado "T6 ortografia pega erro de teste" info "sem corretor neste runner (check pulado, como projetado)"; fi
+          rm -f tmp-erro.tex
+
+          # T7 - regressão (compila o main.tex do zero com latexmk) via make verificar
+          if command -v make >/dev/null 2>&1; then
+            make verificar > "$RUNNER_TEMP/verif.log" 2>&1; rc=$?
+            ok=$(grep -c '^  OK' "$RUNNER_TEMP/verif.log"); fa=$(grep -c '^  FALHA' "$RUNNER_TEMP/verif.log"); av=$(grep -c '^  AVISO' "$RUNNER_TEMP/verif.log")
+            resultado "T7 make verificar (compila e verifica)" "$([ $rc -eq 0 ] && [ "$fa" -eq 0 ] && echo ok || echo FALHA)" "exit=$rc OK=$ok FALHA=$fa AVISO=$av"
+            [ $rc -ne 0 ] && tail -8 "$RUNNER_TEMP/verif.log" | sed 's/^/      | /'
+          fi
+          ./verificar-ocultamento.sh --check-only > "$RUNNER_TEMP/verif2.log" 2>&1; rc=$?
+          resultado "T8 ./verificar-ocultamento.sh --check-only" "$([ $rc -eq 0 ] && echo ok || echo FALHA)" "exit=$rc OK=$(grep -c '^  OK' "$RUNNER_TEMP/verif2.log") FALHA=$(grep -c '^  FALHA' "$RUNNER_TEMP/verif2.log")"
+
+          # T9 - exemplos pelo script executável (./)
+          ./gerar-exemplos.sh > "$RUNNER_TEMP/ex.log" 2>&1; rc=$?
+          n=$(ls exemplo-*.pdf 2>/dev/null | wc -l | tr -d ' ')
+          resultado "T9 ./gerar-exemplos.sh (4 PDFs)" "$([ $rc -eq 0 ] && [ "$n" -eq 4 ] && echo ok || echo FALHA)" "exit=$rc PDFs=$n"
+          [ $rc -ne 0 ] && tail -8 "$RUNNER_TEMP/ex.log" | sed 's/^/      | /'
+
+          # T10 - PDF final na raiz
+          make pdf > "$RUNNER_TEMP/pdf.log" 2>&1
+          if [ -s main.pdf ]; then resultado "T10 make pdf deixa main.pdf na raiz" ok "$(wc -c < main.pdf | tr -d ' ') bytes"; else resultado "T10 make pdf deixa main.pdf na raiz" FALHA "sem main.pdf"; fi
+
+          echo "FALHAS: $FALHAS"
+          exit $FALHAS
+
+  hunspell-linux:
+    name: Linux (ubuntu-24.04) com hunspell real (sem aspell)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - name: Instalar hunspell e remover aspell
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq hunspell hunspell-pt-br hunspell-en-us
+          sudo apt-get purge -y -qq aspell 2>/dev/null || true
+      - name: Testes do backend hunspell
+        run: |
+          set +e
+          r=0
+          res() { printf 'RESULTADO | %-46s | %s\n' "$1" "$2"; [ "$2" = "FALHA" ] && r=1; return 0; }
+          echo "aspell: $(command -v aspell || echo AUSENTE) | hunspell: $(hunspell --version | head -1)"
+          bash verificar-ortografia.sh > orto-real.log 2>&1;  cat orto-real.log
+          printf 'Este paragrafo tem um erroo de digitacao.\n' > tmp-erro.tex
+          bash verificar-ortografia.sh tmp-erro.tex > orto-erro.log 2>&1; cat orto-erro.log
+          printf '%% LTeX: language=en-US\nThis sentence has a mispeled word.\n' > tmp-en.tex
+          bash verificar-ortografia.sh tmp-en.tex > orto-en.log 2>&1; cat orto-en.log
+          grep -q 'corretor: hunspell' orto-real.log && res "H1 backend escolhido = hunspell" ok || res "H1 backend escolhido = hunspell" FALHA
+          grep -q 'OK   nenhuma palavra suspeita' orto-real.log && res "H2 árvore real passa limpa" ok || res "H2 árvore real passa limpa" FALHA
+          grep -q 'erroo' orto-erro.log && res "H3 pega erro em pt_BR" ok || res "H3 pega erro em pt_BR" FALHA
+          grep -q 'mispeled' orto-en.log && res "H4 pega erro em en_US" ok || res "H4 pega erro em en_US" FALHA
+          exit $r
+
+  windows-hunspell:
+    name: Windows - hunspell real (Git Bash)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - name: Instalar hunspell (Chocolatey) e dicionários (LibreOffice)
+        shell: pwsh
+        run: |
+          choco install hunspell.portable -y --no-progress
+          $dic = Join-Path $env:RUNNER_TEMP 'dic'; New-Item -ItemType Directory -Force $dic | Out-Null
+          $base = 'https://raw.githubusercontent.com/LibreOffice/dictionaries/master'
+          foreach ($f in 'pt_BR/pt_BR.aff','pt_BR/pt_BR.dic','en/en_US.aff','en/en_US.dic') {
+            Invoke-WebRequest "$base/$f" -OutFile (Join-Path $dic ([IO.Path]::GetFileName($f)))
+          }
+          "DICPATH=$dic" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "$env:ChocolateyInstall\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+      - name: Testes do backend hunspell no Windows
+        shell: bash
+        run: |
+          set +e
+          r=0
+          res() { printf 'RESULTADO | %-46s | %s\n' "$1" "$2"; [ "$2" = "FALHA" ] && r=1; return 0; }
+          echo "hunspell: $(command -v hunspell || echo AUSENTE) | $(hunspell --version 2>&1 | head -1) | DICPATH=$DICPATH"
+          bash verificar-ortografia.sh > orto-real.log 2>&1; cat orto-real.log
+          printf 'Este paragrafo tem um erroo de digitacao.\n' > tmp-erro.tex
+          bash verificar-ortografia.sh tmp-erro.tex > orto-erro.log 2>&1; cat orto-erro.log
+          printf '%% LTeX: language=en-US\nThis sentence has a mispeled word.\n' > tmp-en.tex
+          bash verificar-ortografia.sh tmp-en.tex > orto-en.log 2>&1; cat orto-en.log
+          grep -q 'corretor: hunspell' orto-real.log && res "W1 backend escolhido = hunspell" ok || res "W1 backend escolhido = hunspell" FALHA
+          grep -q 'OK   nenhuma palavra suspeita' orto-real.log && res "W2 árvore real passa limpa" ok || res "W2 árvore real passa limpa" FALHA
+          grep -q 'erroo' orto-erro.log && res "W3 pega erro em pt_BR" ok || res "W3 pega erro em pt_BR" FALHA
+          grep -q 'mispeled' orto-en.log && res "W4 pega erro em en_US" ok || res "W4 pega erro em en_US" FALHA
+          exit $r
+
+  windows-wsl:
+    name: Windows - WSL2 (Ubuntu 24.04)
+    if: ${{ inputs.incluir_wsl }}
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: core.autocrlf=true
+        shell: bash
+        run: git config --global core.autocrlf true
+      - uses: actions/checkout@v6
+      # A/B: um commit ANTERIOR ao .gitattributes (3777a4f), clonado pelo Git do Windows.
+      - name: Clone anterior ao .gitattributes
+        shell: bash
+        run: |
+          git clone -q "https://github.com/${{ github.repository }}.git" "$GITHUB_WORKSPACE/../antes-gitattr"
+          cd "$GITHUB_WORKSPACE/../antes-gitattr" && git checkout -q 3777a4f && git log --oneline -1
+      - uses: Vampire/setup-wsl@v7
+        with:
+          distribution: Ubuntu-24.04
+      - name: Pacotes no WSL
+        shell: wsl-bash {0}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq aspell aspell-pt-br aspell-en chktex make
+      - name: Testes dentro do WSL
+        shell: wsl-bash {0}
+        env:
+          # O WSL não recebe as variáveis do Windows sozinho; /p traduz o caminho.
+          WSLENV: GITHUB_WORKSPACE/p
+        run: |
+          set +e
+          FALHAS=0
+          resultado() { printf 'RESULTADO | %-52s | %-5s | %s\n' "$1" "$2" "$3"; [ "$2" = "FALHA" ] && FALHAS=$((FALHAS + 1)); return 0; }
+          W="${GITHUB_WORKSPACE:-}"; ANTES="$W/../antes-gitattr"
+          echo "WSL: $(uname -sr) | $(bash --version | head -1 | cut -c1-40) | $(make --version | head -1)"
+          echo "workspace no WSL: $W"
+          cd "$W" || { resultado "WSL cd no workspace" FALHA "$W"; exit 1; }
+
+          cr=0; for f in *.sh Makefile; do n=$(tr -cd '\r' < "$f" | wc -c | tr -d ' '); cr=$((cr + n)); done
+          if [ "$cr" -eq 0 ]; then resultado "S1 .sh e Makefile em LF (clone do Git do Windows)" ok "0 CRs"; else resultado "S1 .sh e Makefile em LF (clone do Git do Windows)" FALHA "$cr CRs"; fi
+          make ajuda >/dev/null 2>&1; rc=$?; resultado "S2 make ajuda" "$([ $rc -eq 0 ] && echo ok || echo FALHA)" "exit=$rc"
+          make lint > /tmp/lint.log 2>&1; rc=$?; w=$(grep -c '^Warning' /tmp/lint.log)
+          resultado "S3 make lint (0 avisos)" "$([ $rc -eq 0 ] && [ "$w" -eq 0 ] && echo ok || echo FALHA)" "exit=$rc avisos=$w"
+          ./verificar-ortografia.sh > /tmp/orto.log 2>&1; cat /tmp/orto.log | sed 's/^/    /'
+          resultado "S4 ortografia com aspell real (18 arquivos OK)" "$(grep -q 'corretor: aspell' /tmp/orto.log && grep -q 'OK   nenhuma palavra suspeita' /tmp/orto.log && echo ok || echo FALHA)" ""
+
+          # informativo: o commit ANTERIOR ao .gitattributes (o defeito que ele corrige)
+          cd "$ANTES" 2>/dev/null && resultado "S5 (informativo) Makefile SEM .gitattributes" info "$(tr -cd '\r' < Makefile | wc -c | tr -d ' ') CRs no clone antigo"
+          cd "$W"
+          # um script em CRLF deve FALHAR no bash de Unix (é o que o .gitattributes previne)
+          sed 's/$/\r/' verificar-ocultamento.sh > /tmp/crlf-script.sh
+          bash /tmp/crlf-script.sh --check-only > /tmp/crlf.log 2>&1
+          if grep -q 'invalid option name' /tmp/crlf.log; then resultado "S6 script em CRLF falha no bash do WSL (esperado)" ok "reproduzido"; else resultado "S6 script em CRLF falha no bash do WSL (esperado)" FALHA "não falhou"; head -3 /tmp/crlf.log; fi
+          echo "FALHAS: $FALHAS"
+          exit $FALHAS
+
+  windows-miktex:
+    name: Windows - MiKTeX (compila o template)
+    if: ${{ inputs.incluir_miktex }}
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+      - name: Instalar MiKTeX
+        shell: pwsh
+        run: |
+          choco install miktex -y --no-progress
+          $bin = 'C:\Program Files\MiKTeX\miktex\bin\x64'
+          "MiKTeX bin: $bin (existe: $(Test-Path $bin))"
+          $bin | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+      # Sem a verificação de atualizações como administrador, a primeira compilação
+      # falhou em 20 s ("no MiKTeX administrator has checked for updates").
+      - name: Configurar o MiKTeX (instalação automática de pacotes e atualizações)
+        shell: pwsh
+        run: |
+          initexmf --admin --set-config-value="[MPM]AutoInstall=1"
+          initexmf --admin --update-fndb
+          miktex --admin packages update-package-database 2>&1 | Out-String | Write-Host
+          miktex --admin packages update 2>&1 | Select-Object -Last 8 | Out-String | Write-Host
+          miktex --version
+      - name: Compilar com MiKTeX
+        shell: bash
+        run: |
+          set +e
+          FALHAS=0
+          resultado() { printf 'RESULTADO | %-52s | %-5s | %s\n' "$1" "$2" "$3"; [ "$2" = "FALHA" ] && FALHAS=$((FALHAS + 1)); return 0; }
+          echo "pdflatex: $(command -v pdflatex) | latexmk: $(command -v latexmk) | biber: $(command -v biber) | perl: $(command -v perl)"
+          latexmk -pdf -halt-on-error -interaction=nonstopmode -file-line-error main.tex > build.log 2>&1; rc=$?
+          resultado "M1 latexmk compila o main.tex com o MiKTeX" "$([ $rc -eq 0 ] && [ -s main.pdf ] && echo ok || echo FALHA)" "exit=$rc $(ls -l main.pdf 2>/dev/null | awk '{print $5" bytes"}')"
+          [ $rc -ne 0 ] && { tail -40 build.log | cut -c1-200; }
+          if [ -s main.pdf ]; then
+            make verificar > verif.log 2>&1; rc=$?
+            fa=$(grep -c '^  FALHA' verif.log)
+            resultado "M2 make verificar com o MiKTeX" "$([ $rc -eq 0 ] && [ "$fa" -eq 0 ] && echo ok || echo FALHA)" "exit=$rc OK=$(grep -c '^  OK' verif.log) FALHA=$fa AVISO=$(grep -c '^  AVISO' verif.log)"
+            [ $rc -ne 0 ] && tail -10 verif.log
+          fi
+          exit $FALHAS
+
+  windows-sem-git:
+    name: Windows - make com PATH sem o Git for Windows
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      # Sem sh, o find e o sort são os do Windows: o make não funciona. A proteção do
+      # alvo lint deve PARAR com uma mensagem clara (em vez de rodar o chktex sem arquivos).
+      - name: make lint com PATH reduzido
+        shell: cmd
+        run: |
+          set "PATH=C:\mingw64\bin;C:\Windows\System32;C:\Windows"
+          where make
+          where sh
+          make lint > saida-lint.txt 2>&1
+          set "RC=%ERRORLEVEL%"
+          type saida-lint.txt
+          echo exit=%RC%
+          if "%RC%"=="0" (echo RESULTADO ^| X1 make lint deve FALHAR sem o Git for Windows ^| FALHA ^| exit=0 & exit /b 1)
+          findstr /c:"encontrou nenhum .tex" saida-lint.txt >nul
+          if errorlevel 1 (echo RESULTADO ^| X2 mensagem clara do make lint ^| FALHA ^| mensagem ausente & exit /b 1)
+          echo RESULTADO ^| X1 make lint falha sem o Git for Windows (esperado) ^| ok ^| exit=%RC%
+          echo RESULTADO ^| X2 mensagem clara do make lint ^| ok ^|
