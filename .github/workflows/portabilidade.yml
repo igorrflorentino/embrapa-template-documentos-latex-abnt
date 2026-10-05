@@ -83,6 +83,7 @@ jobs:
           resultado() { # $1=teste $2=ok|FALHA|info $3=detalhe
             printf 'RESULTADO | %-52s | %-5s | %s\n' "$1" "$2" "$3"
             [ "$2" = "FALHA" ] && FALHAS=$((FALHAS + 1))
+            return 0
           }
           rodar() { # roda "$@", guarda a saída, mostra o fim e devolve o código
             "$@" > "$RUNNER_TEMP/saida.log" 2>&1
@@ -177,7 +178,7 @@ jobs:
         run: |
           set +e
           r=0
-          res() { printf 'RESULTADO | %-46s | %s\n' "$1" "$2"; [ "$2" = "FALHA" ] && r=1; }
+          res() { printf 'RESULTADO | %-46s | %s\n' "$1" "$2"; [ "$2" = "FALHA" ] && r=1; return 0; }
           echo "aspell: $(command -v aspell || echo AUSENTE) | hunspell: $(hunspell --version | head -1)"
           bash verificar-ortografia.sh > orto-real.log 2>&1;  cat orto-real.log
           printf 'Este paragrafo tem um erroo de digitacao.\n' > tmp-erro.tex
@@ -212,7 +213,7 @@ jobs:
         run: |
           set +e
           r=0
-          res() { printf 'RESULTADO | %-46s | %s\n' "$1" "$2"; [ "$2" = "FALHA" ] && r=1; }
+          res() { printf 'RESULTADO | %-46s | %s\n' "$1" "$2"; [ "$2" = "FALHA" ] && r=1; return 0; }
           echo "hunspell: $(command -v hunspell || echo AUSENTE) | $(hunspell --version 2>&1 | head -1) | DICPATH=$DICPATH"
           bash verificar-ortografia.sh > orto-real.log 2>&1; cat orto-real.log
           printf 'Este paragrafo tem um erroo de digitacao.\n' > tmp-erro.tex
@@ -257,7 +258,7 @@ jobs:
         run: |
           set +e
           FALHAS=0
-          resultado() { printf 'RESULTADO | %-52s | %-5s | %s\n' "$1" "$2" "$3"; [ "$2" = "FALHA" ] && FALHAS=$((FALHAS + 1)); }
+          resultado() { printf 'RESULTADO | %-52s | %-5s | %s\n' "$1" "$2" "$3"; [ "$2" = "FALHA" ] && FALHAS=$((FALHAS + 1)); return 0; }
           W="${GITHUB_WORKSPACE:-}"; ANTES="$W/../antes-gitattr"
           echo "WSL: $(uname -sr) | $(bash --version | head -1 | cut -c1-40) | $(make --version | head -1)"
           echo "workspace no WSL: $W"
@@ -310,7 +311,7 @@ jobs:
         run: |
           set +e
           FALHAS=0
-          resultado() { printf 'RESULTADO | %-52s | %-5s | %s\n' "$1" "$2" "$3"; [ "$2" = "FALHA" ] && FALHAS=$((FALHAS + 1)); }
+          resultado() { printf 'RESULTADO | %-52s | %-5s | %s\n' "$1" "$2" "$3"; [ "$2" = "FALHA" ] && FALHAS=$((FALHAS + 1)); return 0; }
           echo "pdflatex: $(command -v pdflatex) | latexmk: $(command -v latexmk) | biber: $(command -v biber) | perl: $(command -v perl)"
           latexmk -pdf -halt-on-error -interaction=nonstopmode -file-line-error main.tex > build.log 2>&1; rc=$?
           resultado "M1 latexmk compila o main.tex com o MiKTeX" "$([ $rc -eq 0 ] && [ -s main.pdf ] && echo ok || echo FALHA)" "exit=$rc $(ls -l main.pdf 2>/dev/null | awk '{print $5" bytes"}')"
