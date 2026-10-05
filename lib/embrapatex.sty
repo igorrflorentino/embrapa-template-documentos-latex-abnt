@@ -704,7 +704,24 @@
 \providecommand{\imprimirautorinvertido}{} \renewcommand{\imprimirautorinvertido}{\@autorinvertido}
 \providecommand{\imprimiredicao}{} \renewcommand{\imprimiredicao}{\@edicao}
 \providecommand{\imprimireditora}{} \renewcommand{\imprimireditora}{\@editora}
-\providecommand{\imprimirnumeropaginas}{} \renewcommand{\imprimirnumeropaginas}{\@numeropaginas}
+% Número de páginas da ficha: \numeropaginas{<n>} é um valor manual e vence;
+% com \numeropaginas{} (vazio) o total é automático, lido do núcleo do LaTeX.
+% O formato grava o total de páginas do PDF no .aux ao fim da passada e o expõe,
+% na passada seguinte, em \PreviousTotalPages (0 na primeira compilação, quando
+% a linha de páginas ainda é omitida; o latexmk recompila e a preenche). Conta
+% as páginas físicas (capa, pré-textuais, texto e apêndices/anexos). Expansão
+% pura (\ifx/\ifnum), por isso serve a \ifnotempty, que testa via \equal. Antes
+% do formato 2020-10-01 \PreviousTotalPages não existe: sem valor manual, a linha
+% simplesmente não sai.
+\providecommand{\imprimirnumeropaginas}{}
+\renewcommand{\imprimirnumeropaginas}{%
+	\ifx\@numeropaginas\@empty
+		\ifdefined\PreviousTotalPages
+			\ifnum\PreviousTotalPages>\z@\PreviousTotalPages\fi
+		\fi
+	\else
+		\@numeropaginas
+	\fi}
 \providecommand{\imprimirilustracao}{} \renewcommand{\imprimirilustracao}{\@ilustracao}
 \providecommand{\imprimirdimensao}{} \renewcommand{\imprimirdimensao}{\@dimensao}
 \providecommand{\imprimirisbn}{} \renewcommand{\imprimirisbn}{\@isbn}

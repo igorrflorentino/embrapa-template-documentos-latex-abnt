@@ -316,7 +316,7 @@ A ficha catalográfica é gerada automaticamente em LaTeX a partir dos campos de
 
 ```tex
 \autorinvertido{Sobrenome, Nome}   % entrada principal; se vazio, usa o \autor
-\numeropaginas{85}                 % número de páginas
+\numeropaginas{}                   % vazio = automático (total de páginas do PDF); ou fixe, ex.: 85
 \ilustracao{il.}                   % il. / il. color. (opcional)
 \descritores{1. Assunto um. 2. Assunto dois. I. Título.}
 \cdd{630}                          % classificação CDD
@@ -324,7 +324,9 @@ A ficha catalográfica é gerada automaticamente em LaTeX a partir dos campos de
 \crb{CRB-1/1234}                   % registro profissional
 ```
 
-Os dados de classificação (CDD/CDU), os descritores de assunto e o registro CRB devem ser fornecidos por um(a) **bibliotecário(a)**. Os campos `\autor`, `\titulo`, `\local` e `\data` já configurados no documento são reaproveitados automaticamente, e qualquer campo deixado em branco é omitido.
+Os dados de classificação (CDD/CDU), os descritores de assunto e o registro CRB devem ser fornecidos por um(a) **bibliotecário(a)**. Os campos `\autor`, `\titulo`, `\local` e `\data` já configurados no documento são reaproveitados automaticamente, e qualquer campo deixado em branco é omitido, com uma exceção: o `\numeropaginas`.
+
+**Número de páginas automático.** Com `\numeropaginas{}` (vazio, o padrão do `main.tex`), a ficha imprime o **total de páginas do PDF**, contando a capa, os elementos pré-textuais, o texto e os apêndices e anexos. O valor vem do próprio LaTeX (que grava o total no `.aux` ao fim da compilação), então não precisa de pacote extra e acompanha o documento quando ele cresce ou encolhe. Por vir do `.aux`, ele só fica certo na passada seguinte: o `latexmk` (e o `make`) recompila sozinho até estabilizar, mas uma única passada de `pdflatex` numa compilação nova omite a linha de páginas da ficha (nunca imprime "0 p."). Se a sua unidade conta de outro modo (por exemplo, só até a última página numerada), escreva o valor à mão, como `\numeropaginas{85}`: o valor manual sempre vence. Exige o LaTeX de 2020-10-01 ou mais novo (TeX Live 2021 em diante); em versões anteriores, sem valor manual, a linha simplesmente não sai.
 
 # Modo corporativo
 
