@@ -1,7 +1,8 @@
-# Fins de linha: scripts de shell e o Makefile PRECISAM de LF.
-# Sem isto, o Git for Windows (core.autocrlf=true, o padrão) os extrai com CRLF e o
-# bash falha já na primeira linha útil ("set: pipefail\r: invalid option name"). Os
-# demais arquivos de texto (.tex, .bib, .md...) toleram CRLF e seguem o padrão de
-# cada máquina.
+# Fins de linha: scripts de shell e o Makefile devem ficar com LF.
+# Medido num runner Windows com core.autocrlf=true: sem isto o Git extrai o Makefile
+# em CRLF (o make e o Git Bash toleram), e um bash de Unix (macOS, Linux ou WSL, ao
+# clonar com o Git do Windows e rodar no WSL) falha com scripts em CRLF ("set:
+# pipefail\r: invalid option name"). Os demais arquivos de texto (.tex, .bib, .md...)
+# toleram CRLF e seguem o padrão de cada máquina.
 *.sh      text eol=lf
 Makefile  text eol=lf

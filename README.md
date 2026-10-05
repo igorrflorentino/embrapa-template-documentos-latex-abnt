@@ -66,13 +66,19 @@ Os itens marcados *Só do template* testam o próprio modelo; num documento deri
 
 ### Compatibilidade de sistemas operacionais
 
-| Sistema | Situação |
-|---|---|
-| **Linux** (Ubuntu) | **Testado automaticamente** a cada Pull Request pela CI: compilação do `main.tex`, exemplos, rede de regressão, lint e ortografia (com `aspell`). |
-| **macOS** | **Testado à mão** durante o desenvolvimento (TeX Live 2026): compilação, exemplos, regressão, lint e ortografia; os scripts rodam também com o bash 3.2 que vem no sistema. Não há teste automático. |
-| **Windows** | **Não testado.** Os scripts `.sh` e o `Makefile` precisam de um shell tipo Unix com GNU make: use o WSL ou o Git Bash (no PowerShell/cmd puros o `make lint` não funciona, pois o `find` e o `sort` do Windows são outros programas). O `.gitattributes` mantém os `.sh` e o `Makefile` com fim de linha LF; sem ele, o Git for Windows os converte para CRLF e o bash falha (reproduzido). A compilação em si (`latexmk`, `makeglossaries`) depende de TeX Live ou MiKTeX com Perl. |
+Testado em outubro de 2026, **nativamente** (TeX Live completo instalado no próprio runner, sem contêiner) em runners hospedados do GitHub e na máquina de desenvolvimento. Em cada sistema rodaram `make ajuda`, `make lint`, `make verificar` (compila o `main.tex` do zero e confere 23 verificações), `make pdf`, `./gerar-exemplos.sh` (os 4 PDFs) e `./verificar-ocultamento.sh --check-only`.
 
-A checagem de ortografia precisa de `aspell` ou `hunspell` com o dicionário pt_BR (no macOS basta o verificador do sistema); sem eles, ela é pulada e avisa. Se você usa Windows e encontrar um problema, abra uma issue.
+| Sistema | Resultado | Ambiente testado |
+|---|---|---|
+| **Linux** | **Passou em tudo**, e é o único com **CI automática** a cada Pull Request (compilação, exemplos, regressão, lint e ortografia, hoje no Ubuntu 24.04 e já verificada também no 26.04). | Ubuntu 24.04: bash 5.2, GNU make 4.3, aspell e hunspell |
+| **macOS** | **Passou em tudo**, inclusive com o bash 3.2 que vem no sistema. Sem CI automática. | `macos-latest` e a máquina de desenvolvimento: bash 3.2 e 5.3, GNU make 3.81, corretor nativo |
+| **Windows** | **Passou em tudo, exceto a ortografia, que não foi exercitada** (nenhum corretor estava instalado, então o script a pulou e avisou, como projetado). Sem CI automática. | `windows-latest`: Git for Windows 2.55 (Git Bash) com `core.autocrlf=true`, GNU make 4.4.1, Perl 5.42, TeX Live 2026 |
+
+O que **não** foi testado: o **WSL**, o **MiKTeX**, o `make` **sem o Git for Windows** no PATH (no runner o `make lint` funcionou até a partir do cmd e do PowerShell, mas porque o `sh`, o `find` e o `sort` do Git for Windows estavam no PATH) e o `aspell`/`hunspell` no Windows. A CI automática continua só em Linux; os testes de macOS e Windows foram feitos uma vez, com um workflow temporário, e podem ser repetidos.
+
+Sobre fins de linha: o `.gitattributes` mantém os `.sh` e o `Makefile` com LF. Medido no Windows com `core.autocrlf=true`, sem ele o Git extraiu o `Makefile` em CRLF (50 CRs), e o `make` e o Git Bash **toleraram**; já um bash de Unix (macOS, Linux ou **WSL**, ao clonar com o Git do Windows e rodar no WSL) **falha** com scripts em CRLF (reproduzido). Os `.tex` toleram CRLF.
+
+A checagem de ortografia precisa de `aspell` ou `hunspell` com o dicionário pt_BR (no macOS basta o verificador do sistema); sem eles, ela é pulada e avisa. Se você encontrar um problema em algum sistema, abra uma issue.
 
 # Por onde começo?
 
