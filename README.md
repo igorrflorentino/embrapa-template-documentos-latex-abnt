@@ -55,9 +55,11 @@ Além dos diretórios acima, a raiz do repositório traz arquivos que automatiza
 | `Makefile` | Atalhos de comando: `make` (compila), `make lint`, `make ortografia`, `make limpar` e `make ajuda`; para quem mantém o template, também `make exemplos` e `make verificar` |
 | `verificar-ortografia.sh` e `ortografia-dicionario.txt` | Checagem ortográfica de apoio (`make ortografia`); o dicionário lista as palavras legítimas que o corretor desconhece (veja "Como verificar a ortografia") |
 | `.latexmkrc` | Configura o `latexmk` para gerar o glossário e a lista de siglas automaticamente (`makeglossaries`) |
-| `.vscode/settings.json` | Receitas de compilação do LaTeX Workshop (VS Code), com o `main.tex` como arquivo raiz |
-| `.github/workflows/compilar-latex.yml` | CI do GitHub Actions: lint, compilação do `main.tex` e, depois do merge na `main`, publicação do PDF na release `pdf-latest` |
+| `.vscode/settings.json` e `.vscode/extensions.json` | Receitas de compilação do LaTeX Workshop (VS Code), com o `main.tex` como arquivo raiz; recomendam as extensões LaTeX Workshop e LTeX+ e configuram o LTeX+ (idioma pt-BR e o dicionário do projeto) |
+| `.github/workflows/compilar-latex.yml` | CI do GitHub Actions: lint e ortografia (só avisam, não bloqueiam), compilação do `main.tex` e, depois do merge na `main`, publicação do PDF na release `pdf-latest` |
+| `.github/workflows/portabilidade.yml` | Teste **manual** de portabilidade em Linux, macOS e Windows (aba *Actions* > *Run workflow*; não roda sozinho; veja "Compatibilidade de sistemas operacionais") |
 | `.gitignore` | Mantém fora do git os arquivos gerados pela compilação (incluindo o `/main.pdf`) |
+| `.gitattributes` | Mantém os `.sh` e o `Makefile` com fim de linha LF (evita a falha no bash de Unix ou do WSL quando o Git do Windows converte os arquivos para CRLF) |
 | `gerar-exemplos.sh` e `exemplo-*.tex` | Showcase: um PDF de demonstração para cada tipo de documento (academico, publicacao, corporativo e probatorio). *Só do template* |
 | `verificar-ocultamento.sh` | Rede de regressão da exibição automática de elementos opcionais, mais duas checagens de aviso (Lista de Símbolos e partículas em nomes do `.bib`). *Só do template* |
 | `CLAUDE.md` | Orientações para agentes de IA (Claude Code) que trabalhem neste repositório |
@@ -89,6 +91,32 @@ O que **não** foi testado: as extensões dentro do próprio VS Code (o motor do
 Sobre fins de linha: o `.gitattributes` mantém os `.sh` e o `Makefile` com LF. Medido no Windows com `core.autocrlf=true`, sem ele o Git extraiu o `Makefile` em CRLF (50 CRs); o `make` e o Git Bash **toleraram**, e no WSL o `make` também funcionou, só com `^M` visíveis na saída do `make ajuda`. Já um script `.sh` em CRLF **falha** no bash de Unix, inclusive no WSL (reproduzido: `set: pipefail^M: invalid option name`); nesse teste os `.sh` já vinham em LF, e o `.gitattributes` garante isso. Os `.tex` toleram CRLF.
 
 A checagem de ortografia precisa de `aspell` ou `hunspell` com o dicionário pt_BR (no macOS basta o verificador do sistema); sem eles, ela é pulada e avisa. Se você encontrar um problema em algum sistema, abra uma issue.
+
+### Atualizando um documento derivado
+
+Se o seu documento nasceu como uma **cópia** do template (sem histórico git em comum), dá para trazer as melhorias novas **sem sobrescrever o seu conteúdo**. A regra é separar o que é infraestrutura do template (pode ser copiada) do que é seu (nunca copie por cima):
+
+| Copie do template (leia o `diff` antes) | É seu: não sobrescreva |
+|---|---|
+| `lib/embrapatex.sty` e `lib/preambulo.tex` (se você acrescentou pacotes ao preâmbulo, aplique as mudanças à mão). **Se o seu documento ainda usa `abntex2cite`, não copie esses dois**: no template eles já usam `biblatex-abnt` e o `biber`, e a cópia quebraria o seu documento (veja o aviso abaixo) | `main.tex`: os metadados; acrescente à mão só os comandos novos que quiser |
+| `Makefile`, `.latexmkrc`, `.gitattributes`, `.gitignore` | todo o conteúdo de `elementos-textuais/`, `elementos-pre-textuais/` e `elementos-pos-textuais/`, e `figuras/` |
+| `.github/workflows/compilar-latex.yml` | `elementos-pos-textuais/referencias.bib` |
+| `verificar-ortografia.sh`, `.vscode/extensions.json` e `.vscode/settings.json` | `ortografia-dicionario.txt`: parta do arquivo do template, tire o que não é seu e acrescente as suas palavras |
+| `verificar-ocultamento.sh`, **só** se você mantiver a rede de regressão (ela é calibrada ao conteúdo-exemplo do template) | `exemplo-*.tex`, `gerar-exemplos.sh` e `.github/workflows/portabilidade.yml` são calibrados ao template (exemplos, rede de regressão e, no job do WSL, um commit antigo do template que não existe no seu repositório): apague ou adapte |
+
+Como os históricos são independentes, **não use `git merge`**: use `git diff` e `git checkout`, que só mexem nos arquivos que você escolher (procedimento testado num derivado simulado):
+
+```bash
+git remote add template https://github.com/igorrflorentino/embrapa-template-documentos-latex-abnt.git
+git fetch template main
+git diff --stat HEAD template/main -- Makefile .latexmkrc .gitattributes .github lib .vscode verificar-ortografia.sh   # o que mudou
+git diff HEAD template/main -- Makefile                                                                                # ler um arquivo
+git checkout template/main -- Makefile .gitattributes verificar-ortografia.sh                                          # trazer só estes
+```
+
+Depois de trazer os arquivos, compile (`make`), rode `make lint` e `make ortografia`, corrija os avisos que forem erros de verdade e acrescente ao `ortografia-dicionario.txt` as palavras legítimas. Se os seus capítulos ficam em outras pastas, ajuste o `find` do `Makefile` e do workflow. Na CI do seu repositório, os passos "só-do-template" (regressão e exemplos) já são pulados sozinhos; se você mantém o seu próprio `verificar-ocultamento.sh`, pode remover a guarda desse passo (veja o CLAUDE.md).
+
+**Atenção ao estilo de referências.** O template usa `biblatex-abnt` com o `biber`. Um documento antigo, que usa `abntex2cite` com BibTeX, **não migra só copiando arquivos**: mudam o preâmbulo, as macros de citação do `embrapatex.sty` e o comportamento de alguns campos do `.bib` (veja "Como cadastrar e citar Referências"). Essa migração **não foi testada num documento derivado real**; faça-a numa branch e compare a lista de referências antes e depois.
 
 # Por onde começo?
 
