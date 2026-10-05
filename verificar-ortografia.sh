@@ -23,6 +23,8 @@
 # No Windows (Git Bash) use o hunspell: instale o programa e aponte a variável de
 # ambiente DICPATH para a pasta com os dicionários (.aff e .dic) de pt_BR e en_US
 # (testado com o Hunspell 1.7.0 e os dicionários do repositório do LibreOffice).
+# O aspell também funciona no Windows (MSYS2), mas o dicionário pt_BR precisa ser
+# compilado e copiado à mão; veja o README, "Compatibilidade de sistemas operacionais".
 # Sem nenhum deles, o check é pulado (também com código 0).
 #
 # Idioma: pt_BR por padrão. Um arquivo em outro idioma declara isso numa das 10
